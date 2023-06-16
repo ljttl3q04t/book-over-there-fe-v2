@@ -34,7 +34,8 @@ const buildHeaders = (params?: any) => {
   const access_token = getAccessToken();
   return {
     headers: {
-      Authorization: `Bearer ${access_token}`,
+      "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjg2OTEwNTQxLCJpYXQiOjE2ODY5MDY5NDEsImp0aSI6Ijk0Mzc3NTRmMmIzZDQxYmFiM2EyMzgwY2RiYmM3OWI4IiwidXNlcl9pZCI6MX0.4phvuG_xrsbGMJ1iYuJL-s-ELqqNKQ25icMIntDKou0`,
+      "Content-type": "Application/json",
     },
     params,
   };
