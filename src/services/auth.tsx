@@ -9,7 +9,7 @@ export class AuthService {
         onfailure: any
     ) {
         axiosApi
-            .post("/users/login", { username, password })
+            .post("/user/login", { username, password })
             .then(function (token: { data: any }) {
                 if (token.data) {
                     onsuccess && onsuccess(token);
@@ -23,6 +23,6 @@ export class AuthService {
     };
 
     static register = (params: any) => {
-        axiosApi.post('/services/user/register', params)
+        axiosApi.post('/user/register', params)
     }
 }

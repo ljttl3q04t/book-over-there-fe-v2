@@ -1,9 +1,10 @@
 import axios from "axios";
 
 export const axiosApi = axios.create({
-  baseURL: "http://143.198.94.33/",
+  baseURL: "http://143.198.94.33/services",
   headers: {
     "Content-type": "Application/json",
+    "Access-Control-Allow-Origin": "*",
   },
 });
 
