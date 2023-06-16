@@ -26,25 +26,14 @@ const Homepage = () => {
     return resultArray;
   }, [] as any[]);
 
-  const [selectedBook, setSelectedBook] = useState(null);
-
-  const handleBookClick = (book:any) => {
-    setSelectedBook(book);
-  };
-
-  const handleCloseDetails = () => {
-    setSelectedBook(null);
-  };
-
-
   return (
     <Row style={{ flexDirection: "column" }} gutter={[0, 32]} align="middle">
       <Row gutter={[16, 16]} justify="space-evenly" style={{ width: "100%" }}>
-        {[1, 2, 3, 4].map(() => (
+        {[1, 2, 3, 4].map((item) => (
           <Col>
             <CardBook
-              action
               content={{ title: "Hot Books", description: "Book available" }}
+              router={`/book-detail/${item}`}
             />
           </Col>
         ))}
@@ -68,8 +57,11 @@ const Homepage = () => {
                       <CardBook
                         height="350px"
                         heightImg="260px"
-                        content={{ title: book.title, description: book.description }}
-                        onClick={(item:any) => handleBookClick(item)}
+                        content={{
+                          title: book.title,
+                          description: book.description,
+                        }}
+                        router={`/book-detail/:id}`}
                       />
                     </Col>
                   ))}
@@ -78,18 +70,6 @@ const Homepage = () => {
             ))}
           </Carousel>
         </Col>
-        {selectedBook && (
-          <Modal
-            title="Book Details"
-            open={selectedBook !== null}
-            onCancel={handleCloseDetails}
-            footer={null}
-          >
-            {/* Render book details here based on selectedBook */}
-            <p>Title: {selectedBook}</p>
-            {/* Add more book details */}
-          </Modal>
-        )}
       </Row>
     </Row>
   );

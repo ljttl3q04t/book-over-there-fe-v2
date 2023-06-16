@@ -1,20 +1,30 @@
-import { ExclamationCircleOutlined } from "@ant-design/icons";
+import {
+  ExclamationCircleOutlined,
+  InfoCircleOutlined,
+  LikeFilled,
+  LikeOutlined,
+  ShoppingCartOutlined,
+} from "@ant-design/icons";
+import { Color } from "@rc-component/color-picker";
 import { Button, Card, Modal, Row } from "antd";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 const { Meta } = Card;
 const { confirm } = Modal;
 
 function CardBook({
   width = 300,
   height = 300,
-  action,
-  heightImg = 150,
   srcImg = "https://symbols.vn/wp-content/uploads/2021/12/Cap-nhat-them-bo-suu-tap-Anh-nen-dien-thoai-One-Piece-an-tuong.jpg",
   content,
-  onClick,
   onEdit,
   onDelete,
+  permissionAdmin,
+  isLike = false,
+  router,
 }: any) {
+  const navigate = useNavigate();
+
   const showConfirmDelete = () => {
     confirm({
       icon: <ExclamationCircleOutlined />,
@@ -29,28 +39,18 @@ function CardBook({
   return (
     <>
       <Card
-        className={!content ? "card-book card-book-checkbody" : ""}
+        className="card-book"
         hoverable
         style={{ width: width, height: height }}
-        cover={
-          <img
-            alt="example"
-            src={srcImg}
-            height={!content ? height : heightImg}
-            style={{ borderRadius: !content ? "8px" : "" }}
-          />
-        }
-        actions={action ? [<span>Explore</span>] : []}
-        onClick={onClick}
+        cover={<img alt="example" src={srcImg} style={{ height: "100%" }} />}
       >
-        {content ? (
-          <Meta title={content.title} description={content.description} />
-        ) : (
+        <Meta
+          title={content && content.title}
+          description={content && content.description}
+        />
+        <div className="overlay" style={{ width: width, height: height }}></div>
+        {permissionAdmin ? (
           <>
-            <div
-              className="overlay"
-              style={{ width: width, height: height }}
-            ></div>
             <Row>
               <Button
                 type="primary"
@@ -62,6 +62,30 @@ function CardBook({
               <Button onClick={showConfirmDelete}>Delete</Button>
             </Row>
           </>
+        ) : (
+          <Row>
+            <Button
+              style={{ marginRight: "10px" }}
+              shape="circle"
+              icon={<ShoppingCartOutlined />}
+              size="large"
+            />
+
+            <Button
+              style={{ marginRight: "10px" }}
+              shape="circle"
+              icon={<InfoCircleOutlined />}
+              size="large"
+              onClick={() => navigate(`${router}`)}
+            />
+
+            <Button
+              shape="circle"
+              icon={isLike ? <LikeFilled /> : <LikeOutlined />}
+              style={{ color: isLike && "#1890ff" }}
+              size="large"
+            />
+          </Row>
         )}
       </Card>
     </>

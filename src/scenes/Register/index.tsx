@@ -1,5 +1,5 @@
 import { Button, Checkbox, Form, Input, Typography, notification } from 'antd'
-import { UserOutlined, LockOutlined, MailOutlined,PhoneOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined, MailOutlined, PhoneOutlined } from '@ant-design/icons';
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
 
@@ -7,11 +7,13 @@ const { Title } = Typography;
 
 const Register = () => {
     const navigate = useNavigate();
+    const [form] = Form.useForm();
     const onFinish = (values: any) => {
-        navigate('/login');
-        notification.success({
-            message: "Register successfully. Please login to you account"
-        })
+
+        // navigate('/login');
+        // notification.success({
+        //     message: "Register successfully. Please login to you account"
+        // })
     };
 
     return (
@@ -20,6 +22,7 @@ const Register = () => {
                 name="normal_login"
                 className="login-form"
                 layout="vertical"
+                form={form}
                 initialValues={{
                     remember: true,
                 }}
@@ -40,8 +43,13 @@ const Register = () => {
                 </Form.Item>
                 <Form.Item
                     name="email"
-                    label="Email"
+                    label="E-mail"
                     rules={[
+                        {
+                            type: 'email',
+                            message: 'The input is not valid E-mail!',
+                        },
+
                         {
                             required: true,
                             message: 'Please input your Email!',
@@ -61,13 +69,14 @@ const Register = () => {
                     ]}
                 >
                     <Input
-                        prefix={<PhoneOutlined  className="site-form-item-icon" />}
+                        prefix={<PhoneOutlined className="site-form-item-icon" />}
                         placeholder="Phone"
                     />
                 </Form.Item>
                 <Form.Item
                     name="password"
                     label="Password"
+                    hasFeedback
                     rules={[
                         {
                             required: true,
@@ -77,23 +86,34 @@ const Register = () => {
                 >
                     <Input.Password prefix={<LockOutlined className="site-form-item-icon" />}
                         type="password"
-                        placeholder="Password"/>
+                        placeholder="Password" />
                 </Form.Item>
                 <Form.Item
                     name="rePassword"
                     label="Re-enter password"
+                    dependencies={['password']}
+                    hasFeedback
                     rules={[
                         {
                             required: true,
                             message: 'Please input your Password again!',
                         },
+                        ({ getFieldValue }) => ({
+                            validator(_, value) {
+                                if (!value || getFieldValue('password') === value) {
+                                    return Promise.resolve();
+                                }
+                                return Promise.reject(new Error('The new password that you entered do not match!'));
+                            },
+                        }),
                     ]}
                 >
                     <Input.Password prefix={<LockOutlined className="site-form-item-icon" />}
                         type="password"
-                        placeholder="Re-enter password"/>
+                        placeholder="Re-enter password" />
                 </Form.Item>
                 <Form.Item>
+
                     <a className="login-form-forgot" href="/">
                         Forgot password
                     </a>
@@ -103,6 +123,7 @@ const Register = () => {
                     <Button type="primary" htmlType="submit" className="login-form-button">
                         Register
                     </Button>
+                    Or <a href="/login">Login now!</a>
                 </Form.Item>
             </Form>
         </div>

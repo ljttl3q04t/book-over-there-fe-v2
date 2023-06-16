@@ -21,6 +21,7 @@ import BookWishList from "./scenes/User/BookWishList";
 
 import "./App.scss";
 import { useBeforeRender } from "./component/Error";
+import BookDetail from "./scenes/BookDetail";
 
 const App = () => {
   useBeforeRender(() => {
@@ -60,6 +61,7 @@ const App = () => {
           <Route path="/book-returned" Component={BookReturned} />
           <Route path="/book-history" Component={BookHistory} />
           <Route path="/book-wishlist" Component={BookWishList} />
+          <Route path="/book-detail/:id" Component={BookDetail} />
         </Route>
       </Routes>
     </Router>

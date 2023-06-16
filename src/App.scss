@@ -13,6 +13,9 @@
   &.card-book-checkbody .ant-card-body {
     visibility: hidden;
   }
+  .ant-card-cover {
+    height: 70%;
+  }
   position: relative;
   .overlay {
     transition: 0.5s ease;
@@ -82,8 +85,4 @@
 
 .ant-carousel .slick-dots li.slick-active button {
   background-color: #1890ff;
-}
-
-.áđá{
-  
 }

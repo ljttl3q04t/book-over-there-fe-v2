@@ -1,11 +1,11 @@
-import { ApiService } from "../http-common"
+import { ApiServiceAuthor, axiosApi } from "../http-common";
 
-const getListBook = (pageSize: any, pageIndex: any) => {
-    return ApiService.get(`/services/book/list/?page=${pageIndex}&page_size=${pageSize}`);
-}
+const getListBook = (page: any, page_Size: any) => {
+  const params = { page, page_Size };
+  return ApiServiceAuthor.get(`/services/book/list`,params) ;
+};
 
 const bookService = {
-    getListBook
-
-}
+  getListBook,
+};
 export default bookService;

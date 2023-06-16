@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CardBook from "../../../component/CardBook";
 import {
   Button,
@@ -15,6 +15,8 @@ import { PlusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import type { FormInstance } from "antd/es/form";
 import type { RcFile, UploadProps } from "antd/es/upload";
 import type { UploadFile } from "antd/es/upload/interface";
+import { getListBook } from "../../../store/bookStore";
+import { useDispatch } from "react-redux";
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -35,11 +37,18 @@ const getBase64 = (file: RcFile): Promise<string> =>
 function AllBook() {
   const formRef = React.useRef<FormInstance>(null);
   const [modalAdd, setModalAdd] = useState(false);
+  const dispatch = useDispatch<any>();
 
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [previewTitle, setPreviewTitle] = useState("");
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [option, setOption] = useState({ pageIndex: 1, pageSize: 15 });
+
+  useEffect(() => {
+    dispatch(getListBook(option));
+  }, [option]);
+
   const handlePreview = async (file: UploadFile) => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj as RcFile);
@@ -201,8 +210,6 @@ function AllBook() {
         {[1, 2, 3, 1, 2, 3, 4, 1, 2, 4, 5, 5, 5].map(() => (
           <Col>
             <CardBook
-              width="280px"
-              height="350px"
               onEdit={() => setModalAdd(true)}
               onDelete={handleDelete}
             />

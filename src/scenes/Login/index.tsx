@@ -3,23 +3,30 @@ import { Form, Input, Button, Checkbox, Typography, notification } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import "../../index.css"
+import { AuthService } from '../../services/auth';
 
 const { Title } = Typography;
 
 const Login = () => {
     const navigate = useNavigate();
+    localStorage.setItem("access_token", 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjg2ODg2Mjc2LCJpYXQiOjE2ODY4ODI2NzYsImp0aSI6ImI3NDc0ZGI3NzlhMDQ3M2E5NjRjNjM3Mjc3MjQ4MDhhIiwidXNlcl9pZCI6MX0.DFQZTZkrls7snNg0CFggaGyoRi128cGHAT_hw4tKAok');
     const onFinish = (values: any) => {
-        if (values.username === '123' && values.password === '123') {
-            localStorage.setItem("access_token", '123123123123');
-            navigate('/');
-            notification.success({
-                message: "Login successfully!!"
-            })
-        } else {
-            notification.info({
-                message: "Please check your username & password"
-            })
-        }
+        AuthService.login(
+            values.username,
+            values.password,
+            (token: any) => {
+                var tokenn = token.data.access_token;
+                localStorage.setItem("access_token", 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjg2ODg2Mjc2LCJpYXQiOjE2ODY4ODI2NzYsImp0aSI6ImI3NDc0ZGI3NzlhMDQ3M2E5NjRjNjM3Mjc3MjQ4MDhhIiwidXNlcl9pZCI6MX0.DFQZTZkrls7snNg0CFggaGyoRi128cGHAT_hw4tKAok');
+                navigate("/");
+                notification.success({
+                    message: "Login successfully!"
+                });
+            },
+            (reason: any) => {
+                notification.info({
+                    message: "Something wrong. Please check your username & password"
+                });
+            },)
     };
 
     return (
@@ -71,7 +78,7 @@ const Login = () => {
                     <Button type="primary" htmlType="submit" className="login-form-button">
                         Log in
                     </Button>
-                    Or <a href="/">register now!</a>
+                    Or <a href="/register">register now!</a>
                 </Form.Item>
             </Form>
         </div>
