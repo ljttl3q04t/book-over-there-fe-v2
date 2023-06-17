@@ -33,7 +33,7 @@ function CardBook({
       onOk() {
         onDelete("ok");
       },
-      onCancel() {},
+      onCancel() { },
     });
   };
   return (
@@ -41,14 +41,14 @@ function CardBook({
       <Card
         className="card-book"
         hoverable
-        style={{ width: width, height: height }}
+        style={{ width: width, height: height, minWidth: '283px' }}
         cover={<img alt="example" src={srcImg} style={{ height: "100%" }} />}
       >
         <Meta
           title={content && content.title}
           description={content && content.description}
         />
-        <div className="overlay" style={{ width: width, height: height }}></div>
+        <div className="overlay" style={{ width: width, height: height, minWidth: '283px' }}></div>
         {permissionAdmin ? (
           <>
             <Row>

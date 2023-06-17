@@ -11,6 +11,7 @@ import {
 } from "@ant-design/icons";
 
 import { useLocation, useNavigate } from "react-router-dom";
+import { getAccessToken } from "../http-common";
 
 const { Sider } = Layout;
 const { Title } = Typography;
@@ -53,10 +54,13 @@ const Sidebar: React.FC<SidebarProps> = ({
         setActive(pathname.substring(1));
     }, [pathname]);
 
-    const items: MenuProps["items"] = [
+    let items: MenuProps["items"] = [
         getItem("Home Page", "", <HomeOutlined />),
         getItem("Checkout", "checkout", <CheckCircleOutlined />),
-        getItem("User", "sub0", <UserOutlined />, [
+        getItem("Support", "support", <MessageOutlined />),
+    ]
+    if (getAccessToken()) {
+        items = [...items, getItem("User", "sub0", <UserOutlined />, [
             getItem("My Account", "sub1", <UserOutlined />, [
                 getItem("Personal profile", "personalprofile"),
                 getItem("Payment", "payment"),
@@ -64,18 +68,14 @@ const Sidebar: React.FC<SidebarProps> = ({
             ]),
 
             getItem("Book Status", "sub2", <BookOutlined />, [
-                getItem("All book", "user-book-status-all"),
-                getItem("New book", "new-book"),
-                getItem("Book can borrow", "book-borrow"),
-                getItem("Book being borrowing", "book-be-borrow"),
-                getItem("Book borrowing", "book-borrowing"),
-                getItem("Book returned", "book-returned"),
+                getItem("My book", "my-book"),
             ]),
             getItem("Book History", "book-history", <HistoryOutlined />),
             getItem("Wishlist", "book-wishlist", <UnorderedListOutlined />),
         ]),
-        getItem("Support", "support", <MessageOutlined />),
-    ];
+        ]
+    }
+
 
     return (
         <Sider

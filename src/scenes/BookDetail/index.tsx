@@ -33,7 +33,7 @@ function BookDetail() {
           Add to cart
         </Button>
         <Button icon={<LikeOutlined />} style={{ marginLeft: "10px" }}>
-          Wish
+          Wishlist
         </Button>
       </Col>
     </Row>

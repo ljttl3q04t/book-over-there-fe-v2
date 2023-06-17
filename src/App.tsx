@@ -10,18 +10,14 @@ import Personal from "./scenes/User/Personal Profile";
 import Transaction from "./scenes/User/Transaction History";
 import Payment from "./scenes/User/Payment";
 import Support from "./scenes/User/Support";
-import AllBook from "./scenes/User/BookAll";
-import BookNew from "./scenes/User/BookNew";
-import BookCanBorrow from "./scenes/User/BookCanBorrow";
-import BookBeBorrow from "./scenes/User/BookBeBorrow";
-import BookBorrowing from "./scenes/User/BookBorrowing";
-import BookReturned from "./scenes/User/BookReturned";
 import BookHistory from "./scenes/User/BookHistory";
 import BookWishList from "./scenes/User/BookWishList";
 
 import "./App.scss";
 import { useBeforeRender } from "./component/Error";
 import BookDetail from "./scenes/BookDetail";
+import MyBook from "./scenes/User/MyBook";
+import { getAccessToken } from "./http-common";
 
 const App = () => {
   useBeforeRender(() => {
@@ -49,19 +45,17 @@ const App = () => {
         <Route element={<LayoutCustom />}>
           <Route path="/" Component={Homepage} />
           <Route path="/checkout" Component={Checkout} />
-          <Route path="/personalprofile" Component={Personal} />
           <Route path="/support" Component={Support} />
-          <Route path="/payment" Component={Payment} />
-          <Route path="/transactionhistory" Component={Transaction} />
-          <Route path="/user-book-status-all" Component={AllBook} />
-          <Route path="/new-book" Component={BookNew} />
-          <Route path="/book-borrow" Component={BookCanBorrow} />
-          <Route path="/book-be-borrow" Component={BookBeBorrow} />
-          <Route path="/book-borrowing" Component={BookBorrowing} />
-          <Route path="/book-returned" Component={BookReturned} />
-          <Route path="/book-history" Component={BookHistory} />
-          <Route path="/book-wishlist" Component={BookWishList} />
-          <Route path="/book-detail/:id" Component={BookDetail} />
+
+          {!!getAccessToken() && <>
+            < Route path="/personalprofile" Component={Personal} />
+            <Route path="/payment" Component={Payment} />
+            <Route path="/transactionhistory" Component={Transaction} />
+            <Route path="/My-book" Component={MyBook} />
+            <Route path="/book-history" Component={BookHistory} />
+            <Route path="/book-wishlist" Component={BookWishList} />
+            <Route path="/book-detail/:id" Component={BookDetail} />
+          </>}
         </Route>
       </Routes>
     </Router>
