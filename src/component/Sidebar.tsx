@@ -70,7 +70,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             getItem("Club staff", "clubstaff"),
         ]),
         getItem("User", "sub0", <UserOutlined />, [
-            getItem("My Account", "sub1", <UserOutlined />, [
+            getItem("My Account", "sub3", <UserOutlined />, [
                 getItem("Personal profile", "personalprofile"),
                 getItem("Payment", "payment"),
                 getItem("Transaction history", "transactionhistory"),

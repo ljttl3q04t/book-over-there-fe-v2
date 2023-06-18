@@ -7,6 +7,7 @@ import { ThunkDispatch } from "@reduxjs/toolkit";
 import { Button, Form, Modal, Input, Select, DatePicker, notification } from 'antd';
 import type { FormInstance } from 'antd/es/form';
 import type { RangePickerProps } from 'antd/es/date-picker';
+import { getAccessToken } from '../../../http-common';
 
 const { TextArea } = Input;
 
@@ -29,7 +30,6 @@ const ClubList = () => {
     const [modalJoin, setModalJoin] = useState(false);
 
     const initFetch = useCallback(async () => {
-
         dispatch(getClubList())
             .then((response) => {
                 if (response.payload) {
@@ -123,7 +123,7 @@ const ClubList = () => {
             render: (values: any) => {
                 setClubId(values?.id);
                 return (<>
-                    <Button type='primary' onClick={handleOpenJoin}>Join Club</Button>
+                    <Button type='primary' disabled={!!getAccessToken() ? false : true} onClick={handleOpenJoin}>Join Club</Button>
                 </>)
             }
         }

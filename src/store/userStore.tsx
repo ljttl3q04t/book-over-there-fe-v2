@@ -13,12 +13,23 @@ export const registerUser = createAsyncThunk(
     }
 );
 
+export const getUser = createAsyncThunk(
+    "user/getUser",
+    async () => {
+        const res = await userService.getUser();
+        return res.data;
+    }
+);
+
 const userSlice = createSlice({
     name: "user",
     initialState,
     reducers: {},
     extraReducers: (builder) => {
         builder.addCase(registerUser.fulfilled, (state: any, action: any) => {
+            return action.payload;
+        });
+        builder.addCase(getUser.fulfilled, (state: any, action: any) => {
             return action.payload;
         });
     },

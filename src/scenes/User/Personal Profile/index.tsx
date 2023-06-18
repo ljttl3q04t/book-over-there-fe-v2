@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Button, DatePicker, Form, Image, Input, Select } from 'antd';
 import type { FormInstance } from 'antd/es/form';
 import type { RangePickerProps } from 'antd/es/date-picker';
 import { PlusOutlined } from '@ant-design/icons';
 import { Modal, Upload } from 'antd';
+import { useDispatch } from 'react-redux';
+import { ThunkDispatch } from "@reduxjs/toolkit";
 import type { RcFile, UploadProps } from 'antd/es/upload';
 import type { UploadFile } from 'antd/es/upload/interface';
 import dayjs from 'dayjs';
+import { getUser } from '../../../store/userStore';
 
 const { Option } = Select;
 
@@ -30,6 +33,8 @@ const getBase64 = (file: RcFile): Promise<string> =>
 
 const Personal = () => {
   const formRef = React.useRef<FormInstance>(null);
+  const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
+  const [user, setUser] = useState();
   const dateFormatList = ['DD/MM/YYYY'];
   const disabledDate: RangePickerProps['disabledDate'] = (current) => {
     return current && current > dayjs().endOf('day');
@@ -39,6 +44,28 @@ const Personal = () => {
   const [previewImage, setPreviewImage] = useState('');
   const [previewTitle, setPreviewTitle] = useState('');
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+
+  const initFetch = useCallback(async () => {
+    dispatch(getUser())
+      .then((response) => {
+        if (response.payload) {
+          formRef.current?.setFieldsValue({
+            username: response.payload.username,
+            full_name: response.payload.full_name,
+            address: response.payload.address,
+            email: response.payload.email,
+            phone_number: response.payload.phone_number,
+            gender: "male",
+            birth_date: dayjs(response.payload.birth_date)
+          });
+        }
+      })
+
+  }, [dispatch]);
+
+  useEffect(() => {
+    initFetch()
+  }, [])
 
 
   const handlePreview = async (file: UploadFile) => {
@@ -69,31 +96,20 @@ const Personal = () => {
   );
 
   const onFinish = (values: any) => {
-    const formData = new FormData();
-    formData.append('username', values.username);
-    formData.append('studentId', values.studentId);
-    formData.append('email', values.email);
-    formData.append('phone', values.phone);
-    formData.append('gender', values.gender);
-    formData.append('birthDate', values.birthDate.format('YYYY-MM-DD'));
-    if (values.profilePic) {
-      formData.append('profilePic', values.profilePic);
-    }
-    formData.forEach((value, name) => {
-      console.log(`Field: ${name}, Value: ${value}`);
-    });
+    // const formData = new FormData();
+    // formData.append('username', values.username);
+    // formData.append('studentId', values.studentId);
+    // formData.append('email', values.email);
+    // formData.append('phone', values.phone);
+    // formData.append('gender', values.gender);
+    // formData.append('birthDate', values.birthDate.format('YYYY-MM-DD'));
+    // if (values.profilePic) {
+    //   formData.append('profilePic', values.profilePic);
+    // }
+    // formData.forEach((value, name) => {
+    //   console.log(`Field: ${name}, Value: ${value}`);
+    // });
   };
-
-  useEffect(() => {
-    formRef.current?.setFieldsValue({
-      username: "phdung",
-      studentId: "SE05759",
-      email: "phdung@gmail.com",
-      phone: "09812312412",
-      gender: "male",
-      birthDate: dayjs("01/01/1998")
-    });
-  }, [])
 
   return (
     <div style={{
@@ -126,41 +142,33 @@ const Personal = () => {
           <Form.Item name="username" label="Username" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="studentId" label="Student ID" rules={[{ required: true }]}>
+          <Form.Item name="full_name" label="Full Name" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="address" label="Address" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
           <Form.Item name="email" label="Email" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="phone" label="Phone number" rules={[{ required: true }]}>
+          <Form.Item name="phone_number" label="Phone number" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
           <Form.Item name="gender" label="Gender" rules={[{ required: true }]}>
             <Select
               placeholder="Select your gender"
               allowClear
+              defaultValue={"male"}
             >
-              <Option value="male">male</Option>
-              <Option value="female">female</Option>
-              <Option value="other">other</Option>
+              <Option value="male">Male</Option>
+              <Option value="female">Female</Option>
+              <Option value="other">Other</Option>
             </Select>
           </Form.Item>
-          <Form.Item
-            noStyle
-            shouldUpdate={(prevValues, currentValues) => prevValues.gender !== currentValues.gender}
-          >
-            {({ getFieldValue }) =>
-              getFieldValue('gender') === 'other' ? (
-                <Form.Item name="customizeGender" label="Customize Gender">
-                  <Input />
-                </Form.Item>
-              ) : null
-            }
-          </Form.Item>
-          <Form.Item name="birthDate" label="Date of birth" rules={[{ required: true }]}>
+          <Form.Item name="birth_date" label="Date of birth" rules={[{ required: true }]}>
             <DatePicker disabledDate={disabledDate} style={{ width: '100%' }} format={dateFormatList} />
           </Form.Item>
-          <Form.Item name={"profilePic"} valuePropName="fileList">
+          {/* <Form.Item name={"profilePic"} valuePropName="fileList">
             <Upload
               accept="image/*"
               listType="picture-circle"
@@ -176,7 +184,7 @@ const Personal = () => {
             <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
               <img alt="example" style={{ width: '100%' }} src={previewImage} />
             </Modal>
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item {...tailLayout}>
             <Button style={{ marginLeft: '235px', marginRight: '10px' }} type="primary" htmlType="submit">
               Submit
