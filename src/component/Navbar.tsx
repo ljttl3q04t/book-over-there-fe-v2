@@ -7,8 +7,9 @@ import {
   Space,
   Image,
   Typography,
-  notification,
   Badge,
+  Modal,
+  Menu
 } from "antd";
 import {
   ProfileOutlined,
@@ -50,6 +51,9 @@ const { Title } = Typography;
 const Navbar: React.FC<NavbarProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const access = localStorage.getItem("access_token");
   const navigate = useNavigate();
+  const [changePW, setChangePW] = useState(false);
+  const [username, setUsername] = useState(localStorage.getItem('username'));
+
   const iconNotifi = () => {
     return (
       <Space size="middle" style={{ marginRight: 15 }}>
@@ -65,6 +69,29 @@ const Navbar: React.FC<NavbarProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
       </Space>
     );
   };
+
+  const handleChangePassword = (e: any) => {
+    setChangePW(true);
+  };
+
+  const handleLogout = (e: any) => {
+    localStorage.removeItem("access_token");
+    window.location.reload();
+    navigate("/");
+  };
+
+  const menu = (
+    <Menu>
+      <Menu.Item key="item1" onClick={handleChangePassword}>
+        Change password
+      </Menu.Item>
+      <Menu.Item key="item2" onClick={handleLogout}>
+        Logout
+      </Menu.Item>
+    </Menu>
+  );
+
+
   return (
     <div style={{ padding: "10px 40px 10px 400px", marginBottom: "0" }}>
       {/* <Search
@@ -89,7 +116,7 @@ const Navbar: React.FC<NavbarProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
               src="https://cdn.eduncle.com/library/scoop-files/2020/6/image_1593346767460.jpg"
             />
             <Dropdown
-              menu={{ items }}
+              overlay={menu}
               placement="bottomRight"
               trigger={["click"]}
               arrow
@@ -102,11 +129,14 @@ const Navbar: React.FC<NavbarProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
                     marginLeft: 5,
                   }}
                 >
-                  Hello Namddoox!
+                  Hello {username}!
                   <ProfileOutlined />
                 </Space>
               </a>
             </Dropdown>
+            <Modal open={changePW} onCancel={() => setChangePW(false)}>
+
+            </Modal>
           </>
         ) : (
           <>

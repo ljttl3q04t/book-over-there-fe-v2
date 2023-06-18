@@ -21,6 +21,7 @@ const Login = () => {
                 notification.success({
                     message: "Login successfully!"
                 });
+                localStorage.setItem('username',token.data.user.username)
             },
             (reason: any) => {
                 notification.info({

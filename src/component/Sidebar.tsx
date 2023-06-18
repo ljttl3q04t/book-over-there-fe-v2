@@ -8,6 +8,7 @@ import {
     UnorderedListOutlined,
     MessageOutlined,
     CheckCircleOutlined,
+    TeamOutlined
 } from "@ant-design/icons";
 
 import { useLocation, useNavigate } from "react-router-dom";
@@ -58,6 +59,11 @@ const Sidebar: React.FC<SidebarProps> = ({
         getItem("Home Page", "", <HomeOutlined />),
         getItem("Checkout", "checkout", <CheckCircleOutlined />),
         getItem("Support", "support", <MessageOutlined />),
+        getItem("Club", "sub1", <TeamOutlined />, [
+            getItem("Club list", "clublist"),
+            getItem("Payment", "payment"),
+            getItem("Transaction history", "transactionhistory"),
+        ]),
     ]
     if (getAccessToken()) {
         items = [...items, getItem("User", "sub0", <UserOutlined />, [

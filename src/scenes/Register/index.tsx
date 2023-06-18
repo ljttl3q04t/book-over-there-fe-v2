@@ -1,19 +1,34 @@
 import { Button, Checkbox, Form, Input, Typography, notification } from 'antd'
 import { UserOutlined, LockOutlined, MailOutlined, PhoneOutlined } from '@ant-design/icons';
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { registerUser } from '../../store/userStore';
+import { ThunkDispatch } from "@reduxjs/toolkit";
 
 const { Title } = Typography;
 
 const Register = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
     const [form] = Form.useForm();
-    const onFinish = (values: any) => {
 
-        // navigate('/login');
-        // notification.success({
-        //     message: "Register successfully. Please login to you account"
-        // })
+    const onFinish = (values: any) => {
+        var user = {
+            username: values.username,
+            password: values.password,
+            number_phone: values.phone,
+            email: values.email,
+        }
+
+        dispatch(registerUser(user))
+            .then((res: any) => {
+                console.log(res.data)
+                notification.success({
+                    message: "Register successfully",
+                });
+                navigate("/login")
+            })
     };
 
     return (

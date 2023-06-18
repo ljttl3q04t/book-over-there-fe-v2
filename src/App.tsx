@@ -13,6 +13,9 @@ import Support from "./scenes/User/Support";
 import BookHistory from "./scenes/User/BookHistory";
 import BookWishList from "./scenes/User/BookWishList";
 
+// Club
+import ClubList from "./scenes/Club/ClubList";
+
 import "./App.scss";
 import { useBeforeRender } from "./component/Error";
 import BookDetail from "./scenes/BookDetail";
@@ -46,15 +49,15 @@ const App = () => {
           <Route path="/" Component={Homepage} />
           <Route path="/checkout" Component={Checkout} />
           <Route path="/support" Component={Support} />
-
+          <Route path="/book-detail/:id" Component={BookDetail} />
+          <Route path="/clublist" Component={ClubList} />
           {!!getAccessToken() && <>
-            < Route path="/personalprofile" Component={Personal} />
+            <Route path="/personalprofile" Component={Personal} />
             <Route path="/payment" Component={Payment} />
             <Route path="/transactionhistory" Component={Transaction} />
             <Route path="/My-book" Component={MyBook} />
             <Route path="/book-history" Component={BookHistory} />
             <Route path="/book-wishlist" Component={BookWishList} />
-            <Route path="/book-detail/:id" Component={BookDetail} />
           </>}
         </Route>
       </Routes>
