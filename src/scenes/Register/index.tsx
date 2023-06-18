@@ -23,7 +23,6 @@ const Register = () => {
 
         dispatch(registerUser(user))
             .then((res: any) => {
-                console.log(res.data)
                 notification.success({
                     message: "Register successfully",
                 });

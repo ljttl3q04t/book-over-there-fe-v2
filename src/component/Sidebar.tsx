@@ -59,25 +59,36 @@ const Sidebar: React.FC<SidebarProps> = ({
         getItem("Home Page", "", <HomeOutlined />),
         getItem("Checkout", "checkout", <CheckCircleOutlined />),
         getItem("Support", "support", <MessageOutlined />),
+
+    ]
+
+    if (getAccessToken()) {
+        items = [...items,
         getItem("Club", "sub1", <TeamOutlined />, [
             getItem("Club list", "clublist"),
-            getItem("Payment", "payment"),
-            getItem("Transaction history", "transactionhistory"),
+            getItem("Club book", "clubbook"),
+            getItem("Club staff", "clubstaff"),
         ]),
-    ]
-    if (getAccessToken()) {
-        items = [...items, getItem("User", "sub0", <UserOutlined />, [
+        getItem("User", "sub0", <UserOutlined />, [
             getItem("My Account", "sub1", <UserOutlined />, [
                 getItem("Personal profile", "personalprofile"),
                 getItem("Payment", "payment"),
                 getItem("Transaction history", "transactionhistory"),
             ]),
 
+
+
             getItem("Book Status", "sub2", <BookOutlined />, [
                 getItem("My book", "my-book"),
             ]),
             getItem("Book History", "book-history", <HistoryOutlined />),
             getItem("Wishlist", "book-wishlist", <UnorderedListOutlined />),
+        ]),
+        ]
+    }
+    else {
+        items = [...items, getItem("Club", "sub1", <TeamOutlined />, [
+            getItem("Club list", "clublist"),
         ]),
         ]
     }

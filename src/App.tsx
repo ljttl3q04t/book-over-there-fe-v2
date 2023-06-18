@@ -15,12 +15,15 @@ import BookWishList from "./scenes/User/BookWishList";
 
 // Club
 import ClubList from "./scenes/Club/ClubList";
+import ClubBook from "./scenes/Club/ClubBook";
+import ClubStaff from "./scenes/Club/ClubStaff";
 
 import "./App.scss";
 import { useBeforeRender } from "./component/Error";
 import BookDetail from "./scenes/BookDetail";
 import MyBook from "./scenes/User/MyBook";
 import { getAccessToken } from "./http-common";
+
 
 const App = () => {
   useBeforeRender(() => {
@@ -52,6 +55,9 @@ const App = () => {
           <Route path="/book-detail/:id" Component={BookDetail} />
           <Route path="/clublist" Component={ClubList} />
           {!!getAccessToken() && <>
+            <Route path="/clubstaff" Component={ClubStaff} />
+            <Route path="/clubbook" Component={ClubBook} />
+            <Route path="/bookclub" Component={ClubBook} />
             <Route path="/personalprofile" Component={Personal} />
             <Route path="/payment" Component={Payment} />
             <Route path="/transactionhistory" Component={Transaction} />
