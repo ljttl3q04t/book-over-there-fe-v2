@@ -8,7 +8,9 @@ import {
     UnorderedListOutlined,
     MessageOutlined,
     CheckCircleOutlined,
-    TeamOutlined
+    TeamOutlined,
+    MenuFoldOutlined,
+    MenuUnfoldOutlined
 } from "@ant-design/icons";
 
 import { useLocation, useNavigate } from "react-router-dom";
@@ -121,6 +123,15 @@ const Sidebar: React.FC<SidebarProps> = ({
                     setActive(key);
                 }}
             ></Menu>
+            <div>
+                <div style={{ position: 'absolute',right:'27px',bottom:'20px', fontSize: '30px' }}>
+                    {isSidebarOpen ? (
+                        <MenuFoldOutlined style={{ color: 'white' }} onClick={() => setIsSidebarOpen(false)} />
+                    ) : (
+                        <MenuUnfoldOutlined style={{ color: 'white' }} onClick={() => setIsSidebarOpen(true)} />
+                    )}
+                </div>
+            </div>
         </Sider>
     );
 };

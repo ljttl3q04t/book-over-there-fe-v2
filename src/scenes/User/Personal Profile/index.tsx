@@ -1,15 +1,16 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Button, DatePicker, Form, Image, Input, Select } from 'antd';
+import { Button, DatePicker, Form, Image, Input, Select, Spin, notification } from 'antd';
 import type { FormInstance } from 'antd/es/form';
 import type { RangePickerProps } from 'antd/es/date-picker';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, LoadingOutlined } from '@ant-design/icons';
 import { Modal, Upload } from 'antd';
 import { useDispatch } from 'react-redux';
 import { ThunkDispatch } from "@reduxjs/toolkit";
 import type { RcFile, UploadProps } from 'antd/es/upload';
 import type { UploadFile } from 'antd/es/upload/interface';
 import dayjs from 'dayjs';
-import { getUser } from '../../../store/userStore';
+import { getUser, updateUser } from '../../../store/userStore';
+import Loading from '../../../component/Loading';
 
 const { Option } = Select;
 
@@ -34,7 +35,7 @@ const getBase64 = (file: RcFile): Promise<string> =>
 const Personal = () => {
   const formRef = React.useRef<FormInstance>(null);
   const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
-  const [user, setUser] = useState();
+  const [loading, setLoading] = useState(false);
   const dateFormatList = ['DD/MM/YYYY'];
   const disabledDate: RangePickerProps['disabledDate'] = (current) => {
     return current && current > dayjs().endOf('day');
@@ -46,6 +47,7 @@ const Personal = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   const initFetch = useCallback(async () => {
+    setLoading(true);
     dispatch(getUser())
       .then((response) => {
         if (response.payload) {
@@ -56,10 +58,10 @@ const Personal = () => {
             email: response.payload.email,
             phone_number: response.payload.phone_number,
             gender: "male",
-            birth_date: dayjs(response.payload.birth_date)
+            birth_date: response?.payload?.birth_date === null ? "" : dayjs(response?.payload?.birth_date)
           });
         }
-      })
+      }).finally(() => setLoading(false))
 
   }, [dispatch]);
 
@@ -96,19 +98,30 @@ const Personal = () => {
   );
 
   const onFinish = (values: any) => {
-    // const formData = new FormData();
-    // formData.append('username', values.username);
-    // formData.append('studentId', values.studentId);
-    // formData.append('email', values.email);
-    // formData.append('phone', values.phone);
-    // formData.append('gender', values.gender);
-    // formData.append('birthDate', values.birthDate.format('YYYY-MM-DD'));
-    // if (values.profilePic) {
-    //   formData.append('profilePic', values.profilePic);
-    // }
-    // formData.forEach((value, name) => {
-    //   console.log(`Field: ${name}, Value: ${value}`);
-    // });
+    const data = {
+      username: values.username,
+      full_name: values.full_name,
+      address: values.address,
+      email: values.email,
+      phone_number: values.phone_number,
+      birth_date: dayjs(values.birth_date).format('YYYY-MM-DD')
+    }
+
+    setLoading(true)
+    dispatch(updateUser(data))
+      .then((res: any) => {
+        if (!!res?.error?.message) {
+          notification.info({
+            message: "Info",
+            description: res.payload.error || res.payload,
+          });
+          return;
+        }
+        notification.success({
+          message: "Update info successfully",
+          type: "success",
+        });
+      }).finally(() => setLoading(false))
   };
 
   return (
@@ -189,12 +202,13 @@ const Personal = () => {
             <Button style={{ marginLeft: '235px', marginRight: '10px' }} type="primary" htmlType="submit">
               Submit
             </Button>
-            <Button htmlType="button">
+            <Button htmlType="button" onClick={initFetch}>
               Cancel
             </Button>
           </Form.Item>
         </Form>
       </div>
+      {loading && <Loading />}
     </div >
   );
 };

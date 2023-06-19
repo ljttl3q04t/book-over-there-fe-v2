@@ -17,14 +17,22 @@ const Register = () => {
         var user = {
             username: values.username,
             password: values.password,
-            number_phone: values.phone,
+            phone_number: values.phone,
             email: values.email,
         }
 
         dispatch(registerUser(user))
             .then((res: any) => {
+                if (!!res?.error?.message) {
+                    notification.info({
+                        message: "Info",
+                        description: res.payload.error || res.payload,
+                    });
+                    return;
+                }
                 notification.success({
-                    message: "Register successfully",
+                    message: "Register successfully, please login to continue!",
+                    type: "success",
                 });
                 navigate("/login")
             })

@@ -13,8 +13,8 @@ const { Meta } = Card;
 const { confirm } = Modal;
 
 function CardBook({
-  width = 300,
-  height = 300,
+  width = 150,
+  height = 150,
   srcImg = "https://symbols.vn/wp-content/uploads/2021/12/Cap-nhat-them-bo-suu-tap-Anh-nen-dien-thoai-One-Piece-an-tuong.jpg",
   content,
   onEdit,
@@ -41,14 +41,14 @@ function CardBook({
       <Card
         className="card-book"
         hoverable
-        style={{ width: width, height: height, minWidth: '283px' }}
+        style={{ width: width, height: height, minWidth: '200px' }}
         cover={<img alt="example" src={srcImg} style={{ height: "100%" }} />}
       >
         <Meta
           title={content && content.title}
           description={content && content.description}
         />
-        <div className="overlay" style={{ width: width, height: height, minWidth: '283px' }}></div>
+        <div className="overlay" style={{ width: width, height: height, minWidth: '201px' }}></div>
         {permissionAdmin ? (
           <>
             <Row>
@@ -68,14 +68,14 @@ function CardBook({
               style={{ marginRight: "10px" }}
               shape="circle"
               icon={<ShoppingCartOutlined />}
-              size="large"
+              size="small"
             />
 
             <Button
               style={{ marginRight: "10px" }}
               shape="circle"
               icon={<InfoCircleOutlined />}
-              size="large"
+              size="small"
               onClick={() => navigate(`${router}`)}
             />
 
@@ -83,7 +83,7 @@ function CardBook({
               shape="circle"
               icon={isLike ? <LikeFilled /> : <LikeOutlined />}
               style={{ color: isLike && "#1890ff" }}
-              size="large"
+              size="small"
             />
           </Row>
         )}

@@ -15,9 +15,17 @@ export const getClubList = createAsyncThunk(
 
 export const joinClub = createAsyncThunk(
     "club/joinClub",
-    async (data: any) => {
-        const res = await clubService.joinCLub(data);
-        return res.data;
+    async (data: any, { rejectWithValue }) => {
+        try {
+            const res = await clubService.joinCLub(data);
+            return res.data;
+        } catch (err: any) {
+            if (!err.response) {
+                throw err;
+            }
+
+            return rejectWithValue(err.response.data);
+        }
     }
 );
 
@@ -26,10 +34,13 @@ const clubSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: (builder) => {
-        builder.addCase(getClubList.fulfilled, (state: any, action: any) => {
-            return action.payload;
+        builder.addCase(getClubList.fulfilled, (state: any, { payload }) => {
+            return payload;
         });
-        builder.addCase(joinClub.fulfilled, (state: any, action: any) => {
+        builder.addCase(joinClub.fulfilled, (state: any, { payload }) => {
+            return payload;
+        });
+        builder.addCase(joinClub.rejected, (state: any, action: any) => {
             return action.payload;
         });
     },

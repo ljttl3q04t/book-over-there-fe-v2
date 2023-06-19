@@ -50,9 +50,9 @@ const { Title } = Typography;
 
 const Navbar: React.FC<NavbarProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const access = localStorage.getItem("access_token");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [changePW, setChangePW] = useState(false);
-  const [username, setUsername] = useState(localStorage.getItem('username'));
 
   const iconNotifi = () => {
     return (
@@ -75,8 +75,7 @@ const Navbar: React.FC<NavbarProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
   };
 
   const handleLogout = (e: any) => {
-    localStorage.removeItem("access_token");
-    window.location.reload();
+    localStorage.clear();
     navigate("/");
   };
 
@@ -129,7 +128,7 @@ const Navbar: React.FC<NavbarProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
                     marginLeft: 5,
                   }}
                 >
-                  Hello {username}!
+                  Hello {localStorage.getItem('username')}!
                   <ProfileOutlined />
                 </Space>
               </a>

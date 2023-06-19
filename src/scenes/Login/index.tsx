@@ -40,7 +40,7 @@ const Login = () => {
                 }}
                 onFinish={onFinish}
             >
-                <Title level={2} style={{ textAlign: 'center' }}>Book Over There</Title>
+                <Title onClick={() =>{navigate('/')}} level={2} style={{ textAlign: 'center' }}>Book Over There</Title>
                 <Form.Item
                     name="username"
                     rules={[

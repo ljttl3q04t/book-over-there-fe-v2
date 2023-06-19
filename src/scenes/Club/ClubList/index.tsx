@@ -19,6 +19,7 @@ const layout = {
 
 const ClubList = () => {
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
+    const [loading, setLoading] = useState(false);
     const [clubList, setClubList] = useState([]);
     const [clubId, setClubId] = useState();
     const formRef = React.useRef<FormInstance>(null);
@@ -30,6 +31,7 @@ const ClubList = () => {
     const [modalJoin, setModalJoin] = useState(false);
 
     const initFetch = useCallback(async () => {
+        setLoading(true);
         dispatch(getClubList())
             .then((response) => {
                 if (response.payload) {
@@ -38,6 +40,8 @@ const ClubList = () => {
                     });
                     setClubList(data);
                 }
+            }).finally(() => {
+                setLoading(false)
             })
 
     }, [dispatch]);
@@ -68,11 +72,20 @@ const ClubList = () => {
                     reason: formValues.reason
                 }
                 dispatch(joinClub(data))
-                    .then((response) => {
-                        if (response.payload) {
-                            notification.success({ message: 'Your request has been send, please wait for approval' })
+                    .then((res: any) => {
+                        if (!!res?.error?.message) {
+                            notification.info({
+                                message: "Info",
+                                description: res.payload.error || res.payload,
+                            });
+                            return;
                         }
-                    }).catch((e: any) => notification.info({ message: e })).finally(() => {
+                        notification.success({
+                            message: "Your request has been send successfully, please wait for approval. Thank you!",
+                            type: "success",
+                        });
+                    })
+                    .finally(() => {
                         setModalJoin(false);
                         formRef.current?.resetFields();
                     })
@@ -130,7 +143,7 @@ const ClubList = () => {
     ];
 
     return (<>
-        <Table columns={columns} dataSource={clubList} />
+        <Table loading={loading} columns={columns} dataSource={clubList} />
         <Modal width={800} open={modalJoin} onCancel={handleCloseJoin} onOk={onFinish}>
             <Form
                 {...layout}
