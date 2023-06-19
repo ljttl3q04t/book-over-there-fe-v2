@@ -1,80 +1,81 @@
-import React from "react";
-import CardBook from "../../../component/CardBook";
-import { Col, Row, Select } from "antd";
+import React, { useCallback, useEffect, useState } from "react";
+import { Avatar, Button, Col, Row, Select } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
+import bookService from "../../../services/book";
+import { BookCopy, ListView } from "../../../services/types";
 
 const { Option } = Select;
 
 function MyBook() {
+    const [books, setBooks] = useState<BookCopy[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const fetchBookList = useCallback(async () => {
+        try {
+            setLoading(true);
+            const response: ListView<BookCopy> = await bookService.getMyBookList();
+            setBooks(response.results);
+            setLoading(false);
+        } catch (error) {
+            console.error("error", error);
+            // Handle error
+        }
+    }, []);
 
+    useEffect(() => {
+        fetchBookList();
+    }, [fetchBookList]);
 
-    const columns: ColumnsType<any> = [
+    const columns = [
         {
-            title: 'Cover',
-            dataIndex: 'cover',
-            key: 'author',
-            render: (text) => <a>{text}</a>,
+            title: "Avatar",
+            dataIndex: ["book", "image"],
+            key: "avatar",
+            render: (image: string) => <Avatar shape='square' size={148} src={image} />
         },
         {
-            title: 'Age',
-            dataIndex: 'age',
-            key: 'age',
+            title: "Name",
+            dataIndex: ["book", "name"],
+            key: "name",
         },
         {
-            title: 'Address',
-            dataIndex: 'address',
-            key: 'address',
+            title: "BookStatus",
+            dataIndex: "book_status",
+            key: "book_status",
         },
         {
-            title: 'Tags',
-            key: 'tags',
-            dataIndex: 'tags',
-            render: (_, { tags }) => (
-                ""
-            ),
+            title: "Category",
+            dataIndex: ["book", "category", "name"],
+            key: "category",
         },
         {
-            title: 'Action',
-            key: 'action',
-            render: (_, record) => (
-                ""
-            ),
+            title: "Author",
+            dataIndex: ["book", "author", "name"],
+            key: "author",
+        },
+        {
+            title: "Publisher",
+            dataIndex: ["book", "publisher", "name"],
+            key: "publisher",
         },
     ];
 
-    const data: any = [
-        {
-            key: '1',
-            name: 'John Brown',
-            age: 32,
-            address: 'New York No. 1 Lake Park',
-            tags: ['nice', 'developer'],
-        },
-        {
-            key: '2',
-            name: 'Jim Green',
-            age: 42,
-            address: 'London No. 1 Lake Park',
-            tags: ['loser'],
-        },
-        {
-            key: '3',
-            name: 'Joe Black',
-            age: 32,
-            address: 'Sydney No. 1 Lake Park',
-            tags: ['cool', 'teacher'],
-        },
-    ];
     return (
         <>
-            <Select defaultValue={"All"} size="large" style={{ width: 250, marginBottom: 30 }}>
-                <Option value="All">ALL</Option>
-                <Option value="newest">Newest</Option>
-                <Option value="oldest">Oldest</Option>
-                <Option value="a-z">A-Z</Option>
-                <Option value="z-a">Z-A</Option>
-            </Select>
-            <Table columns={columns} dataSource={data} />;
+            <Row gutter={8} align="middle">
+                <Col>
+                    <Select defaultValue={"All"} style={{width: 120}}>
+                        <Option value="All">ALL</Option>
+                        <Option value="newest">Newest</Option>
+                        <Option value="oldest">Oldest</Option>
+                        <Option value="a-z">A-Z</Option>
+                        <Option value="z-a">Z-A</Option>
+                    </Select>
+                </Col>
+                <Col>
+                    <Button type="primary" >Add Book</Button>
+                </Col>
+            </Row>
+            <Table<BookCopy> columns={columns} dataSource={books} loading={loading} />
         </>
     );
 }
