@@ -45,7 +45,7 @@ const CardTransaction = () => (
           Hangzhou, Zhejiang
         </Descriptions.Item>
         <Descriptions.Item label="Address" span={2}>
-          TODO
+          ''
         </Descriptions.Item>
       </Descriptions>
     </Col>
@@ -59,7 +59,7 @@ const Transaction = () => {
   return (
     <Row gutter={[0, 32]}>
       {[1, 2, 4, 5, 6].map(() => (
-        <CardTransaction key={"cardTransaction"} />
+        <CardTransaction />
       ))}
     </Row>
   );
