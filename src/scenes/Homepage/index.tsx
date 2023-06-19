@@ -1,15 +1,16 @@
-import { useState, useEffect, useCallback } from "react";
-import { Col, Row, Typography, Carousel, Button } from "antd";
-import { QueryFilter, ProFormText } from "@ant-design/pro-form";
-import Table, { ColumnsType } from "antd/es/table";
-import { useDispatch } from 'react-redux';
+/* eslint-disable unused-imports/no-unused-vars */
+import { ProFormText, QueryFilter } from "@ant-design/pro-form";
 import { ThunkDispatch } from "@reduxjs/toolkit";
+import { Button, Carousel, Col, Row, Typography } from "antd";
+import Table, { ColumnsType } from "antd/es/table";
+import { useCallback, useEffect, useState } from "react";
+import React from "react";
+import { useDispatch } from "react-redux";
+
 import CardBook from "../../component/CardBook";
 import { getListBook } from "../../store/bookStore";
-import { getRowNumber } from "../../services/utils";
 
 const { Title } = Typography;
-
 
 const Homepage = () => {
   const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
@@ -17,7 +18,7 @@ const Homepage = () => {
   const [bookList, setBookList] = useState([]);
   const [option, setOption] = useState({
     pageIndex: 1,
-    pageSize: 10
+    pageSize: 10,
   });
   const [params, setParams] = useState<string>("");
 
@@ -31,64 +32,78 @@ const Homepage = () => {
               ...item,
             };
           });
-          setBookList(data)
+          setBookList(data);
         }
-      }).finally(() => setLoading(false))
-
+      })
+      .finally(() => setLoading(false));
   }, [dispatch]);
 
   useEffect(() => {
-    initFetch()
-  }, [])
-
+    initFetch();
+  }, []);
 
   const columns: ColumnsType<any> = [
     {
-      title: '',
-      dataIndex: 'https://symbols.vn/wp-content/uploads/2021/12/Cap-nhat-them-bo-suu-tap-Anh-nen-dien-thoai-One-Piece-an-tuong.jpg',
-      render: () => { return (<><img alt="pic" style={{ width: 50, height: 50 }} src={`https://symbols.vn/wp-content/uploads/2021/12/Cap-nhat-them-bo-suu-tap-Anh-nen-dien-thoai-One-Piece-an-tuong.jpg`} /></>) }
+      title: "",
+      dataIndex:
+        "https://symbols.vn/wp-content/uploads/2021/12/Cap-nhat-them-bo-suu-tap-Anh-nen-dien-thoai-One-Piece-an-tuong.jpg",
+      render: () => {
+        return (
+          <>
+            <img
+              alt="pic"
+              style={{ width: 50, height: 50 }}
+              src={`https://symbols.vn/wp-content/uploads/2021/12/Cap-nhat-them-bo-suu-tap-Anh-nen-dien-thoai-One-Piece-an-tuong.jpg`}
+            />
+          </>
+        );
+      },
     },
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
     },
     {
-      title: 'Category',
-      dataIndex: 'category',
-      key: 'category',
+      title: "Category",
+      dataIndex: "category",
+      key: "category",
       render: (category: any) => {
         return category?.name;
-      }
+      },
     },
     {
-      title: 'Author',
-      key: 'author',
-      dataIndex: 'author',
+      title: "Author",
+      key: "author",
+      dataIndex: "author",
       render: (category: any) => {
         return category?.name;
-      }
+      },
     },
     {
-      title: 'Publisher',
-      key: 'publisher',
-      dataIndex: 'publisher',
+      title: "Publisher",
+      key: "publisher",
+      dataIndex: "publisher",
       render: (category: any) => {
         return category?.name;
-      }
+      },
     },
     {
-      title: 'Action',
-      key: '',
-      dataIndex: '',
+      title: "Action",
+      key: "",
+      dataIndex: "",
       render: (values: any) => {
-        return (<>
-          <Button type='primary' /* onClick={handleOpenJoin} */>View book</Button>
-          <Button style={{ margin: "0 5px" }} type='primary' /* onClick={handleOpenJoin} */>Add to cart</Button>
-          <Button type='primary' /* onClick={handleOpenJoin} */>Add to wishlist</Button>
-        </>)
-      }
-    }
+        return (
+          <>
+            <Button type="primary" /* onClick={handleOpenJoin} */>View book</Button>
+            <Button style={{ margin: "0 5px" }} type="primary" /* onClick={handleOpenJoin} */>
+              Add to cart
+            </Button>
+            <Button type="primary" /* onClick={handleOpenJoin} */>Add to wishlist</Button>
+          </>
+        );
+      },
+    },
   ];
 
   const books = [
@@ -191,15 +206,15 @@ const Homepage = () => {
           Book List
         </Title>
       </div>
-      <div style={{ width: '100%', padding: 0 }}>
+      <div style={{ width: "100%", padding: 0 }}>
         <QueryFilter
           style={{ padding: 10 }}
           layout="vertical"
           resetText={"RESET"}
           searchText={"QUERY"}
           onFinish={(data) => {
-            let params = new URLSearchParams();
-            for (let key in data) {
+            const params = new URLSearchParams();
+            for (const key in data) {
               params.set(key, data[key]);
             }
             setParams(params.toString());
@@ -229,16 +244,16 @@ const Homepage = () => {
 
         <Table
           loading={loading}
-          scroll={{ x: 'max-content' }}
+          scroll={{ x: "max-content" }}
           columns={columns}
           dataSource={bookList}
-        // dataSource={companyStore.companyData.data}
-        // onChange={handleTableChange}
-        // pagination={{
-        //   total: companyStore.companyData.totalItems,
-        //   pageSize: globalConstant.pageSize,
-        //   current: option.pageIndex,
-        // }}
+          // dataSource={companyStore.companyData.data}
+          // onChange={handleTableChange}
+          // pagination={{
+          //   total: companyStore.companyData.totalItems,
+          //   pageSize: globalConstant.pageSize,
+          //   current: option.pageIndex,
+          // }}
         />
       </div>
     </Row>

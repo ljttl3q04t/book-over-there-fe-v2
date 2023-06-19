@@ -1,8 +1,8 @@
+import { LikeOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { Button, Col, Descriptions, Row } from "antd";
 import Paragraph from "antd/es/typography/Paragraph";
 import Title from "antd/es/typography/Title";
 import React from "react";
-import { ShoppingCartOutlined, LikeOutlined } from "@ant-design/icons";
 
 function BookDetail() {
   const carDetail = (
@@ -63,18 +63,7 @@ function BookDetail() {
             boxShadow: "rgb(0 0 0 / 12%) 0px 5px 5px",
             margin: 0,
           }}
-        >
-          To be, or not to be, that is a question: Whether it is nobler in the
-          mind to suffer. The slings and arrows of outrageous fortune Or to take
-          arms against a sea of troubles, And by opposing end them? To die: to
-          sleep; No more; and by a sleep to say we end The heart-ache and the
-          thousand natural shocks That flesh is heir to, 'tis a consummation
-          Devoutly to be wish'd. To die, to sleep To sleep- perchance to dream:
-          ay, there's the rub! For in that sleep of death what dreams may come
-          When we have shuffled off this mortal coil, Must give us pause. There
-          's the respect That makes calamity of so long life--William
-          Shakespeare
-        </Paragraph>
+        ></Paragraph>
       </Col>
       <Col>
         <Title level={2}>History:</Title>

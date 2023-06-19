@@ -1,28 +1,22 @@
-import { axiosApi } from "../http-common"
-
+import { axiosApi } from "../http-common";
 
 export class AuthService {
-    static login = function (
-        username: any,
-        password: any,
-        onsuccess: any,
-        onfailure: any
-    ) {
-        axiosApi
-            .post("/user/login", { username, password })
-            .then(function (token: { data: any }) {
-                if (token.data) {
-                    onsuccess && onsuccess(token);
-                } else {
-                    onfailure && onfailure();
-                }
-            })
-            .catch((reason: any) => {
-                onfailure && onfailure(reason);
-            });
-    };
+  static login = function (username: any, password: any, onsuccess: any, onfailure: any) {
+    axiosApi
+      .post("/user/login", { username, password })
+      .then(function (token: { data: any }) {
+        if (token.data) {
+          onsuccess && onsuccess(token);
+        } else {
+          onfailure && onfailure();
+        }
+      })
+      .catch((reason: any) => {
+        onfailure && onfailure(reason);
+      });
+  };
 
-    static register = (params: any) => {
-        axiosApi.post('/user/register', params)
-    }
+  static register = (params: any) => {
+    axiosApi.post("/user/register", params);
+  };
 }

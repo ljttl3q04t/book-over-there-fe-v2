@@ -1,17 +1,15 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+
 import bookService from "../services/book";
 
 const initialState: any = {
   listBook: [],
 };
 
-export const getListBook = createAsyncThunk(
-  "book/getAllBook",
-  async (data?: any) => {
-    const res = await bookService.getListBook(data?.pageIndex, data?.pageSize);
-    return res.data;
-  }
-);
+export const getListBook = createAsyncThunk("book/getAllBook", async (data?: any) => {
+  const res = await bookService.getListBook(data?.pageIndex, data?.pageSize);
+  return res.data;
+});
 
 const bookSlice = createSlice({
   name: "book",
