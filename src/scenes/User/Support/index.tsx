@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable unicorn/no-array-for-each */
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Modal,notification, Typography, Upload } from 'antd'
 import type { FormInstance } from 'antd/es/form';
@@ -34,9 +33,6 @@ const Support = () => {
         if (values.issuePic) {
             formData.append('issuePic', values.issuePic);
         }
-        formData.forEach((value, name) => {
-            console.log(`Field: ${name}, Value: ${value}`);
-        });
         onReset();
         notification.success({
             message: 'Ticket Has Been Send',

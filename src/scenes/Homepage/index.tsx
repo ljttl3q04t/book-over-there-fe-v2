@@ -50,14 +50,14 @@ const Homepage = () => {
   const columns: ColumnsType<any> = [
     {
       title: "",
-      dataIndex: "https://symbols.vn/wp-content/uploads/2021/12/Cap-nhat-them-bo-suu-tap-Anh-nen-dien-thoai-One-Piece-an-tuong.jpg",
+      dataIndex: "image",
       render: (_values: any) => {
         return (
           <>
             <img
               alt="pic"
               style={{ width: 50, height: 50 }}
-              src={`https://symbols.vn/wp-content/uploads/2021/12/Cap-nhat-them-bo-suu-tap-Anh-nen-dien-thoai-One-Piece-an-tuong.jpg`}
+              src={_values}
             />
           </>
         );
