@@ -1,0 +1,6 @@
+---
+- name: deploy code
+  hosts: all
+  become: true
+  roles:
+    - name: app
