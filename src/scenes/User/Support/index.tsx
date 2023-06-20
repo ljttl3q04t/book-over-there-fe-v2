@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { PlusOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Modal, notification, Typography, Upload } from "antd";
 import type { FormInstance } from "antd/es/form";
@@ -57,7 +59,6 @@ const Support = () => {
     }
     setPreviewImage(file.url || (file.preview as string));
     setPreviewOpen(true);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     setPreviewTitle(file.name || file.url!.substring(file.url!.lastIndexOf("/") + 1));
   };
 

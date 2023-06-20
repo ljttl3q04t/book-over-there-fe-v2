@@ -2,6 +2,7 @@ import { Avatar, Button, Col, Row, Select } from "antd";
 import Table from "antd/es/table";
 import React, { useCallback, useEffect, useState } from "react";
 
+import DawerBook from "../../../component/DrawerBook";
 import bookService from "../../../services/book";
 import { BookCopy, ListView } from "../../../services/types";
 
@@ -10,6 +11,7 @@ const { Option } = Select;
 function MyBook() {
   const [books, setBooks] = useState<BookCopy[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [open, setOpen] = useState(false);
   const fetchBookList = useCallback(async () => {
     try {
       setLoading(true);
@@ -73,10 +75,13 @@ function MyBook() {
           </Select>
         </Col>
         <Col>
-          <Button type="primary">Add Book</Button>
+          <Button type="primary" onClick={() => setOpen(true)}>
+            Add Book
+          </Button>
         </Col>
       </Row>
       <Table<BookCopy> columns={columns} dataSource={books} loading={loading} />
+      <DawerBook open={open} onClose={() => setOpen(false)} />
     </>
   );
 }

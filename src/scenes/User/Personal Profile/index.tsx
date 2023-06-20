@@ -1,17 +1,17 @@
-/* eslint-disable unused-imports/no-unused-vars */
-import { PlusOutlined } from "@ant-design/icons";
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+// import {PlusOutlined } from '@ant-design/icons';
 import { ThunkDispatch } from "@reduxjs/toolkit";
 import { Button, DatePicker, Form, Image, Input, notification, Select } from "antd";
 import type { RangePickerProps } from "antd/es/date-picker";
 import type { FormInstance } from "antd/es/form";
-import type { RcFile, UploadProps } from "antd/es/upload";
-import type { UploadFile } from "antd/es/upload/interface";
+// import type { RcFile } from 'antd/es/upload';
+// import type { UploadFile } from 'antd/es/upload/interface';
 import dayjs from "dayjs";
 import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import Loading from "../../../component/Loading";
-import { getUser, updateUser } from "../../../store/userStore";
+import { updateUser } from "../../../store/userStore";
 
 const { Option } = Select;
 
@@ -24,13 +24,13 @@ const tailLayout = {
   wrapperCol: { offset: 8, span: 16 },
 };
 
-const getBase64 = (file: RcFile): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = (error) => reject(error);
-  });
+// const getBase64 = (file: RcFile): Promise<string> =>
+//   new Promise((resolve, reject) => {
+//     const reader = new FileReader();
+//     reader.readAsDataURL(file);
+//     reader.onload = () => resolve(reader.result as string);
+//     reader.onerror = (error) => reject(error);
+//   });
 
 const Personal = () => {
   const formRef = React.useRef<FormInstance>(null);
@@ -41,61 +41,57 @@ const Personal = () => {
     return current && current > dayjs().endOf("day");
   };
 
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState("");
-  const [previewTitle, setPreviewTitle] = useState("");
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  // const [previewOpen, setPreviewOpen] = useState(false);
+  // const [previewImage, setPreviewImage] = useState('');
+  // const [previewTitle, setPreviewTitle] = useState('');
+  // const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const { userInfo }: any = useSelector<any>((state) => state.user);
 
   const initFetch = useCallback(async () => {
     setLoading(true);
-    dispatch(getUser())
-      .then((response) => {
-        if (response.payload) {
-          formRef.current?.setFieldsValue({
-            username: response.payload.username,
-            full_name: response.payload.full_name,
-            address: response.payload.address,
-            email: response.payload.email,
-            phone_number: response.payload.phone_number,
-            gender: "male",
-            birth_date: response?.payload?.birth_date === null ? "" : dayjs(response?.payload?.birth_date),
-          });
-        }
-      })
-      .finally(() => setLoading(false));
-  }, [dispatch]);
+    formRef.current?.setFieldsValue({
+      username: userInfo.username,
+      full_name: userInfo.full_name,
+      address: userInfo.address,
+      email: userInfo.email,
+      phone_number: userInfo.phone_number,
+      gender: "male",
+      birth_date: userInfo.birth_date === null ? "" : dayjs(userInfo.birth_date),
+    });
+
+    setLoading(false);
+  }, [userInfo]);
 
   useEffect(() => {
     initFetch();
-  }, []);
+  }, [userInfo]);
 
-  const handlePreview = async (file: UploadFile) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj as RcFile);
-    }
-    setPreviewImage(file.url || (file.preview as string));
-    setPreviewOpen(true);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    setPreviewTitle(file.name || file.url!.substring(file.url!.lastIndexOf("/") + 1));
-  };
+  // const handlePreview = async (file: UploadFile) => {
+  //   if (!file.url && !file.preview) {
+  //     file.preview = await getBase64(file.originFileObj as RcFile);
+  //   }
+  //   setPreviewImage(file.url || file.preview as string);
+  //   setPreviewOpen(true);
+  //   setPreviewTitle(file.name || file.url!.substring(file.url!.lastIndexOf('/') + 1));
+  // };
 
-  const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
-    setFileList(newFileList);
-    if (newFileList.length > 0) {
-      const selectedFile = newFileList[0].originFileObj as File;
-      formRef.current?.setFieldsValue({ profilePic: selectedFile });
-    } else {
-      formRef.current?.setFieldsValue({ profilePic: undefined });
-    }
-  };
-  const handleCancel = () => setPreviewOpen(false);
+  // const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
+  //   setFileList(newFileList);
+  //   if (newFileList.length > 0) {
+  //     const selectedFile = newFileList[0].originFileObj as File;
+  //     formRef.current?.setFieldsValue({ profilePic: selectedFile });
+  //   } else {
+  //     formRef.current?.setFieldsValue({ profilePic: undefined });
+  //   }
+  // };
+  // const handleCancel = () => setPreviewOpen(false);
 
-  const uploadButton = (
-    <div>
-      <PlusOutlined />
-      <div style={{ marginTop: 8 }}>Upload</div>
-    </div>
-  );
+  // const uploadButton = (
+  //   <div>
+  //     <PlusOutlined />
+  //     <div style={{ marginTop: 8 }}>Upload</div>
+  //   </div>
+  // );
 
   const onFinish = (values: any) => {
     const data = {

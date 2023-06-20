@@ -3,7 +3,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import clubService from "../services/club";
 
 const initialState: any = {
-  userList: [],
+  clubList: [],
 };
 
 export const getClubList = createAsyncThunk("club/getListClub", async () => {

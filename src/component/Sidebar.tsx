@@ -55,7 +55,6 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSide
   let items: MenuProps["items"] = [
     getItem("Home Page", "", <HomeOutlined />),
     getItem("Checkout", "checkout", <CheckCircleOutlined />),
-    getItem("Support", "support", <MessageOutlined />),
   ];
 
   if (getAccessToken()) {
@@ -77,9 +76,14 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSide
         getItem("Book History", "book-history", <HistoryOutlined />),
         getItem("Wishlist", "book-wishlist", <UnorderedListOutlined />),
       ]),
+      getItem("Support", "support", <MessageOutlined />),
     ];
   } else {
-    items = [...items, getItem("Club", "sub1", <TeamOutlined />, [getItem("Club list", "clublist")])];
+    items = [
+      ...items,
+      getItem("Club", "sub1", <TeamOutlined />, [getItem("Club list", "clublist")]),
+      getItem("Support", "support", <MessageOutlined />),
+    ];
   }
 
   return (

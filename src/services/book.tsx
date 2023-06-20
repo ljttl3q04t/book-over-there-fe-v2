@@ -1,8 +1,8 @@
 import { ApiServiceAuthor } from "../http-common";
 import { BookCopy, ListView } from "./types";
 
-const getListBook = (page: any, page_Size: any) => {
-  const params = { page, page_Size };
+const getListBook = (page: any, page_Size: any, filter?: any) => {
+  const params = { page, page_Size, filter };
   return ApiServiceAuthor.get(`/book/list`, { params });
 };
 

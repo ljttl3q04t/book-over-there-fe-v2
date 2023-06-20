@@ -4,6 +4,8 @@ import userService from "../services/user";
 
 const initialState: any = {
   userList: [],
+  userInfo: {},
+  token: "",
 };
 
 export const registerUser = createAsyncThunk("users/register", async (data: any, { rejectWithValue }) => {
@@ -40,7 +42,11 @@ export const getUser = createAsyncThunk("user/getUser", async () => {
 const userSlice = createSlice({
   name: "user",
   initialState,
-  reducers: {},
+  reducers: {
+    token: (state, { payload }) => {
+      state.token = payload;
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(registerUser.fulfilled, (state: any, { payload }) => {
       return payload;
@@ -49,16 +55,16 @@ const userSlice = createSlice({
       return action.payload;
     });
     builder.addCase(updateUser.fulfilled, (state: any, { payload }) => {
-      return payload;
+      state.userInfo = payload;
     });
     builder.addCase(updateUser.rejected, (state: any, action: any) => {
       return action.payload;
     });
-    builder.addCase(getUser.fulfilled, (state: any, action: any) => {
-      return action.payload;
+    builder.addCase(getUser.fulfilled, (state: any, { payload }: any) => {
+      state.userInfo = payload;
     });
   },
 });
-
+export const { token } = userSlice.actions;
 const { reducer } = userSlice;
 export default reducer;

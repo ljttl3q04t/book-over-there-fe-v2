@@ -1,3 +1,4 @@
+import { notification } from "antd";
 import axios from "axios";
 
 export const axiosApi = axios.create({
@@ -12,6 +13,12 @@ axiosApi.interceptors.response.use(
     return response;
   },
   async (error: any) => {
+    if (!error.response) {
+      notification.error({
+        message: error.message,
+      });
+    }
+
     if (error.response && error.response.status === 401) {
       removeAccessToken();
       return;

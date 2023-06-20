@@ -1,3 +1,4 @@
+/* eslint-disable no-extra-boolean-cast */
 import { ThunkDispatch } from "@reduxjs/toolkit";
 import { Button, DatePicker, Form, Input, Modal, notification } from "antd";
 import type { RangePickerProps } from "antd/es/date-picker";
@@ -55,11 +56,12 @@ const ClubList = () => {
     setModalJoin(false);
   };
 
-  const handleOpenJoin = () => {
+  const handleOpenJoin = (_item: any) => {
+    setClubId(_item.id);
     setModalJoin(true);
   };
 
-  const onFinish = () => {
+  const onFinish = (_values: any) => {
     formRef.current
       ?.validateFields()
       .then((formValues) => {
@@ -91,10 +93,8 @@ const ClubList = () => {
             formRef.current?.resetFields();
           });
       })
-      .catch(() => {
-        notification.info({
-          message: "Please make sure that you enter all field",
-        });
+      .catch((_errors) => {
+        notification.info({ message: "Please make sure that you enter all field" });
       });
   };
 
@@ -136,11 +136,10 @@ const ClubList = () => {
       title: "Action",
       key: "",
       dataIndex: "",
-      render: (values: any) => {
-        setClubId(values?.id);
+      render: (_values: any) => {
         return (
           <>
-            <Button type="primary" disabled={getAccessToken() ? false : true} onClick={handleOpenJoin}>
+            <Button type="primary" disabled={!!getAccessToken() ? false : true} onClick={() => handleOpenJoin(_values)}>
               Join Club
             </Button>
           </>

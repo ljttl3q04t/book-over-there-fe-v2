@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import {
   ExclamationCircleOutlined,
   InfoCircleOutlined,
@@ -6,10 +7,10 @@ import {
   ShoppingCartOutlined,
 } from "@ant-design/icons";
 import { Button, Card, Modal, Row } from "antd";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 const { Meta } = Card;
 const { confirm } = Modal;
-import React from "react";
 
 function CardBook({
   width = 150,
@@ -32,7 +33,6 @@ function CardBook({
       onOk() {
         onDelete("ok");
       },
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
       onCancel() {},
     });
   };

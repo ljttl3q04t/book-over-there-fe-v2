@@ -25,7 +25,7 @@ const Login = () => {
         });
         localStorage.setItem("username", token.data.user.username);
       },
-      () => {
+      (_reason: any) => {
         notification.info({
           message: "Something wrong. Please check your username & password",
         });

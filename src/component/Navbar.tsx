@@ -1,45 +1,29 @@
-/* eslint-disable unused-imports/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BellOutlined, ProfileOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import { Badge, Dropdown, Image, Input, Menu, Modal, Space, Typography } from "antd";
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Badge, Dropdown, Image, Modal, Space } from "antd";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
+import { getUser, token } from "../store/userStore";
 
 interface NavbarProps {
   isSidebarOpen: boolean;
   setIsSidebarOpen: (value: boolean) => void;
 }
 
-const items: MenuProps["items"] = [
-  {
-    key: "1",
-    label: <p>Change password</p>,
-  },
-  {
-    key: "2",
-    label: (
-      <Link
-        onClick={() => {
-          localStorage.removeItem("access_token");
-          window.location.reload();
-        }}
-        to="/"
-      >
-        Logout
-      </Link>
-    ),
-  },
-];
-
-const { Search } = Input;
-const { Title } = Typography;
-
-const Navbar: React.FC<NavbarProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
+const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: any) => {
   const access = localStorage.getItem("access_token");
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [changePW, setChangePW] = useState(false);
+  const dispatch = useDispatch<any>();
+  const username: any = useSelector<any>((state) => state.user.userInfo.username);
+
+  useEffect(() => {
+    dispatch(getUser());
+    dispatch(token(access));
+  }, [dispatch]);
 
   const iconNotifi = () => {
     return (
@@ -57,25 +41,27 @@ const Navbar: React.FC<NavbarProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
     );
   };
 
-  const handleChangePassword = () => {
+  const handleChangePassword = (_e: any) => {
     setChangePW(true);
   };
 
-  const handleLogout = () => {
+  const handleLogout = (_e: any) => {
     localStorage.clear();
     navigate("/");
   };
 
-  const menu = (
-    <Menu>
-      <Menu.Item key="item1" onClick={handleChangePassword}>
-        Change password
-      </Menu.Item>
-      <Menu.Item key="item2" onClick={handleLogout}>
-        Logout
-      </Menu.Item>
-    </Menu>
-  );
+  const items: MenuProps["items"] = [
+    {
+      label: "Change password",
+      key: "1",
+      onClick: handleChangePassword,
+    },
+    {
+      label: "Logout",
+      key: "2",
+      onClick: handleLogout,
+    },
+  ];
 
   return (
     <div style={{ padding: "10px 40px 10px 400px", marginBottom: "0" }}>
@@ -100,7 +86,7 @@ const Navbar: React.FC<NavbarProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
               preview={false}
               src="https://cdn.eduncle.com/library/scoop-files/2020/6/image_1593346767460.jpg"
             />
-            <Dropdown overlay={menu} placement="bottomRight" trigger={["click"]} arrow>
+            <Dropdown menu={{ items }} placement="bottomRight" trigger={["click"]} arrow>
               <a onClick={(e) => e.preventDefault()}>
                 <Space
                   style={{
@@ -109,7 +95,7 @@ const Navbar: React.FC<NavbarProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
                     marginLeft: 5,
                   }}
                 >
-                  Hello {localStorage.getItem("username")}!
+                  Hello {username}!
                   <ProfileOutlined />
                 </Space>
               </a>
