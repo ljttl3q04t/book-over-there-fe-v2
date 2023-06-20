@@ -1,7 +1,9 @@
-import React from "react";
+import React from 'react'
 
 const ClubBook = () => {
-  return <div>ClubBook</div>;
-};
+  return (
+    <div>ClubBook</div>
+  )
+}
 
-export default ClubBook;
+export default ClubBook

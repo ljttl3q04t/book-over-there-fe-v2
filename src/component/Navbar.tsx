@@ -1,10 +1,26 @@
 /* eslint-disable unused-imports/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { BellOutlined, ProfileOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import {
+  BellOutlined,
+  ProfileOutlined,
+  ShoppingCartOutlined,
+} from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import { Badge, Dropdown, Image, Input, Menu, Modal, Space, Typography } from "antd";
-import React, { useState } from "react";
+import {
+  Badge,
+  Dropdown,
+  Image,
+  Input,
+  Menu,
+  Modal,
+  Space,
+  Typography
+} from "antd";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+
+import { getUser, token } from "../store/userStore";
 
 interface NavbarProps {
   isSidebarOpen: boolean;
@@ -40,6 +56,14 @@ const Navbar: React.FC<NavbarProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [changePW, setChangePW] = useState(false);
+  const dispatch = useDispatch<any>()
+  const username: any = useSelector<any>((state) => state.user.userInfo.username)
+
+
+  useEffect(() => {
+    dispatch(getUser())
+    dispatch(token(access))
+  }, [dispatch])
 
   const iconNotifi = () => {
     return (
@@ -57,11 +81,11 @@ const Navbar: React.FC<NavbarProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
     );
   };
 
-  const handleChangePassword = () => {
+  const handleChangePassword = (e: any) => {
     setChangePW(true);
   };
 
-  const handleLogout = () => {
+  const handleLogout = (e: any) => {
     localStorage.clear();
     navigate("/");
   };
@@ -76,6 +100,20 @@ const Navbar: React.FC<NavbarProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
       </Menu.Item>
     </Menu>
   );
+
+  const items: MenuProps['items'] = [
+    {
+      label: 'Change password',
+      key: '1',
+      onClick: handleChangePassword
+    },
+    {
+      label: 'Logout',
+      key: '2',
+      onClick: handleLogout
+    },
+  ];
+
 
   return (
     <div style={{ padding: "10px 40px 10px 400px", marginBottom: "0" }}>
@@ -100,7 +138,12 @@ const Navbar: React.FC<NavbarProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
               preview={false}
               src="https://cdn.eduncle.com/library/scoop-files/2020/6/image_1593346767460.jpg"
             />
-            <Dropdown overlay={menu} placement="bottomRight" trigger={["click"]} arrow>
+            <Dropdown
+              menu={{ items }}
+              placement="bottomRight"
+              trigger={["click"]}
+              arrow
+            >
               <a onClick={(e) => e.preventDefault()}>
                 <Space
                   style={{
@@ -109,12 +152,14 @@ const Navbar: React.FC<NavbarProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
                     marginLeft: 5,
                   }}
                 >
-                  Hello {localStorage.getItem("username")}!
+                  Hello {username}!
                   <ProfileOutlined />
                 </Space>
               </a>
             </Dropdown>
-            <Modal open={changePW} onCancel={() => setChangePW(false)}></Modal>
+            <Modal open={changePW} onCancel={() => setChangePW(false)}>
+
+            </Modal>
           </>
         ) : (
           <>
@@ -159,3 +204,5 @@ const Navbar: React.FC<NavbarProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
 };
 
 export default Navbar;
+
+

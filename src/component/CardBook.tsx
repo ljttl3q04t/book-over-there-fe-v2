@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import {
   ExclamationCircleOutlined,
   InfoCircleOutlined,
@@ -6,10 +7,10 @@ import {
   ShoppingCartOutlined,
 } from "@ant-design/icons";
 import { Button, Card, Modal, Row } from "antd";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 const { Meta } = Card;
 const { confirm } = Modal;
-import React from "react";
 
 function CardBook({
   width = 150,
@@ -32,8 +33,7 @@ function CardBook({
       onOk() {
         onDelete("ok");
       },
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      onCancel() {},
+      onCancel() { },
     });
   };
   return (
@@ -41,15 +41,22 @@ function CardBook({
       <Card
         className="card-book"
         hoverable
-        style={{ width: width, height: height, minWidth: "200px" }}
+        style={{ width: width, height: height, minWidth: '200px' }}
         cover={<img alt="example" src={srcImg} style={{ height: "100%" }} />}
       >
-        <Meta title={content && content.title} description={content && content.description} />
-        <div className="overlay" style={{ width: width, height: height, minWidth: "201px" }}></div>
+        <Meta
+          title={content && content.title}
+          description={content && content.description}
+        />
+        <div className="overlay" style={{ width: width, height: height, minWidth: '201px' }}></div>
         {permissionAdmin ? (
           <>
             <Row>
-              <Button type="primary" style={{ marginRight: "10px" }} onClick={onEdit}>
+              <Button
+                type="primary"
+                style={{ marginRight: "10px" }}
+                onClick={onEdit}
+              >
                 Edit
               </Button>
               <Button onClick={showConfirmDelete}>Delete</Button>
@@ -57,7 +64,12 @@ function CardBook({
           </>
         ) : (
           <Row>
-            <Button style={{ marginRight: "10px" }} shape="circle" icon={<ShoppingCartOutlined />} size="small" />
+            <Button
+              style={{ marginRight: "10px" }}
+              shape="circle"
+              icon={<ShoppingCartOutlined />}
+              size="small"
+            />
 
             <Button
               style={{ marginRight: "10px" }}
