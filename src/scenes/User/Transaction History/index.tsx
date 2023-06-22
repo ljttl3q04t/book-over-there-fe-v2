@@ -44,7 +44,6 @@ const CardTransaction = () => (
         <Descriptions.Item label="Live" span={2}>
           Hangzhou, Zhejiang
         </Descriptions.Item>
-        <Descriptions.Item label="Address" span={2}></Descriptions.Item>
       </Descriptions>
     </Col>
     <Col xs={{ span: 3 }}>

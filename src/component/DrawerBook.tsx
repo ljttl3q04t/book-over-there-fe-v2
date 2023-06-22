@@ -1,10 +1,8 @@
-/* eslint-disable no-console */
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable react/react-in-jsx-scope */
 import { PlusOutlined } from "@ant-design/icons";
 import { Button, Drawer, Form, FormInstance, Input, Modal, Select, Space, Upload, UploadFile, UploadProps } from "antd";
 import { RcFile } from "antd/es/upload";
 import { useEffect, useRef, useState } from "react";
+import React from "react";
 
 const getBase64 = (file: RcFile): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -24,7 +22,6 @@ function DawerBook({ open, onSubmit, onClose }: any) {
 
   const onFinish = (values: any) => {
     onClose();
-    console.log(values);
     onSubmit(values);
   };
 
