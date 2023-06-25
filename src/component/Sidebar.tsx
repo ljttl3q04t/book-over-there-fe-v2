@@ -67,7 +67,7 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSide
       ]),
       getItem("User", "sub0", <UserOutlined />, [
         getItem("My Account", "sub3", <UserOutlined />, [
-          getItem("Personal profile", "personalprofile"),
+          getItem("Personal profile", "my-profile"),
           getItem("Payment", "payment"),
           getItem("Transaction history", "transactionhistory"),
         ]),

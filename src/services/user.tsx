@@ -9,7 +9,14 @@ const getUser = () => {
 };
 
 const updateUser = (data: any) => {
-  return ApiServiceAuthor.put("/user/info/update", data);
+  const formData = new FormData();
+  formData.append('email', data.email);
+  formData.append('phone_number', data.phone_number);
+  formData.append('address', data.address);
+  formData.append('full_name', data.full_name);
+  formData.append('birth_date', data.birth_date);
+  formData.append('avatar', data.avatar);
+  return ApiServiceAuthor.put("/user/info/update", formData);
 };
 
 const userService = {

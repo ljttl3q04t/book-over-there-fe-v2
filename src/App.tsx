@@ -4,6 +4,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
+import {Error403, Error404} from "./component";
 import { useBeforeRender } from "./component/Error";
 import BookDetail from "./scenes/BookDetail";
 import Checkout from "./scenes/Checkout";
@@ -49,21 +50,23 @@ const App = () => {
             <Route path="/support" Component={Support} />
             <Route path="/book-detail/:id" Component={BookDetail} />
             <Route path="/clublist" Component={ClubList} />
-            {!!token && (
+            {token ? (
               <>
                 <Route path="/clubstaff" Component={ClubStaff} />
                 <Route path="/clubbook" Component={ClubBook} />
                 <Route path="/bookclub" Component={ClubBook} />
-                <Route path="/personalprofile" Component={Personal} />
+                <Route path="/my-profile" Component={Personal} />
                 <Route path="/payment" Component={Payment} />
                 <Route path="/transactionhistory" Component={Transaction} />
                 <Route path="/My-book" Component={MyBook} />
                 <Route path="/book-history" Component={BookHistory} />
                 <Route path="/book-wishlist" Component={BookWishList} />
               </>
+            ) : (
+              <Route path="/" element={<Error403 />} />
             )}
           </Route>
-          <Route path="*" element={<h1 style={{ textAlign: "center", fontSize: "2em" }}>Not Found</h1>} />
+          <Route path="*" element={<Error404/>}/>
         </Routes>
       </Router>
     </div>
