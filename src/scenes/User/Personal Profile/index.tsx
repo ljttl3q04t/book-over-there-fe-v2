@@ -5,6 +5,7 @@ import {ThunkDispatch} from "@reduxjs/toolkit";
 import {Button, DatePicker, Form, Image, Input, notification, Select, Upload} from "antd";
 import type {RangePickerProps} from "antd/es/date-picker";
 import type {FormInstance} from "antd/es/form";
+import type { RcFile, UploadFile, UploadProps } from 'antd/es/upload/interface';
 import dayjs from "dayjs";
 import React, {useCallback, useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
@@ -41,9 +42,27 @@ const Personal = () => {
   };
 
   const {userInfo}: any = useSelector<any>((state) => state.user);
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+
+  const props: UploadProps = {
+    onRemove: (file) => {
+      const index = fileList.indexOf(file);
+      const newFileList = fileList.slice();
+      newFileList.splice(index, 1);
+      setFileList(newFileList);
+    },
+    beforeUpload: (file) => {
+      setFileList([...fileList, file]);
+
+      return false;
+    },
+    fileList,
+  };
 
   const initFetch = useCallback(async () => {
     setLoading(true);
+    console.log();
+    
     formRef.current?.setFieldsValue({
       username: userInfo.username,
       full_name: userInfo.full_name,
@@ -71,7 +90,7 @@ const Personal = () => {
       email: values.email,
       phone_number: values.phone_number,
       birth_date: dayjs(values.birth_date).format("YYYY-MM-DD"),
-      avatar: values.avatar,
+      avatar: fileList[0] as RcFile
     };
     dispatch(updateUser(data))
       .then((res: any) => {
@@ -139,7 +158,7 @@ const Personal = () => {
           </Form.Item>
           <Form.Item name="avatar" label="Avatar">
             <Upload
-              beforeUpload={() => false}
+              {...props} listType="picture-card"
             >
               <Button icon={<UploadOutlined/>}>Click to Upload</Button>
             </Upload>
