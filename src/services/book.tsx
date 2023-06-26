@@ -6,7 +6,7 @@ const getListBook = (page: any, page_Size: any, filter?: any) => {
   return ApiServiceAuthor.get(`/book/list`, { params });
 };
 
-async function getMyBookList(): Promise<ListView<BookCopy>> {
+async function getMyBookList(): Promise<BookCopy[]> {
   try {
     const response = await ApiServiceAuthor.get(`/user/my-book`);
     return response.data;

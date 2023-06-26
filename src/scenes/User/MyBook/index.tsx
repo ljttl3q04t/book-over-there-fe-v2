@@ -30,8 +30,8 @@ function MyBook() {
   const fetchBookList = useCallback(async () => {
     try {
       setLoading(true);
-      const response: ListView<BookCopy> = await bookService.getMyBookList();
-      setBooks(response.results);
+      const response: BookCopy[] = await bookService.getMyBookList();
+      setBooks(response);
       setLoading(false);
     } catch (error) {
       console.error("error", error);
