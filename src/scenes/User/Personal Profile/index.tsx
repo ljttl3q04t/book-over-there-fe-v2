@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import Loading from "../../../component/Loading";
 import { updateUser } from "../../../store/userStore";
+import { UploadChangeParam } from "antd/lib/upload";
 
 const { Option } = Select;
 
@@ -42,6 +43,7 @@ const Personal = () => {
   };
 
   const { userInfo }: any = useSelector<any>((state) => state.user);
+
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   const uploadButton = (
@@ -66,6 +68,23 @@ const Personal = () => {
     fileList,
   };
 
+  const getBase64 = (img: RcFile, callback: (url: string) => void) => {
+    const reader = new FileReader();
+    reader.addEventListener('load', () => callback(reader.result as string));
+    reader.readAsDataURL(img);
+  };
+
+  const handleChange: UploadProps['onChange'] = (info: UploadChangeParam<UploadFile>) => {
+    console.log("info:", info);
+
+    // Get this url from response in real world.
+    getBase64(info.file as RcFile, () => {
+      setLoading(false);
+      // setImageUrl(url);
+    });
+    // }
+  };
+
   const initFetch = useCallback(async () => {
     setLoading(true);
     fileList.push({
@@ -74,6 +93,8 @@ const Personal = () => {
       status: "done",
       url: userInfo.avatar,
     });
+    console.log('userInfo: ', userInfo);
+
     formRef.current?.setFieldsValue({
       username: userInfo.username,
       full_name: userInfo.full_name,
@@ -103,6 +124,8 @@ const Personal = () => {
       birth_date: dayjs(values.birth_date).format("YYYY-MM-DD"),
       avatar: fileList[0] as RcFile,
     };
+    console.log("data: ", data);
+
     dispatch(updateUser(data))
       .then((res: any) => {
         if (res?.error?.message) {
@@ -134,7 +157,7 @@ const Personal = () => {
         style={{
           display: "flex",
           padding: 30,
-          background:"#fff",
+          background: "#fff",
           borderRadius: 10,
           boxShadow: "rgb(0 0 0 / 12%) 0px 5px 5px",
         }}
@@ -144,7 +167,9 @@ const Personal = () => {
         </div>
         <Form {...layout} ref={formRef} name="control-ref" onFinish={onFinish} style={{ width: 600 }}>
           <Form.Item name="username" label="Username" rules={[{ required: true }]}>
-            <Input />
+            <Input
+              // disabled
+            />
           </Form.Item>
           <Form.Item name="full_name" label="Full Name" rules={[{ required: true }]}>
             <Input />
@@ -169,8 +194,13 @@ const Personal = () => {
             <DatePicker disabledDate={disabledDate} style={{ width: "100%" }} format={dateFormatList} />
           </Form.Item>
           <Form.Item name="avatar" label="Avatar">
-            <Upload multiple={false} {...props} listType="picture-card">
-              { uploadButton}
+            <Upload
+              multiple={false}
+              {...props}
+              listType="picture-card"
+              onChange={handleChange}
+            >
+              {uploadButton}
             </Upload>
           </Form.Item>
           <Form.Item {...tailLayout}>
