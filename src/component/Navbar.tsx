@@ -2,11 +2,12 @@
 import { BellOutlined, ProfileOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Badge, Dropdown, Image, Modal, Space } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import { getUser, token } from "../store/userStore";
+import { UserContext } from '@/context/UserContext';
 
 interface NavbarProps {
   isSidebarOpen: boolean;
@@ -19,7 +20,9 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
   const [changePW, setChangePW] = useState(false);
   const dispatch = useDispatch<any>();
   const username: any = useSelector<any>((state) => state.user.userInfo.username);
-
+  const { user} = useContext(UserContext);
+  console.log(user,"user");
+  
   useEffect(() => {
     dispatch(getUser());
     dispatch(token(access));
@@ -95,7 +98,7 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
                     marginLeft: 5,
                   }}
                 >
-                  Hello {username}!
+                  Hello {user.username}!
                   <ProfileOutlined />
                 </Space>
               </a>

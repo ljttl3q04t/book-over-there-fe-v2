@@ -7,7 +7,7 @@ import Table, { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-
+import styled from "styled-components";
 import { getAccessToken } from "../../../http-common";
 import { getClubList, joinClub } from "../../../store/clubStore";
 
@@ -17,6 +17,17 @@ const layout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 16 },
 };
+
+const StyledBookList = styled.div`
+  border-radius: 12px;
+  padding: 30px;
+  background: #fff;
+  width: 100%;
+  margin-top: 70px;
+`;
+const StyledModalContent = styled.div`
+  padding: 30px;
+`;
 
 const ClubList = () => {
   const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
@@ -97,7 +108,12 @@ const ClubList = () => {
         notification.info({ message: "Please make sure that you enter all field" });
       });
   };
-
+  const disableJoinedClubBtn = (item: any) => {
+    if (!getAccessToken() || item.is_member) {
+      return true;
+    }
+    return false;
+  };
   const columns: ColumnsType<any> = [
     {
       title: "No",
@@ -115,7 +131,7 @@ const ClubList = () => {
       key: "description",
     },
     {
-      title: "Created At",
+      title: "Created Date",
       key: "created_at",
       dataIndex: "created_at",
       render: (value: any) => {
@@ -139,7 +155,7 @@ const ClubList = () => {
       render: (_values: any) => {
         return (
           <>
-            <Button type="primary" disabled={!!getAccessToken() ? false : true} onClick={() => handleOpenJoin(_values)}>
+            <Button type="primary" disabled={disableJoinedClubBtn(_values)} onClick={() => handleOpenJoin(_values)}>
               Join Club
             </Button>
           </>
@@ -149,31 +165,33 @@ const ClubList = () => {
   ];
 
   return (
-    <>
+    <StyledBookList>
       <Table loading={loading} columns={columns} dataSource={clubList} />
-      <Modal width={800} open={modalJoin} onCancel={handleCloseJoin} onOk={onFinish}>
-        <Form {...layout} ref={formRef} name="control-ref" style={{ width: 800 }}>
-          <Form.Item name="full_name" label="Full Name" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name="phone_number" label="Phone Number" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name="email" label="Email" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name="address" label="Address" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name="birth_date" label="Date of Birth" rules={[{ required: true }]}>
-            <DatePicker disabledDate={disabledDate} style={{ width: "100%" }} format={dateFormatList} />
-          </Form.Item>
-          <Form.Item name="reason" label="Reason" rules={[{ required: true }]}>
-            <TextArea rows={4} placeholder="Why you want to join this club..." />
-          </Form.Item>
-        </Form>
+      <Modal title="Join Club" width={800} open={modalJoin} onCancel={handleCloseJoin} onOk={onFinish}>
+        <StyledModalContent>
+          <Form {...layout} ref={formRef} name="control-ref" style={{ width: 800 }}>
+            <Form.Item name="full_name" label="Full Name" rules={[{ required: true }]}>
+              <Input />
+            </Form.Item>
+            <Form.Item name="phone_number" label="Phone Number" rules={[{ required: true }]}>
+              <Input />
+            </Form.Item>
+            <Form.Item name="email" label="Email" rules={[{ required: true }]}>
+              <Input />
+            </Form.Item>
+            <Form.Item name="address" label="Address" rules={[{ required: true }]}>
+              <Input />
+            </Form.Item>
+            <Form.Item name="birth_date" label="Date of Birth" rules={[{ required: true }]}>
+              <DatePicker disabledDate={disabledDate} style={{ width: "100%" }} format={dateFormatList} />
+            </Form.Item>
+            <Form.Item name="reason" label="Reason" rules={[{ required: true }]}>
+              <TextArea rows={4} placeholder="Why you want to join this club..." />
+            </Form.Item>
+          </Form>
+        </StyledModalContent>
       </Modal>
-    </>
+    </StyledBookList>
   );
 };
 
