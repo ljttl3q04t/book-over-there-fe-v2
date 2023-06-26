@@ -1,10 +1,25 @@
 import { Avatar, Button, Col, Row, Select } from "antd";
 import Table from "antd/es/table";
 import React, { useCallback, useEffect, useState } from "react";
+import styled from "styled-components";
 
 import DawerBook from "../../../component/DrawerBook";
 import bookService from "../../../services/book";
 import { BookCopy, ListView } from "../../../services/types";
+
+const StyledMyBookContainer = styled.div`
+  border-radius: 12px;
+  padding: 30px;
+  background: #fff;
+  width: 100%;
+  margin-top: 70px;
+  box-shadow: 0 20px 27px rgb(0 0 0/5%);
+  > .table-header {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 20px;
+  }
+`;
 
 const { Option } = Select;
 
@@ -63,26 +78,22 @@ function MyBook() {
   ];
 
   return (
-    <>
-      <Row gutter={8} align="middle">
-        <Col>
-          <Select defaultValue={"All"} style={{ width: 120 }}>
-            <Option value="All">ALL</Option>
-            <Option value="newest">Newest</Option>
-            <Option value="oldest">Oldest</Option>
-            <Option value="a-z">A-Z</Option>
-            <Option value="z-a">Z-A</Option>
-          </Select>
-        </Col>
-        <Col>
-          <Button type="primary" onClick={() => setOpen(true)}>
-            Add Book
-          </Button>
-        </Col>
-      </Row>
+    <StyledMyBookContainer>
+      <div className="table-header">
+        <Select defaultValue={"All"} style={{ width: 120 }}>
+          <Option value="All">ALL</Option>
+          <Option value="newest">Newest</Option>
+          <Option value="oldest">Oldest</Option>
+          <Option value="a-z">A-Z</Option>
+          <Option value="z-a">Z-A</Option>
+        </Select>
+        <Button type="primary" onClick={() => setOpen(true)}>
+          Add Book
+        </Button>
+      </div>
       <Table<BookCopy> columns={columns} dataSource={books} loading={loading} />
       <DawerBook open={open} onClose={() => setOpen(false)} />
-    </>
+    </StyledMyBookContainer>
   );
 }
 

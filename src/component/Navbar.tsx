@@ -64,7 +64,7 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
   ];
 
   return (
-    <div style={{ padding: "10px 40px 10px 400px", marginBottom: "0" }}>
+    <div style={{ padding: "10px 40px 10px 400px", marginBottom: "0", background: "#fff" }}>
       {/* <Search
                 placeholder="Enter book name to search...."
                 allowClear

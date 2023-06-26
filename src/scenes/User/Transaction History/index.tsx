@@ -30,7 +30,7 @@ const CardTransaction = () => (
         style={{ width: "100%", height: "70%", objectFit: "cover" }}
       />
       <Button type="primary" style={{ marginBottom: "20px" }}>
-        Mượn lại
+        Borrow back
       </Button>
     </Col>
     <Col xs={{ span: 15 }}>

@@ -13,8 +13,8 @@ const { Meta } = Card;
 const { confirm } = Modal;
 
 function CardBook({
-  width = 150,
-  height = 150,
+  width = 290,
+  height = 200,
   srcImg = "https://symbols.vn/wp-content/uploads/2021/12/Cap-nhat-them-bo-suu-tap-Anh-nen-dien-thoai-One-Piece-an-tuong.jpg",
   content,
   onEdit,

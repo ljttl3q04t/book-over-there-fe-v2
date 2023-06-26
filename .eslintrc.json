@@ -4,48 +4,35 @@
     "es2021": true
   },
   "extends": [
-    "plugin:react/recommended",
     "eslint:recommended",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended"
   ],
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": "latest",
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
     "sourceType": "module"
   },
-  "plugins": ["react", "@typescript-eslint", "simple-import-sort", "unused-imports", "unicorn"],
+  "plugins": ["@typescript-eslint", "react", "react-hooks"],
   "rules": {
-    "eqeqeq": "error",
-    "simple-import-sort/imports": "error",
-    "simple-import-sort/exports": "error",
-    "@typescript-eslint/no-namespace": "off",
-    "@typescript-eslint/no-unused-vars": "off",
-    "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/naming-convention": [
-      "error",
-      {
-        "selector": "enumMember",
-        "format": ["UPPER_CASE"]
-      }
-    ],
-    "unused-imports/no-unused-imports": "error",
-    "unused-imports/no-unused-vars": [
-      "error",
-      {
-        "vars": "all",
-        "varsIgnorePattern": "^_",
-        "args": "after-used",
-        "argsIgnorePattern": "^_"
-      }
-    ],
-    "@typescript-eslint/ban-types": "off",
-    "no-undef": "off",
-    "no-console": [
-      "warn",
-      {
-        "allow": ["debug", "info", "warn", "error"]
-      }
-    ],
-    "unicorn/no-array-for-each": "error",
-    "unicorn/prefer-regexp-test": "error"
+    // Add custom rules or override defaults here
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "lint-staged": {
+    "linters": {
+      "src/**/*.{ts,tsx}": [
+        "eslint --fix",
+        "git add"
+      ]
+    }
   }
+  
 }

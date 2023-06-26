@@ -1,27 +1,27 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 // import {PlusOutlined } from '@ant-design/icons';
-import {UploadOutlined} from '@ant-design/icons';
-import {ThunkDispatch} from "@reduxjs/toolkit";
-import {Button, DatePicker, Form, Image, Input, notification, Select, Upload} from "antd";
-import type {RangePickerProps} from "antd/es/date-picker";
-import type {FormInstance} from "antd/es/form";
-import type { RcFile, UploadFile, UploadProps } from 'antd/es/upload/interface';
+import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+import { ThunkDispatch } from "@reduxjs/toolkit";
+import { Button, DatePicker, Form, Image, Input, notification, Select, Upload } from "antd";
+import type { RangePickerProps } from "antd/es/date-picker";
+import type { FormInstance } from "antd/es/form";
+import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import dayjs from "dayjs";
-import React, {useCallback, useEffect, useState} from "react";
-import {useDispatch, useSelector} from "react-redux";
+import React, { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import Loading from "../../../component/Loading";
-import {updateUser} from "../../../store/userStore";
+import { updateUser } from "../../../store/userStore";
 
-const {Option} = Select;
+const { Option } = Select;
 
 const layout = {
-  labelCol: {span: 8},
-  wrapperCol: {span: 16},
+  labelCol: { span: 8 },
+  wrapperCol: { span: 16 },
 };
 
 const tailLayout = {
-  wrapperCol: {offset: 8, span: 16},
+  wrapperCol: { offset: 8, span: 16 },
 };
 
 // const getBase64 = (file: RcFile): Promise<string> =>
@@ -41,8 +41,15 @@ const Personal = () => {
     return current && current > dayjs().endOf("day");
   };
 
-  const {userInfo}: any = useSelector<any>((state) => state.user);
+  const { userInfo }: any = useSelector<any>((state) => state.user);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+
+  const uploadButton = (
+    <div>
+      {loading ? <LoadingOutlined /> : <PlusOutlined />}
+      <div style={{ marginTop: 8 }}>Upload</div>
+    </div>
+  );
 
   const props: UploadProps = {
     onRemove: (file) => {
@@ -52,8 +59,8 @@ const Personal = () => {
       setFileList(newFileList);
     },
     beforeUpload: (file) => {
-      setFileList([...fileList, file]);
-
+      fileList[0] = file;
+      setFileList(fileList);
       return false;
     },
     fileList,
@@ -61,8 +68,12 @@ const Personal = () => {
 
   const initFetch = useCallback(async () => {
     setLoading(true);
-    console.log();
-    
+    fileList.push({
+      uid: "-1",
+      name: "avatar.png",
+      status: "done",
+      url: userInfo.avatar,
+    });
     formRef.current?.setFieldsValue({
       username: userInfo.username,
       full_name: userInfo.full_name,
@@ -90,7 +101,7 @@ const Personal = () => {
       email: values.email,
       phone_number: values.phone_number,
       birth_date: dayjs(values.birth_date).format("YYYY-MM-DD"),
-      avatar: fileList[0] as RcFile
+      avatar: fileList[0] as RcFile,
     };
     dispatch(updateUser(data))
       .then((res: any) => {
@@ -101,6 +112,7 @@ const Personal = () => {
           });
           return;
         }
+        setFileList([]);
         notification.success({
           message: "Update info successfully",
           type: "success",
@@ -122,49 +134,47 @@ const Personal = () => {
         style={{
           display: "flex",
           padding: 30,
+          background:"#fff",
           borderRadius: 10,
-          border: "1px solid rgba(0,0,0,0.2)",
           boxShadow: "rgb(0 0 0 / 12%) 0px 5px 5px",
         }}
       >
         <div>
-          <Image style={{float: "left"}} width={200} src={userInfo.avatar}/>
+          <Image style={{ float: "left" }} width={200} src={userInfo.avatar} />
         </div>
-        <Form {...layout} ref={formRef} name="control-ref" onFinish={onFinish} style={{width: 600}}>
-          <Form.Item name="username" label="Username" rules={[{required: true}]}>
-            <Input/>
+        <Form {...layout} ref={formRef} name="control-ref" onFinish={onFinish} style={{ width: 600 }}>
+          <Form.Item name="username" label="Username" rules={[{ required: true }]}>
+            <Input />
           </Form.Item>
-          <Form.Item name="full_name" label="Full Name" rules={[{required: true}]}>
-            <Input/>
+          <Form.Item name="full_name" label="Full Name" rules={[{ required: true }]}>
+            <Input />
           </Form.Item>
-          <Form.Item name="address" label="Address" rules={[{required: true}]}>
-            <Input/>
+          <Form.Item name="address" label="Address" rules={[{ required: true }]}>
+            <Input />
           </Form.Item>
-          <Form.Item name="email" label="Email" rules={[{required: true}]}>
-            <Input/>
+          <Form.Item name="email" label="Email" rules={[{ required: true }]}>
+            <Input />
           </Form.Item>
-          <Form.Item name="phone_number" label="Phone number" rules={[{required: true}]}>
-            <Input/>
+          <Form.Item name="phone_number" label="Phone number" rules={[{ required: true }]}>
+            <Input />
           </Form.Item>
-          <Form.Item name="gender" label="Gender" rules={[{required: true}]}>
+          <Form.Item name="gender" label="Gender" rules={[{ required: true }]}>
             <Select placeholder="Select your gender" allowClear defaultValue={"male"}>
               <Option value="male">Male</Option>
               <Option value="female">Female</Option>
               <Option value="other">Other</Option>
             </Select>
           </Form.Item>
-          <Form.Item name="birth_date" label="Date of birth" rules={[{required: true}]}>
-            <DatePicker disabledDate={disabledDate} style={{width: "100%"}} format={dateFormatList}/>
+          <Form.Item name="birth_date" label="Date of birth" rules={[{ required: true }]}>
+            <DatePicker disabledDate={disabledDate} style={{ width: "100%" }} format={dateFormatList} />
           </Form.Item>
           <Form.Item name="avatar" label="Avatar">
-            <Upload
-              {...props} listType="picture-card"
-            >
-              <Button icon={<UploadOutlined/>}>Click to Upload</Button>
+            <Upload multiple={false} {...props} listType="picture-card">
+              { uploadButton}
             </Upload>
           </Form.Item>
           <Form.Item {...tailLayout}>
-            <Button style={{marginLeft: "235px", marginRight: "10px"}} type="primary" htmlType="submit">
+            <Button style={{ marginLeft: "235px", marginRight: "10px" }} type="primary" htmlType="submit">
               Submit
             </Button>
             <Button htmlType="button" onClick={initFetch}>
@@ -173,7 +183,7 @@ const Personal = () => {
           </Form.Item>
         </Form>
       </div>
-      {loading && <Loading/>}
+      {loading && <Loading />}
     </div>
   );
 };

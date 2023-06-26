@@ -3,8 +3,9 @@ import "./App.scss";
 import React from "react";
 import { useSelector } from "react-redux";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import BreadcrumbNav from "./component/BreadcrumbNav";
 
-import {Error403, Error404} from "./component";
+import { Error403, Error404 } from "./component";
 import { useBeforeRender } from "./component/Error";
 import BookDetail from "./scenes/BookDetail";
 import Checkout from "./scenes/Checkout";
@@ -66,7 +67,7 @@ const App = () => {
               <Route path="/" element={<Error403 />} />
             )}
           </Route>
-          <Route path="*" element={<Error404/>}/>
+          <Route path="*" element={<Error404 />} />
         </Routes>
       </Router>
     </div>

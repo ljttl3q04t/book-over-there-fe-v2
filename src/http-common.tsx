@@ -2,7 +2,7 @@ import { notification } from "antd";
 import axios from "axios";
 
 export const axiosApi = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
+  baseURL: import.meta.env.VITE_REACT_APP_API_URL,
   headers: {
     "Content-type": "Application/json",
   },

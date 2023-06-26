@@ -5,12 +5,47 @@ import { Button, Carousel, Col, Row, Typography } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-
+import styled from "styled-components";
+import { Layout } from "antd";
+import { EyeFilled, PlusCircleFilled, HeartFilled } from "@ant-design/icons";
 import CardBook from "../../component/CardBook";
 import { getListBook } from "../../store/bookStore";
+const { Content } = Layout;
 
 const { Title } = Typography;
+const StyledBookList = styled.div`
+  border-radius: 12px;
+  padding: 30px;
+  background: #fff;
+  width: 100%;
+  margin-top: 70px;
+`;
+const StyledHeader = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+const StyledSectionCarousel = styled.section`
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 50px;
+  > .carousel-title {
+    padding: 20px;
+  }
+  > .carousel-content {
+    padding-left: 20px;
+  }
+`;
+const calculateChunksSize = () => {
+  const screenWidth = window.innerWidth - 300; // Get the width of the screen
+  const itemWidth = 290; // Width of each carousel item
+  const gutter = 16; // Optional gutter between items if any
 
+  const availableWidth = screenWidth - gutter; // Adjust for gutter if needed
+  const chunksSize = Math.floor(availableWidth / itemWidth);
+
+  return chunksSize;
+};
 const Homepage = () => {
   const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
   const [loading, setLoading] = useState(false);
@@ -19,6 +54,7 @@ const Homepage = () => {
     pageIndex: 1,
     pageSize: 10,
   });
+  const [chunksSize, setChunksSize] = useState(calculateChunksSize());
 
   const initFetch = useCallback(async () => {
     setLoading(true);
@@ -35,6 +71,18 @@ const Homepage = () => {
   useEffect(() => {
     initFetch();
   }, [option]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setChunksSize(calculateChunksSize());
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const handleTableChange = (pagination: any) => {
     setOption({
@@ -88,14 +136,21 @@ const Homepage = () => {
       title: "Action",
       key: "",
       dataIndex: "",
+      fixed: "right",
       render: (_values: any) => {
         return (
           <>
-            <Button type="primary" /* onClick={handleOpenJoin} */>View book</Button>
-            <Button style={{ margin: "0 5px" }} type="primary" /* onClick={handleOpenJoin} */>
-              Add to cart
+            <Button icon={<EyeFilled />} /* onClick={handleOpenJoin*/>View</Button>
+            <Button
+              style={{ margin: "0 5px" }}
+              type="primary"
+              icon={<PlusCircleFilled />} /* onClick={handleOpenJoin} */
+            >
+              Cart
             </Button>
-            <Button type="primary" /* onClick={handleOpenJoin} */>Add to wishlist</Button>
+            <Button type="primary" danger icon={<HeartFilled />} /* onClick={handleOpenJoin} */>
+              Wishlist
+            </Button>
           </>
         );
       },
@@ -120,9 +175,8 @@ const Homepage = () => {
     { title: "Book 15", description: "Description 15" },
   ];
 
-  const chunkSize = 5;
   const chunks = books.reduce((resultArray, item, index) => {
-    const chunkIndex = Math.floor(index / chunkSize);
+    const chunkIndex = Math.floor(index / chunksSize);
     if (!resultArray[chunkIndex]) {
       resultArray[chunkIndex] = [];
     }
@@ -131,79 +185,85 @@ const Homepage = () => {
   }, [] as any[]);
 
   return (
-    <Row style={{ flexDirection: "column" }} gutter={[0, 32]} align="middle">
-      <div style={{ textAlign: "center" }}>
-        <Title level={2} style={{ margin: 0 }}>
-          Popular Books
-        </Title>
+    <Content style={{ margin: "24px 16px 0", overflow: "initial" }}>
+      <div>
+        {" "}
+        <StyledSectionCarousel>
+          <div className="carousel-title">
+            <Title level={2} style={{ margin: 0 }}>
+              Popular Books
+            </Title>
+          </div>
+          <div className="carousel-content">
+            {" "}
+            <Carousel autoplay>
+              {chunks.map((chunk, index) => (
+                <div key={index}>
+                  <Row gutter={[16, 16]}>
+                    {chunk.map((book: any, bookIndex: any) => (
+                      <Col key={bookIndex}>
+                        <CardBook
+                          height="350px"
+                          heightImg="260px"
+                          content={{
+                            title: book.title,
+                            description: book.description,
+                          }}
+                          router={`/book-detail/:id}`}
+                        />
+                      </Col>
+                    ))}
+                  </Row>
+                </div>
+              ))}
+            </Carousel>
+          </div>
+        </StyledSectionCarousel>
+        <StyledSectionCarousel>
+          <div className="carousel-title">
+            <Title level={2} style={{ margin: 0 }}>
+              Popular Club
+            </Title>
+          </div>
+          <div className="carousel-content">
+            {" "}
+            <Carousel autoplay>
+              {chunks.map((chunk, index) => (
+                <div key={index}>
+                  <Row gutter={[16, 16]}>
+                    {chunk.map((book: any, bookIndex: any) => (
+                      <Col key={bookIndex}>
+                        <CardBook
+                          height="350px"
+                          heightImg="260px"
+                          content={{
+                            title: book.title,
+                            description: book.description,
+                          }}
+                          router={`/book-detail/:id}`}
+                        />
+                      </Col>
+                    ))}
+                  </Row>
+                </div>
+              ))}
+            </Carousel>
+          </div>
+        </StyledSectionCarousel>
       </div>
-      <Row gutter={[16, 16]} justify="center" style={{ width: "100%" }}>
-        <Col span={18}>
-          <Carousel autoplay>
-            {chunks.map((chunk, index) => (
-              <div key={index}>
-                <Row gutter={[16, 16]} justify="space-evenly">
-                  {chunk.map((book: any, bookIndex: any) => (
-                    <Col key={bookIndex}>
-                      <CardBook
-                        height="290px"
-                        heightImg="260px"
-                        content={{
-                          title: book.title,
-                          description: book.description,
-                        }}
-                        router={`/book-detail/:id}`}
-                      />
-                    </Col>
-                  ))}
-                </Row>
-              </div>
-            ))}
-          </Carousel>
-        </Col>
-      </Row>
-      <div style={{ textAlign: "center", marginTop: 20 }}>
-        <Title level={2} style={{ margin: 0 }}>
-          Popular Club
-        </Title>
-      </div>
-      <Row gutter={[16, 16]} justify="center" style={{ width: "100%" }}>
-        <Col span={18}>
-          <Carousel autoplay>
-            {chunks.map((chunk, index) => (
-              <div key={index}>
-                <Row gutter={[16, 16]} justify="space-evenly">
-                  {chunk.map((book: any, bookIndex: any) => (
-                    <Col key={bookIndex}>
-                      <CardBook
-                        height="290px"
-                        heightImg="260px"
-                        content={{
-                          title: book.title,
-                          description: book.description,
-                        }}
-                        router={`/book-detail/:id}`}
-                      />
-                    </Col>
-                  ))}
-                </Row>
-              </div>
-            ))}
-          </Carousel>
-        </Col>
-      </Row>
-
-      <div style={{ textAlign: "center", marginTop: 30 }}>
-        <Title level={2} style={{ margin: 0 }}>
-          Book List
-        </Title>
-      </div>
-      <div style={{ width: "100%", padding: 0 }}>
+      <StyledBookList>
+        <StyledHeader>
+          <div style={{ textAlign: "center" }}>
+            <Title level={2} style={{ margin: 0 }}>
+              Book List
+            </Title>
+          </div>
+        </StyledHeader>
         <QueryFilter
           style={{ padding: 10 }}
           layout="vertical"
-          resetText={"RESET"}
-          searchText={"SEARCH"}
+          resetText={"Reset"}
+          searchText={"Search"}
           className="home-page-search_book"
           onFinish={(data) => {
             setOption({
@@ -225,11 +285,10 @@ const Homepage = () => {
             labelAlign="right"
             style={{ display: "flex" }}
             name="filter"
-            label={"SEARCH"}
+            label={"Search"}
             placeholder={"Input name to search"}
           />
         </QueryFilter>
-
         <Table
           loading={loading}
           scroll={{ x: "max-content" }}
@@ -242,8 +301,8 @@ const Homepage = () => {
             current: option.pageIndex,
           }}
         />
-      </div>
-    </Row>
+      </StyledBookList>
+    </Content>
   );
 };
 
