@@ -6,25 +6,25 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import loadable from "@loadable/component";
 
 import { useBeforeRender } from "./component/Error";
-const Error404 = loadable(() => import("./component/Error404"));
-const Error403 = loadable(() => import("./component/Error403"));
+const Error404 = loadable(() => import("@/component/Error404"));
+const Error403 = loadable(() => import("@/component/Error403"));
 
-const BookDetail = loadable(() => import("./scenes/BookDetail"));
-const Checkout = loadable(() => import("./scenes/Checkout"));
-const ClubBook = loadable(() => import("./scenes/Club/ClubBook"));
-const ClubList = loadable(() => import("./scenes/Club/ClubList"));
-const ClubStaff = loadable(() => import("./scenes/Club/ClubStaff"));
-const Homepage = loadable(() => import("./scenes/Homepage"));
-const LayoutCustom = loadable(() => import("./scenes/Layout/index"));
-const Login = loadable(() => import("./scenes/Login"));
-const Register = loadable(() => import("./scenes/Register"));
-const BookHistory = loadable(() => import("./scenes/User/BookHistory"));
-const BookWishList = loadable(() => import("./scenes/User/BookWishList"));
-const MyBook = loadable(() => import("./scenes/User/MyBook"));
-const Payment = loadable(() => import("./scenes/User/Payment"));
+const BookDetail = loadable(() => import("@/scenes/BookDetail"));
+const Checkout = loadable(() => import("@/scenes/Checkout"));
+const ClubBook = loadable(() => import("@/scenes/Club/ClubBook"));
+const ClubList = loadable(() => import("@/scenes/Club/ClubList"));
+const ClubStaff = loadable(() => import("@/scenes/Club/ClubStaff"));
+const Homepage = loadable(() => import("@/scenes/Homepage"));
+const LayoutCustom = loadable(() => import("@/scenes/Layout/index"));
+const Login = loadable(() => import("@/scenes/Login"));
+const Register = loadable(() => import("@/scenes/Register"));
+const BookHistory = loadable(() => import("@/scenes/User/BookHistory"));
+const BookWishList = loadable(() => import("@/scenes/User/BookWishList"));
+const MyBook = loadable(() => import("@/scenes/User/MyBook"));
+const Payment = loadable(() => import("@/scenes/User/Payment"));
 const Personal = loadable(() => import("@/scenes/User/Personal Profile"));
-const Support = loadable(() => import("./scenes/User/Support"));
-const Transaction = loadable(() => import("./scenes/User/Transaction History"));
+const Support = loadable(() => import("@/scenes/User/Support"));
+const Transaction = loadable(() => import("@/scenes/User/Transaction History"));
 
 const App = () => {
   const token = localStorage.getItem("access_token");
