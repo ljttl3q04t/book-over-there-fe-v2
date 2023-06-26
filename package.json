@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@ant-design/pro-components": "^2.5.11",
+    "@loadable/component": "^5.15.3",
     "@reduxjs/toolkit": "^1.9.5",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",

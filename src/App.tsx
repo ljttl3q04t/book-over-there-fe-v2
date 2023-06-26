@@ -3,31 +3,32 @@ import "./App.scss";
 import React from "react";
 import { useSelector } from "react-redux";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import BreadcrumbNav from "./component/BreadcrumbNav";
+import loadable from "@loadable/component";
 
-import { Error403, Error404 } from "./component";
 import { useBeforeRender } from "./component/Error";
-import BookDetail from "./scenes/BookDetail";
-import Checkout from "./scenes/Checkout";
-import ClubBook from "./scenes/Club/ClubBook";
-// Club
-import ClubList from "./scenes/Club/ClubList";
-import ClubStaff from "./scenes/Club/ClubStaff";
-import Homepage from "./scenes/Homepage";
-import LayoutCustom from "./scenes/Layout/index";
-import Login from "./scenes/Login";
-import Register from "./scenes/Register";
-import BookHistory from "./scenes/User/BookHistory";
-import BookWishList from "./scenes/User/BookWishList";
-import MyBook from "./scenes/User/MyBook";
-import Payment from "./scenes/User/Payment";
-// User
-import Personal from "./scenes/User/Personal Profile";
-import Support from "./scenes/User/Support";
-import Transaction from "./scenes/User/Transaction History";
+const Error404 = loadable(() => import("./component/Error404"));
+const Error403 = loadable(() => import("./component/Error403"));
+
+const BookDetail = loadable(() => import("./scenes/BookDetail"));
+const Checkout = loadable(() => import("./scenes/Checkout"));
+const ClubBook = loadable(() => import("./scenes/Club/ClubBook"));
+const ClubList = loadable(() => import("./scenes/Club/ClubList"));
+const ClubStaff = loadable(() => import("./scenes/Club/ClubStaff"));
+const Homepage = loadable(() => import("./scenes/Homepage"));
+const LayoutCustom = loadable(() => import("./scenes/Layout/index"));
+const Login = loadable(() => import("./scenes/Login"));
+const Register = loadable(() => import("./scenes/Register"));
+const BookHistory = loadable(() => import("./scenes/User/BookHistory"));
+const BookWishList = loadable(() => import("./scenes/User/BookWishList"));
+const MyBook = loadable(() => import("./scenes/User/MyBook"));
+const Payment = loadable(() => import("./scenes/User/Payment"));
+const Personal = loadable(() => import("@/scenes/User/Personal Profile"));
+const Support = loadable(() => import("./scenes/User/Support"));
+const Transaction = loadable(() => import("./scenes/User/Transaction History"));
 
 const App = () => {
-  const token = useSelector<any>((state) => state.user.token);
+  const token = localStorage.getItem("access_token");
+
   useBeforeRender(() => {
     window.addEventListener("error", (e) => {
       if (e) {
@@ -59,7 +60,7 @@ const App = () => {
                 <Route path="/my-profile" Component={Personal} />
                 <Route path="/payment" Component={Payment} />
                 <Route path="/transactionhistory" Component={Transaction} />
-                <Route path="/My-book" Component={MyBook} />
+                <Route path="/my-book" Component={MyBook} />
                 <Route path="/book-history" Component={BookHistory} />
                 <Route path="/book-wishlist" Component={BookWishList} />
               </>
@@ -67,7 +68,7 @@ const App = () => {
               <Route path="/" element={<Error403 />} />
             )}
           </Route>
-          <Route path="*" element={<Error404 />} />
+          <Route element={<Error404 />} />
         </Routes>
       </Router>
     </div>
