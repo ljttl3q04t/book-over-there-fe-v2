@@ -1,4 +1,4 @@
-import { Avatar, Button, Select, Dropdown, Space, MenuProps, Form, SelectProps, Modal } from "antd";
+import { Avatar, Button, Select, Dropdown, Space, MenuProps, Form, notification, SelectProps, Modal } from "antd";
 import { MoreOutlined } from '@ant-design/icons';
 import Table, { ColumnsType } from "antd/es/table";
 import React, { useCallback, useEffect, useState } from "react";
@@ -64,19 +64,15 @@ function MyBook() {
       ?.validateFields()
       .then((formValues) => {
         console.log("formValues: ",formValues);
-        
-        // const data = {
-        //   // club_id: clubId,
-        //   full_name: formValues.full_name,
-        //   phone_number: formValues.phone_number,
-        //   email: formValues.email,
-        //   address: formValues.address,
-        //   reason: formValues.reason,
-        // };
+        const data = {
+          book_copy_ids: formValues.book_copy_ids,
+          club_id: formValues.club_id
+        };
+        shareBooksToClub(data)
 
       })
       .catch((_errors) => {
-        // notification.info({ message: "Please make sure that you enter all field" });
+        notification.info({ message: "Please make sure that you enter all field" });
       });
   };
 
@@ -100,6 +96,20 @@ function MyBook() {
 
       setClubListJoined(response.data);
       setLoading(false);
+    } catch (error) {
+      console.error("error", error);
+      // Handle error
+    }
+  }, []);
+
+  const shareBooksToClub = useCallback(async (data:any) => {
+    try {
+      setLoading(true);
+      const response: any = await userService.getUserShareClub(data);
+      console.log("response getUserShareClub: ", response);
+      setLoading(false);
+      handleCloseJoin()
+      notification.info({ message: response.data.result });
     } catch (error) {
       console.error("error", error);
       // Handle error
@@ -145,12 +155,6 @@ function MyBook() {
       title: "Publisher",
       dataIndex: ["book", "publisher", "name"],
       key: "publisher",
-    },
-
-    {
-      title: "Stauts",
-      dataIndex: ["book_status"],
-      key: "book_status",
     },
     {
       title: "Action",
