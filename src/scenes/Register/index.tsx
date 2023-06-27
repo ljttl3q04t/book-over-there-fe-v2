@@ -1,17 +1,31 @@
 import { LockOutlined, MailOutlined, PhoneOutlined, UserOutlined } from "@ant-design/icons";
-import { ThunkDispatch } from "@reduxjs/toolkit";
 import { Button, Form, Input, notification, Typography } from "antd";
 import React from "react";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
-import { registerUser } from "../../store/userStore";
-
+import UserService from "@/services/user";
+import styled from "styled-components";
 const { Title } = Typography;
-
+const StyledRegisterForm = styled.div`
+  border-radius: 12px;
+  padding: 30px;
+  background: #fff;
+  width: 40%;
+  margin-top: 70px;
+`;
+const StyledActionGroup = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+`;
+const StyledRegisterPage = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f5f5;
+  height: 100vh;
+`;
 const Register = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
   const [form] = Form.useForm();
 
   const onFinish = (values: any) => {
@@ -22,7 +36,7 @@ const Register = () => {
       email: values.email,
     };
 
-    dispatch(registerUser(user)).then((res: any) => {
+    UserService.registerUser(user).then((res: any) => {
       if (res?.error?.message) {
         notification.info({
           message: "Info",
@@ -39,118 +53,124 @@ const Register = () => {
   };
 
   return (
-    <div className="login-page">
-      <Form
-        name="normal_login"
-        className="login-form"
-        layout="vertical"
-        form={form}
-        initialValues={{
-          remember: true,
-        }}
-        onFinish={onFinish}
-      >
-        <Title level={2} style={{ textAlign: "center" }}>
-          Welcome to Book Over There
-        </Title>
-        <Form.Item
-          name="username"
-          label="Username"
-          rules={[
-            {
-              required: true,
-              message: "Please input your Username!",
-            },
-          ]}
+    <StyledRegisterPage>
+      <StyledRegisterForm>
+        <Form
+          name="normal_login"
+          className="login-form"
+          layout="vertical"
+          form={form}
+          initialValues={{
+            remember: true,
+          }}
+          onFinish={onFinish}
         >
-          <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
-        </Form.Item>
-        <Form.Item
-          name="email"
-          label="E-mail"
-          rules={[
-            {
-              type: "email",
-              message: "The input is not valid E-mail!",
-            },
-
-            {
-              required: true,
-              message: "Please input your Email!",
-            },
-          ]}
-        >
-          <Input prefix={<MailOutlined className="site-form-item-icon" />} placeholder="Email" />
-        </Form.Item>
-        <Form.Item
-          name="phone"
-          label="Phone"
-          rules={[
-            {
-              required: true,
-              message: "Please input your phone number!",
-            },
-          ]}
-        >
-          <Input prefix={<PhoneOutlined className="site-form-item-icon" />} placeholder="Phone" />
-        </Form.Item>
-        <Form.Item
-          name="password"
-          label="Password"
-          hasFeedback
-          rules={[
-            {
-              required: true,
-              message: "Please input your Password!",
-            },
-          ]}
-        >
-          <Input.Password
-            prefix={<LockOutlined className="site-form-item-icon" />}
-            type="password"
-            placeholder="Password"
-          />
-        </Form.Item>
-        <Form.Item
-          name="rePassword"
-          label="Re-enter password"
-          dependencies={["password"]}
-          hasFeedback
-          rules={[
-            {
-              required: true,
-              message: "Please input your Password again!",
-            },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue("password") === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(new Error("The new password that you entered do not match!"));
+          <Title level={2} style={{ textAlign: "center" }}>
+            Welcome to Book Over There
+          </Title>
+          <Form.Item
+            name="username"
+            label="Username"
+            rules={[
+              {
+                required: true,
+                message: "Please input your Username!",
               },
-            }),
-          ]}
-        >
-          <Input.Password
-            prefix={<LockOutlined className="site-form-item-icon" />}
-            type="password"
-            placeholder="Re-enter password"
-          />
-        </Form.Item>
-        <Form.Item>
-          <a className="login-form-forgot" href="/">
-            Forgot password
-          </a>
-        </Form.Item>
+            ]}
+          >
+            <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
+          </Form.Item>
+          <Form.Item
+            name="email"
+            label="E-mail"
+            rules={[
+              {
+                type: "email",
+                message: "The input is not valid E-mail!",
+              },
 
-        <Form.Item>
-          <Button type="primary" htmlType="submit" className="login-form-button">
-            Register
-          </Button>
-          Or <a href="/login">Login now!</a>
-        </Form.Item>
-      </Form>
-    </div>
+              {
+                required: true,
+                message: "Please input your Email!",
+              },
+            ]}
+          >
+            <Input prefix={<MailOutlined className="site-form-item-icon" />} placeholder="Email" />
+          </Form.Item>
+          <Form.Item
+            name="phone"
+            label="Phone"
+            rules={[
+              {
+                required: true,
+                message: "Please input your phone number!",
+              },
+            ]}
+          >
+            <Input prefix={<PhoneOutlined className="site-form-item-icon" />} placeholder="Phone" />
+          </Form.Item>
+          <Form.Item
+            name="password"
+            label="Password"
+            hasFeedback
+            rules={[
+              {
+                required: true,
+                message: "Please input your Password!",
+              },
+            ]}
+          >
+            <Input.Password
+              prefix={<LockOutlined className="site-form-item-icon" />}
+              type="password"
+              placeholder="Password"
+            />
+          </Form.Item>
+          <Form.Item
+            name="rePassword"
+            label="Re-enter password"
+            dependencies={["password"]}
+            hasFeedback
+            rules={[
+              {
+                required: true,
+                message: "Please input your Password again!",
+              },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("password") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error("The new password that you entered do not match!"));
+                },
+              }),
+            ]}
+          >
+            <Input.Password
+              prefix={<LockOutlined className="site-form-item-icon" />}
+              type="password"
+              placeholder="Re-enter password"
+            />
+          </Form.Item>
+          <Form.Item>
+            <a className="login-form-forgot" href="/">
+              Forgot password
+            </a>
+          </Form.Item>
+
+          <Form.Item>
+            <StyledActionGroup>
+              {" "}
+              <Button type="primary" htmlType="submit" className="login-form-button">
+                Register
+              </Button>
+              <span>Or </span>
+              <a href="/login">Login</a>
+            </StyledActionGroup>
+          </Form.Item>
+        </Form>
+      </StyledRegisterForm>
+    </StyledRegisterPage>
   );
 };
 
