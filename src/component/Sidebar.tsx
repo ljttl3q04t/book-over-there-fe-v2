@@ -58,7 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSide
   ];
   const getClubStaffItem = (isStaff: any): MenuItem => {
     if (isStaff) {
-      return getItem("Club staff", "clubstaff");
+      return getItem("Club Staff", "clubstaff");
     } else {
       return null; // Return null if the user is not a staff member
     }
@@ -67,8 +67,8 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSide
     items = [
       ...items,
       getItem("Club", "sub1", <TeamOutlined />, [
-        getItem("Club list", "clublist"),
-        getItem("Club book", "clubbook"),
+        getItem("Club List", "clublist"),
+        getItem("Club Book", "clubbook"),
         getClubStaffItem(user?.is_staff),
       ]),
       getItem("User", "sub0", <UserOutlined />, [

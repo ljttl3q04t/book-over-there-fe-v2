@@ -70,7 +70,7 @@ const Personal = () => {
       status: "done",
       url: user.avatar,
     });
-    console.log('userInfo: ', userInfo);
+    // console.log('userInfo: ', userInfo);
 
     formRef.current?.setFieldsValue({
       username: user.username,

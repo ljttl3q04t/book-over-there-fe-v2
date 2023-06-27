@@ -2,7 +2,19 @@ import React, { useCallback, useEffect, useState } from "react";
 import Table, { ColumnsType } from "antd/es/table";
 import styled from "styled-components";
 import ClubService from "@/services/club";
-import { Button } from "antd";
+import { Avatar, Button, DatePicker, Form, Input, Modal } from "antd";
+import { PlusCircleFilled } from "@ant-design/icons";
+import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
+import { RangePickerProps } from "antd/es/date-picker";
+import dayjs from "dayjs";
+
+const { RangePicker } = DatePicker;
+
+const layout = {
+  labelCol: { span: 4 },
+  wrapperCol: { span: 16 },
+};
+
 const StyledClubBookList = styled.div`
   border-radius: 12px;
   padding: 30px;
@@ -10,17 +22,59 @@ const StyledClubBookList = styled.div`
   width: 100%;
   margin-top: 70px;
 `;
+const StyledModalContent = styled.div`
+  padding: 30px;
+`;
+interface DataType {
+  no: number;
+  bookName: string;
+  categoryName: string;
+  authorName: string;
+  publisherName: string;
+  image: string;
+  club: string;
+  totalCopyCount: number;
+}
+
+const { TextArea } = Input;
 
 const ClubBook = () => {
   const [loading, setLoading] = useState(false);
-  const [clubBookList, setClubBookList] = useState([]);
+  const [clubBookList, setClubBookList] = useState<DataType[]>([]);
+  const [modalOrder, setModalOrder] = useState(false);
+  const [form] = Form.useForm();
+  const [option, setOption] = useState({
+    pageIndex: 1,
+    pageSize: 10,
+  });
+  const dateFormatList = ["DD/MM/YYYY"];
+  const disabledDate: RangePickerProps["disabledDate"] = (current) => {
+    return current && current > dayjs().endOf("day");
+  };
+  const handleTableChange = (pagination: any) => {
+    setOption({
+      ...option,
+      pageIndex: pagination.current,
+      pageSize: pagination.pageSize,
+    });
+  };
   const initFetch = useCallback(async () => {
     setLoading(true);
     ClubService.getClubBookList()
       .then((response) => {
         if (response.data) {
           const data = response.data.map((item: any, index: any) => {
-            return { no: index + 1, ...item };
+            const book: DataType = {
+              no: index + 1,
+              authorName: item.author?.name,
+              bookName: item.book?.name,
+              categoryName: item.book?.category?.name,
+              publisherName: item.book?.publisher?.name,
+              image: item.book?.image,
+              club: item.club,
+              totalCopyCount: item.total_copy_count,
+            };
+            return book;
           });
           setClubBookList(data);
           console.log(response);
@@ -34,57 +88,130 @@ const ClubBook = () => {
   useEffect(() => {
     initFetch();
   }, []);
-  const handleOrder = (item: any) => {};
-  const columns: ColumnsType<any> = [
+
+  const handleCloseOrder = () => {
+    form.resetFields();
+    setModalOrder(false);
+  };
+  const handleOkOrder = () => {
+    form.validateFields();
+  };
+  const handleOpenOrder = (item: any) => {
+    setModalOrder(true);
+  };
+  const columns: ColumnsType<DataType> = [
     {
-      title: "No",
-      dataIndex: "no",
-      key: "no",
+      title: "",
+      dataIndex: "image",
+      key: "image",
+      render: (image: string) => <Avatar shape="square" size={98} src={image} />,
     },
     {
       title: "Name",
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "bookName",
+      key: "bookName",
     },
     {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
+      title: "Category",
+      dataIndex: "categoryName",
+      key: "categoryName",
     },
     {
-      title: "Created Date",
-      key: "created_at",
-      dataIndex: "created_at",
-      // render: (value: any) => {
-      //   return dayjs(value).format("DD-MM-YYYY");
-      // },
+      title: "Author",
+      dataIndex: "authorName",
+      key: "authorName",
     },
     {
-      title: "Total member",
-      key: "total_member_count",
-      dataIndex: "total_member_count",
+      title: "Publisher",
+      dataIndex: "publisherName",
+      key: "publisherName",
+    },
+    // {
+    //   title: "Image",
+    //   dataIndex: "image",
+    //   key: "image",
+    //   render: (image: string) => <Avatar shape="square" size={98} src={image} />,
+    // },
+    {
+      title: "Club",
+      dataIndex: "club",
+      key: "club",
     },
     {
-      title: "Total book count",
-      key: "total_book_count",
-      dataIndex: "total_book_count",
+      title: "Total Copy Count",
+      dataIndex: "totalCopyCount",
+      key: "totalCopyCount",
     },
     {
       title: "Action",
-      key: "",
-      dataIndex: "",
-      render: (_values: any) => {
-        return (
-          <>
-            <Button type="primary" onClick={() => handleOrder(_values)}>
-              Join Club
-            </Button>
-          </>
-        );
-      },
+      key: "action",
+      render: (_values: DataType) => (
+        <Button icon={<PlusCircleFilled />} type="primary" onClick={() => handleOpenOrder(_values)}>
+          Order
+        </Button>
+      ),
     },
   ];
-  return <StyledClubBookList>ClubBook</StyledClubBookList>;
+  return (
+    <StyledClubBookList>
+      <Table
+        onChange={handleTableChange}
+        pagination={{
+          total: clubBookList.length,
+          pageSize: option.pageSize,
+          current: option.pageIndex,
+        }}
+        loading={loading}
+        columns={columns}
+        dataSource={clubBookList}
+      />
+      <Modal title="Book Order" width={800} open={modalOrder} onCancel={handleCloseOrder} onOk={handleOkOrder}>
+        <StyledModalContent>
+          <Form {...layout} form={form} name="control-ref" style={{ width: 800 }}>
+            <Form.Item
+              name="full_name"
+              label="Full Name"
+              rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} full name` }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="phone_number"
+              label="Phone Number"
+              rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} phone number` }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="email"
+              label="Email"
+              rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} email` }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="address"
+              label="Address"
+              rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} address` }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="order_range"
+              label="Order Time"
+              rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} order time` }]}
+            >
+              <RangePicker format={dateFormatList} />
+              {/* <DatePicker disabledDate={disabledDate} style={{ width: "100%" }} format={dateFormatList} /> */}
+            </Form.Item>
+            <Form.Item name="note" label="Note" rules={[{ required: false }]}>
+              <TextArea rows={4} placeholder="Note..." />
+            </Form.Item>
+          </Form>
+        </StyledModalContent>
+      </Modal>
+    </StyledClubBookList>
+  );
 };
 
 export default ClubBook;

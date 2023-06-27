@@ -21,7 +21,7 @@ axiosApi.interceptors.response.use(
 
     if (error.response && error.response.status === 401) {
       removeAccessToken();
-      localStorage.clear()
+      localStorage.clear();
       return;
     }
 
@@ -49,8 +49,8 @@ const buildHeaders = (params?: any) => {
 
 export class ApiServiceAuthor {
   static async post(path: string, data: any) {
-    console.log("data: ",data);
-    
+    console.log("data: ", data);
+
     return axiosApi.post(path, data, buildHeaders());
   }
 
