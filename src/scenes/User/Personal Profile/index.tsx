@@ -61,39 +61,21 @@ const Personal = () => {
       setFileList(newFileList);
     },
     beforeUpload: (file) => {
-      fileList[0] = file;
-      setFileList(fileList);
+      setFileList([...fileList, file]);
       return false;
     },
-    fileList,
-  };
-
-  const getBase64 = (img: RcFile, callback: (url: string) => void) => {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => callback(reader.result as string));
-    reader.readAsDataURL(img);
-  };
-
-  const handleChange: UploadProps['onChange'] = (info: UploadChangeParam<UploadFile>) => {
-    console.log("info:", info);
-
-    // Get this url from response in real world.
-    getBase64(info.file as RcFile, () => {
-      setLoading(false);
-      // setImageUrl(url);
-    });
-    // }
+    // fileList,
   };
 
   const initFetch = useCallback(async () => {
     setLoading(true);
-    fileList.push({
-      uid: "-1",
-      name: "avatar.png",
-      status: "done",
-      url: userInfo.avatar,
-    });
-    console.log('userInfo: ', userInfo);
+    // fileList.push({
+    //   uid: "-1",
+    //   name: "avatar.png",
+    //   status: "done",
+    //   url: userInfo.avatar,
+    // });
+    // console.log('userInfo: ', userInfo);
 
     formRef.current?.setFieldsValue({
       username: userInfo.username,
@@ -135,7 +117,6 @@ const Personal = () => {
           });
           return;
         }
-        setFileList([]);
         notification.success({
           message: "Update info successfully",
           type: "success",
@@ -168,7 +149,7 @@ const Personal = () => {
         <Form {...layout} ref={formRef} name="control-ref" onFinish={onFinish} style={{ width: 600 }}>
           <Form.Item name="username" label="Username" rules={[{ required: true }]}>
             <Input
-              // disabled
+            // disabled
             />
           </Form.Item>
           <Form.Item name="full_name" label="Full Name" rules={[{ required: true }]}>
@@ -195,12 +176,11 @@ const Personal = () => {
           </Form.Item>
           <Form.Item name="avatar" label="Avatar">
             <Upload
-              multiple={false}
+              // multiple={false}
               {...props}
               listType="picture-card"
-              onChange={handleChange}
             >
-              {uploadButton}
+              {fileList.length >= 1 ? null : uploadButton}
             </Upload>
           </Form.Item>
           <Form.Item {...tailLayout}>

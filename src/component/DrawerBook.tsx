@@ -26,7 +26,8 @@ function DawerBook({ open, onSubmit, onClose }: any) {
     // onSubmit(values);
     console.log("values: ", values)
     console.log("fileList: ", fileList);
-    
+    console.log("values fileList: ", values.image);
+
     const formdata = {
       book: {
         name: values.name,
@@ -70,11 +71,10 @@ function DawerBook({ open, onSubmit, onClose }: any) {
       setFileList(newFileList);
     },
     beforeUpload: (file) => {
-      setFileList([...fileList, file]);
-
+      setFileList([file]);
       return false;
     },
-    fileList,
+    // fileList,
   };
 
   useEffect(() => {
@@ -93,9 +93,6 @@ function DawerBook({ open, onSubmit, onClose }: any) {
     setPreviewTitle(file.name || file.url!.substring(file.url!.lastIndexOf("/") + 1));
   };
 
-  const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
-    setFileList(newFileList);
-  };
   const uploadButton = (
     <div>
       <PlusOutlined />
@@ -122,9 +119,10 @@ function DawerBook({ open, onSubmit, onClose }: any) {
         <Form.Item name="image" label="Cover" >
           <Upload
             accept="image/*"
+            multiple={false}
             listType="picture-card"
             onPreview={handlePreview}
-            onChange={handleChange}
+            // onChange={handleChange}
             {...props}
           >
             {fileList.length >= 1 ? null : uploadButton}
