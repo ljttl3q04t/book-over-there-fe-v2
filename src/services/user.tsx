@@ -8,6 +8,10 @@ const getUser = () => {
   return ApiServiceAuthor.get("/user/info");
 };
 
+const getUserMembership = () => {
+  return ApiServiceAuthor.get("/user/membership");
+};
+
 const updateUser = (data: any) => {
   const formData = new FormData();
   formData.append('email', data.email);
@@ -23,5 +27,6 @@ const userService = {
   registerUser,
   getUser,
   updateUser,
+  getUserMembership
 };
 export default userService;
