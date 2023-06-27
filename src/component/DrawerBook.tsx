@@ -26,16 +26,7 @@ function DawerBook({ open, onSubmit, onClose }: any) {
     // onSubmit(values);
     console.log("values: ", values)
     console.log("fileList: ", fileList);
-
-    // // Extract necessary properties from the fileObject
-    // const { name, type, lastModified, size } = fileList[0];
-
-    // // Create a Blob object from the file properties
-    // const blob = new Blob([fileList[0].data], { type: type });
-
-    // // Create a File object from the Blob and additional properties
-    // const file = new File([blob], name, { lastModified: lastModified, type: type, size: size });
-
+    
     const formdata = {
       book: {
         name: values.name,
@@ -48,7 +39,7 @@ function DawerBook({ open, onSubmit, onClose }: any) {
         publisher: {
           name: values.publisher
         },
-        image: fileList[0].originFileObj as RcFile
+        image: fileList[0] as RcFile
       }
     }
     console.log("formdata: ", formdata);
@@ -71,6 +62,21 @@ function DawerBook({ open, onSubmit, onClose }: any) {
     }
   };
 
+  const props: UploadProps = {
+    onRemove: (file) => {
+      const index = fileList.indexOf(file);
+      const newFileList = fileList.slice();
+      newFileList.splice(index, 1);
+      setFileList(newFileList);
+    },
+    beforeUpload: (file) => {
+      setFileList([...fileList, file]);
+
+      return false;
+    },
+    fileList,
+  };
+
   useEffect(() => {
     if (open === false) {
       form.resetFields();
@@ -89,13 +95,6 @@ function DawerBook({ open, onSubmit, onClose }: any) {
 
   const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
     setFileList(newFileList);
-    if (newFileList.length > 0) {
-      const selectedFile = newFileList[0].originFileObj as File;
-      // setFileList([selectedFile])
-      formRef.current?.setFieldsValue({ image: selectedFile });
-    } else {
-      formRef.current?.setFieldsValue({ image: undefined });
-    }
   };
   const uploadButton = (
     <div>
@@ -124,12 +123,9 @@ function DawerBook({ open, onSubmit, onClose }: any) {
           <Upload
             accept="image/*"
             listType="picture-card"
-            fileList={fileList}
             onPreview={handlePreview}
             onChange={handleChange}
-            beforeUpload={() => {
-              return false;
-            }}
+            {...props}
           >
             {fileList.length >= 1 ? null : uploadButton}
           </Upload>
