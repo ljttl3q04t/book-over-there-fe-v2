@@ -2,28 +2,39 @@ import "../../index.css";
 
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, Input, notification, Typography } from "antd";
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { AuthService } from "../../services/auth";
-
+import { UserContext } from "@/context/UserContext";
+// import { useCookies } from "react-cookie";
+// import { getTokenExpiration } from "@/helpers/TokenHelper";
 const { Title } = Typography;
 
 const Login = () => {
+  // const [cookie, setCookie] = useCookies(["access_token", "refresh_token"]);
+
+  const { setLoggedInUser } = useContext(UserContext);
   const navigate = useNavigate();
+
   // localStorage.setItem("access_token", 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjg2OTA5MDkzLCJpYXQiOjE2ODY5MDU0OTMsImp0aSI6IjJlYjdjNTQxZDc0NTRkM2M5ZDYwNDQ5MGVhNWUwNmEwIiwidXNlcl9pZCI6MX0.Tn052OpOkGVXaS2S6BejuSW47zqSe0mAk9_euJOmykI');
   const onFinish = (values: any) => {
     AuthService.login(
       values.username,
       values.password,
       (token: any) => {
+        console.log(token.data, " token.data");
+
         const tokenn = token.data.access_token;
         localStorage.setItem("access_token", tokenn);
+        // const expirationTime = getTokenExpiration(token);
+        // setCookie("access_token", tokenn, { path: "/", expires: expirationTime });
         navigate("/");
         notification.success({
           message: "Login successfully!",
         });
         localStorage.setItem("username", token.data.user.username);
+        setLoggedInUser(token.data.user);
       },
       (_reason: any) => {
         notification.info({

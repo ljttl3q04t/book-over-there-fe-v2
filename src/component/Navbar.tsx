@@ -2,11 +2,10 @@
 import { BellOutlined, ProfileOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Badge, Dropdown, Image, Modal, Space } from "antd";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { getUser, token } from "../store/userStore";
+import { UserContext } from "@/context/UserContext";
 
 interface NavbarProps {
   isSidebarOpen: boolean;
@@ -17,13 +16,8 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
   const access = localStorage.getItem("access_token");
   const navigate = useNavigate();
   const [changePW, setChangePW] = useState(false);
-  const dispatch = useDispatch<any>();
-  const username: any = useSelector<any>((state) => state.user.userInfo.username);
-
-  useEffect(() => {
-    dispatch(getUser());
-    dispatch(token(access));
-  }, [dispatch]);
+  const { user, logoutUser } = useContext(UserContext);
+  console.log(user, "user");
 
   const iconNotifi = () => {
     return (
@@ -46,6 +40,7 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
   };
 
   const handleLogout = (_e: any) => {
+    logoutUser();
     localStorage.clear();
     navigate("/");
   };
@@ -84,7 +79,7 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
               }}
               width={25}
               preview={false}
-              src="https://cdn.eduncle.com/library/scoop-files/2020/6/image_1593346767460.jpg"
+              src={user && user.avatar}
             />
             <Dropdown menu={{ items }} placement="bottomRight" trigger={["click"]} arrow>
               <a onClick={(e) => e.preventDefault()}>
@@ -95,7 +90,7 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
                     marginLeft: 5,
                   }}
                 >
-                  Hello {username}!
+                  {user && user.username}!
                   <ProfileOutlined />
                 </Space>
               </a>

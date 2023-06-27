@@ -11,9 +11,9 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, MenuProps, Typography } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-
+import { UserContext } from "@/context/UserContext";
 import { getAccessToken } from "../http-common";
 
 const { Sider } = Layout;
@@ -47,7 +47,7 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSide
   const { pathname } = useLocation();
   const [active, setActive] = useState("");
   const navigate = useNavigate();
-
+  const { user } = useContext(UserContext);
   useEffect(() => {
     setActive(pathname.substring(1));
   }, [pathname]);
@@ -56,14 +56,20 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSide
     getItem("Home Page", "", <HomeOutlined />),
     getItem("Checkout", "checkout", <CheckCircleOutlined />),
   ];
-
+  const getClubStaffItem = (isStaff: any): MenuItem => {
+    if (isStaff) {
+      return getItem("Club staff", "clubstaff");
+    } else {
+      return null; // Return null if the user is not a staff member
+    }
+  };
   if (getAccessToken()) {
     items = [
       ...items,
       getItem("Club", "sub1", <TeamOutlined />, [
         getItem("Club list", "clublist"),
         getItem("Club book", "clubbook"),
-        getItem("Club staff", "clubstaff"),
+        getClubStaffItem(user?.is_staff),
       ]),
       getItem("User", "sub0", <UserOutlined />, [
         getItem("My Account", "sub3", <UserOutlined />, [
@@ -95,7 +101,7 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSide
       className={!isNonMobile && !isSidebarOpen ? "ant-layout-sider-collapsed" : ""}
     >
       <Title level={3} style={{ textAlign: "center", color: "#fff", marginTop: "30px" }}>
-        Book over there
+        Book Over There
       </Title>
       <Menu
         style={{ marginTop: "30px" }}

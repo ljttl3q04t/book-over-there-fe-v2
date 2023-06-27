@@ -1,10 +1,10 @@
 import "./App.scss";
 
-import React from "react";
+import React, { useContext } from "react";
 import { useSelector } from "react-redux";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import loadable from "@loadable/component";
-
+import { UserContext } from "@/context/UserContext";
 import { useBeforeRender } from "./component/Error";
 const Error404 = loadable(() => import("@/component/Error404"));
 const Error403 = loadable(() => import("@/component/Error403"));
@@ -28,7 +28,7 @@ const Transaction = loadable(() => import("@/scenes/User/Transaction History"));
 
 const App = () => {
   const token = localStorage.getItem("access_token");
-
+  const { user } = useContext(UserContext);
   useBeforeRender(() => {
     window.addEventListener("error", (e) => {
       if (e) {
@@ -54,7 +54,7 @@ const App = () => {
             <Route path="/clublist" Component={ClubList} />
             {token ? (
               <>
-                <Route path="/clubstaff" Component={ClubStaff} />
+                {user?.is_staff && <Route path="/clubstaff" Component={ClubStaff} />}
                 <Route path="/clubbook" Component={ClubBook} />
                 <Route path="/bookclub" Component={ClubBook} />
                 <Route path="/my-profile" Component={Personal} />

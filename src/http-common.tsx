@@ -21,6 +21,7 @@ axiosApi.interceptors.response.use(
 
     if (error.response && error.response.status === 401) {
       removeAccessToken();
+      localStorage.clear()
       return;
     }
 
