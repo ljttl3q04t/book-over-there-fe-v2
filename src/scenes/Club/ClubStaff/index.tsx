@@ -37,7 +37,7 @@ interface DataType {
   joinedAt: string;
   leaveAt: string;
   isStaff: boolean;
-  memberId: number;
+  membershipId: number;
 }
 type DataIndex = keyof DataType;
 
@@ -69,11 +69,10 @@ const ClubStaff = () => {
               joinedAt: dayjs(item.joined_at).format("YYYY-MM-DD"),
               leaveAt: item.leaved_at && dayjs(item.leaved_at).format("YYYY-MM-DD"),
               isStaff: item.is_staff,
-              memberId: item.member.id,
+              membershipId: item.id,
             };
           });
           setClubMemberTableSource(data);
-          console.log(response);
         }
       })
       .finally(() => {
@@ -82,7 +81,7 @@ const ClubStaff = () => {
   }, []);
   const handleApproveMember = useCallback(async (item: DataType) => {
     const updateMemberForm: UpdateMemberClubForm = {
-      membership_id: item.memberId,
+      membership_id: item.membershipId,
       member_status: MEMBER_STATUS.ACTIVE,
     };
     ClubService.updateMemberClub(updateMemberForm)
