@@ -1,6 +1,7 @@
+import bookService from "@/services/book";
 import { PlusOutlined } from "@ant-design/icons";
-import { Button, Drawer, Form, FormInstance, Input, Modal, Select, Space, Upload, UploadFile, UploadProps } from "antd";
-import { RcFile } from "antd/es/upload";
+import { Button, Drawer, Form, FormInstance, Input, Modal, Select, Space, Upload, notification } from "antd";
+import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import { useEffect, useRef, useState } from "react";
 import React from "react";
 
@@ -20,9 +21,47 @@ function DawerBook({ open, onSubmit, onClose }: any) {
   const [previewTitle, setPreviewTitle] = useState("");
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
-  const onFinish = (values: any) => {
-    onClose();
-    onSubmit(values);
+  const onFinish = async (values: any) => {
+    let formData = new FormData();
+    formData.append('book.name', values.name);
+    formData.append('book.category.name', values.category);
+    formData.append('book.author.name', values.author);
+    formData.append('book.publisher.name', values.publisher);
+    formData.append('book.image', fileList[0] as RcFile);
+    try {
+      const res = await bookService.createBook(formData);
+      console.log("res: ", res);
+
+      notification.info({
+        message: "Info",
+        description: res.result,
+      });
+      onClose();
+    } catch (err: any) {
+      Object.keys(err.response.data.book).forEach((field) => {
+        const errors = err.response.data.book[field];
+        errors.forEach((errorMessage: any) => {
+          notification.error({
+            message: `Validation Error: ${field}`,
+            description: errorMessage,
+          });
+        });
+      });
+    }
+  };
+
+  const props: UploadProps = {
+    onRemove: (file) => {
+      const index = fileList.indexOf(file);
+      const newFileList = fileList.slice();
+      newFileList.splice(index, 1);
+      setFileList(newFileList);
+    },
+    beforeUpload: (file) => {
+      setFileList([file]);
+      return false;
+    },
+    // fileList,
   };
 
   useEffect(() => {
@@ -41,15 +80,6 @@ function DawerBook({ open, onSubmit, onClose }: any) {
     setPreviewTitle(file.name || file.url!.substring(file.url!.lastIndexOf("/") + 1));
   };
 
-  const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
-    setFileList(newFileList);
-    if (newFileList.length > 0) {
-      const selectedFile = newFileList[0].originFileObj as File;
-      formRef.current?.setFieldsValue({ cover: selectedFile });
-    } else {
-      formRef.current?.setFieldsValue({ cover: undefined });
-    }
-  };
   const uploadButton = (
     <div>
       <PlusOutlined />
@@ -73,16 +103,13 @@ function DawerBook({ open, onSubmit, onClose }: any) {
       }
     >
       <Form layout="vertical" form={form} onFinish={onFinish} ref={formRef}>
-        <Form.Item name="cover" label="Cover" rules={[{ required: true, message: "Please enter cover" }]}>
+        <Form.Item name="image" label="Cover" >
           <Upload
             accept="image/*"
+            multiple={false}
             listType="picture-card"
-            fileList={fileList}
             onPreview={handlePreview}
-            onChange={handleChange}
-            beforeUpload={() => {
-              return false;
-            }}
+            {...props}
           >
             {fileList.length >= 1 ? null : uploadButton}
           </Upload>
@@ -97,7 +124,7 @@ function DawerBook({ open, onSubmit, onClose }: any) {
         <Form.Item
           name="bookStatus"
           label="BookStatus"
-          rules={[{ required: true, message: "Please select book status" }]}
+        // rules={[{ required: true, message: "Please select book status" }]}
         >
           <Select
             placeholder="Please enter book status"

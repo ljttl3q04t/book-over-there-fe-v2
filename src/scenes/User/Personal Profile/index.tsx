@@ -37,6 +37,7 @@ const Personal = () => {
   const disabledDate: RangePickerProps["disabledDate"] = (current) => {
     return current && current > dayjs().endOf("day");
   };
+
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const { user, setLoggedInUser } = useContext(UserContext);
 
@@ -55,11 +56,10 @@ const Personal = () => {
       setFileList(newFileList);
     },
     beforeUpload: (file) => {
-      fileList[0] = file;
-      setFileList(fileList);
+      setFileList([...fileList, file]);
       return false;
     },
-    fileList,
+    // fileList,
   };
 
   const initFetch = useCallback(async () => {
@@ -70,6 +70,8 @@ const Personal = () => {
       status: "done",
       url: user.avatar,
     });
+    console.log('userInfo: ', userInfo);
+
     formRef.current?.setFieldsValue({
       username: user.username,
       full_name: user.full_name,
@@ -97,7 +99,7 @@ const Personal = () => {
       email: values.email,
       phone_number: values.phone_number,
       birth_date: dayjs(values.birth_date).format("YYYY-MM-DD"),
-      avatar: fileList[0] as RcFile,
+      avatar: null,
     };
     UserService.updateUser(data)
       .then((res: any) => {
@@ -141,7 +143,9 @@ const Personal = () => {
         </div>
         <Form {...layout} ref={formRef} name="control-ref" onFinish={onFinish} style={{ width: 600 }}>
           <Form.Item name="username" label="Username" rules={[{ required: true }]}>
-            <Input />
+            <Input
+            // disabled
+            />
           </Form.Item>
           <Form.Item name="full_name" label="Full Name" rules={[{ required: true }]}>
             <Input />

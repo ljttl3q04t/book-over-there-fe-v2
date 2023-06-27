@@ -16,8 +16,30 @@ async function getMyBookList(): Promise<BookCopy[]> {
   }
 }
 
+const createBook = async (data:any) => {
+  try {
+    const response = await ApiServiceAuthor.post(`/user/book/add`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error;
+  }
+}
+
+const getHistoryBook = async () => {
+  try {
+    const response = await ApiServiceAuthor.get(`/user/book/add`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error;
+  }
+}
+
 const bookService = {
   getListBook,
   getMyBookList,
+  createBook,
+  getHistoryBook
 };
 export default bookService;
