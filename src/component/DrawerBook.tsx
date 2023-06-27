@@ -22,44 +22,31 @@ function DawerBook({ open, onSubmit, onClose }: any) {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   const onFinish = async (values: any) => {
-    // onClose();
-    // onSubmit(values);
-    console.log("values: ", values)
-    console.log("fileList: ", fileList);
-    console.log("values fileList: ", values.image);
-
-    const formdata = {
-      book: {
-        name: values.name,
-        category: {
-          name: values.category
-        },
-        author: {
-          name: values.author
-        },
-        publisher: {
-          name: values.publisher
-        },
-        image: fileList[0] as RcFile
-      }
-    }
-    console.log("formdata: ", formdata);
-
-
+    let formData = new FormData();
+    formData.append('book.name', values.name);
+    formData.append('book.category.name', values.category);
+    formData.append('book.author.name', values.author);
+    formData.append('book.publisher.name', values.publisher);
+    formData.append('book.image', fileList[0] as RcFile);
     try {
-      const res = await bookService.createBook(formdata);
+      const res = await bookService.createBook(formData);
       console.log("res: ", res);
 
-      // notification.info({
-      //   message: "Info",
-      //   description: res,
-      // });
+      notification.info({
+        message: "Info",
+        description: res.result,
+      });
+      onClose();
     } catch (err: any) {
-      console.log("error: ", err);
-
-      if (!err.response) {
-        throw err;
-      }
+      Object.keys(err.response.data.book).forEach((field) => {
+        const errors = err.response.data.book[field];
+        errors.forEach((errorMessage: any) => {
+          notification.error({
+            message: `Validation Error: ${field}`,
+            description: errorMessage,
+          });
+        });
+      });
     }
   };
 
@@ -122,7 +109,6 @@ function DawerBook({ open, onSubmit, onClose }: any) {
             multiple={false}
             listType="picture-card"
             onPreview={handlePreview}
-            // onChange={handleChange}
             {...props}
           >
             {fileList.length >= 1 ? null : uploadButton}

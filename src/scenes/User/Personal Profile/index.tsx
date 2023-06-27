@@ -69,13 +69,13 @@ const Personal = () => {
 
   const initFetch = useCallback(async () => {
     setLoading(true);
-    // fileList.push({
-    //   uid: "-1",
-    //   name: "avatar.png",
-    //   status: "done",
-    //   url: userInfo.avatar,
-    // });
-    // console.log('userInfo: ', userInfo);
+    fileList.push({
+      uid: "-1",
+      name: "avatar.png",
+      status: "done",
+      url: userInfo.avatar,
+    });
+    console.log('userInfo: ', userInfo);
 
     formRef.current?.setFieldsValue({
       username: userInfo.username,
@@ -85,7 +85,7 @@ const Personal = () => {
       phone_number: userInfo.phone_number,
       gender: "male",
       birth_date: userInfo.birth_date === null ? "" : dayjs(userInfo.birth_date),
-      avatar: userInfo.avatar,
+      // avatar: userInfo.avatar,
     });
 
     setLoading(false);
@@ -104,7 +104,7 @@ const Personal = () => {
       email: values.email,
       phone_number: values.phone_number,
       birth_date: dayjs(values.birth_date).format("YYYY-MM-DD"),
-      avatar: fileList[0] as RcFile,
+      avatar: null,
     };
     console.log("data: ", data);
 
