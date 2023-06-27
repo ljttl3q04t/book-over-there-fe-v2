@@ -63,14 +63,16 @@ function MyBook() {
     formRef.current
       ?.validateFields()
       .then((formValues) => {
-        const data = {
-          // club_id: clubId,
-          full_name: formValues.full_name,
-          phone_number: formValues.phone_number,
-          email: formValues.email,
-          address: formValues.address,
-          reason: formValues.reason,
-        };
+        console.log("formValues: ",formValues);
+        
+        // const data = {
+        //   // club_id: clubId,
+        //   full_name: formValues.full_name,
+        //   phone_number: formValues.phone_number,
+        //   email: formValues.email,
+        //   address: formValues.address,
+        //   reason: formValues.reason,
+        // };
 
       })
       .catch((_errors) => {
