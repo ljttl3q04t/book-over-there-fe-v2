@@ -7,12 +7,12 @@ import { useNavigate } from "react-router-dom";
 
 import { AuthService } from "../../services/auth";
 import { UserContext } from "@/context/UserContext";
-import { useCookies } from "react-cookie";
-import { getTokenExpiration } from "@/helpers/TokenHelper";
+// import { useCookies } from "react-cookie";
+// import { getTokenExpiration } from "@/helpers/TokenHelper";
 const { Title } = Typography;
 
 const Login = () => {
-  const [cookie, setCookie] = useCookies(["access_token", "refresh_token"]);
+  // const [cookie, setCookie] = useCookies(["access_token", "refresh_token"]);
 
   const { setLoggedInUser } = useContext(UserContext);
   const navigate = useNavigate();
@@ -27,8 +27,8 @@ const Login = () => {
 
         const tokenn = token.data.access_token;
         localStorage.setItem("access_token", tokenn);
-        const expirationTime = getTokenExpiration(token);
-        setCookie("access_token", tokenn, { path: "/", expires: expirationTime });
+        // const expirationTime = getTokenExpiration(token);
+        // setCookie("access_token", tokenn, { path: "/", expires: expirationTime });
         navigate("/");
         notification.success({
           message: "Login successfully!",

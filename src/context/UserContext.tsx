@@ -1,9 +1,14 @@
-import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useEffect, useContext, ReactNode } from "react";
 
 interface User {
   username: string;
-  email:string;
-  is_staff:boolean;
+  email: string;
+  is_staff: boolean;
+  address: string;
+  avatar: string;
+  phone_number: string;
+  full_name: string;
+  birth_date: string;
   // Add any other properties you need for the user
 }
 
@@ -28,7 +33,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
   useEffect(() => {
     // Load the user data from localStorage on component mount
-    const storedUser = localStorage.getItem('user');
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
@@ -36,13 +41,13 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
   const setLoggedInUser = (userData: User) => {
     // Save the user data to localStorage when setting the logged-in user
-    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
   };
 
   const logoutUser = () => {
     // Clear the user data from localStorage when logging out
-    localStorage.removeItem('user');
+    localStorage.removeItem("user");
     setUser(null);
   };
 

@@ -1,16 +1,14 @@
 /* eslint-disable no-extra-boolean-cast */
-import { ThunkDispatch } from "@reduxjs/toolkit";
 import { Button, DatePicker, Form, Input, Modal, notification } from "antd";
 import type { RangePickerProps } from "antd/es/date-picker";
-import type { FormInstance } from "antd/es/form";
 import Table, { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
-import React, { useCallback, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { getAccessToken } from "../../../http-common";
-import { getClubList, joinClub } from "../../../store/clubStore";
-
+import { UserContext } from "@/context/UserContext";
+import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
+import ClubService from "@/services/club";
 const { TextArea } = Input;
 
 const layout = {
@@ -30,24 +28,24 @@ const StyledModalContent = styled.div`
 `;
 
 const ClubList = () => {
-  const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
   const [loading, setLoading] = useState(false);
   const [clubList, setClubList] = useState([]);
   const [clubId, setClubId] = useState();
-  const formRef = React.useRef<FormInstance>(null);
+  const [form] = Form.useForm();
   const dateFormatList = ["DD/MM/YYYY"];
   const disabledDate: RangePickerProps["disabledDate"] = (current) => {
     return current && current > dayjs().endOf("day");
   };
+  const { user } = useContext(UserContext);
 
   const [modalJoin, setModalJoin] = useState(false);
 
   const initFetch = useCallback(async () => {
     setLoading(true);
-    dispatch(getClubList())
+    ClubService.getListClub()
       .then((response) => {
-        if (response.payload) {
-          const data = response.payload.map((item: any, index: any) => {
+        if (response.data) {
+          const data = response.data.map((item: any, index: any) => {
             return { no: index + 1, ...item };
           });
           setClubList(data);
@@ -56,25 +54,34 @@ const ClubList = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, [dispatch]);
+  }, []);
 
   useEffect(() => {
     initFetch();
   }, []);
 
   const handleCloseJoin = () => {
-    formRef.current?.resetFields();
+    form.resetFields();
     setModalJoin(false);
   };
 
   const handleOpenJoin = (_item: any) => {
     setClubId(_item.id);
+    console.log(user, "useruseruser");
+
+    form.setFieldsValue({
+      full_name: user.full_name,
+      phone_number: user.phone_number,
+      email: user.email,
+      address: user.address,
+      birth_date: user.birth_date ? dayjs(user.birth_date) : "",
+    });
     setModalJoin(true);
   };
 
   const onFinish = (_values: any) => {
-    formRef.current
-      ?.validateFields()
+    form
+      .validateFields()
       .then((formValues) => {
         const data = {
           club_id: clubId,
@@ -85,7 +92,7 @@ const ClubList = () => {
           birth_date: dayjs(formValues.birth_date).format("YYYY-MM-DD"),
           reason: formValues.reason,
         };
-        dispatch(joinClub(data))
+        ClubService.joinCLub(data)
           .then((res: any) => {
             if (res?.error?.message) {
               notification.info({
@@ -98,10 +105,11 @@ const ClubList = () => {
               message: "Your request has been send successfully, please wait for approval. Thank you!",
               type: "success",
             });
+            initFetch();
           })
           .finally(() => {
             setModalJoin(false);
-            formRef.current?.resetFields();
+            form.resetFields();
           });
       })
       .catch((_errors) => {
@@ -169,23 +177,47 @@ const ClubList = () => {
       <Table loading={loading} columns={columns} dataSource={clubList} />
       <Modal title="Join Club" width={800} open={modalJoin} onCancel={handleCloseJoin} onOk={onFinish}>
         <StyledModalContent>
-          <Form {...layout} ref={formRef} name="control-ref" style={{ width: 800 }}>
-            <Form.Item name="full_name" label="Full Name" rules={[{ required: true }]}>
+          <Form {...layout} form={form} name="control-ref" style={{ width: 800 }}>
+            <Form.Item
+              name="full_name"
+              label="Full Name"
+              rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} full name` }]}
+            >
               <Input />
             </Form.Item>
-            <Form.Item name="phone_number" label="Phone Number" rules={[{ required: true }]}>
+            <Form.Item
+              name="phone_number"
+              label="Phone Number"
+              rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} phone number` }]}
+            >
               <Input />
             </Form.Item>
-            <Form.Item name="email" label="Email" rules={[{ required: true }]}>
+            <Form.Item
+              name="email"
+              label="Email"
+              rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} email` }]}
+            >
               <Input />
             </Form.Item>
-            <Form.Item name="address" label="Address" rules={[{ required: true }]}>
+            <Form.Item
+              name="address"
+              label="Address"
+              rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} address` }]}
+            >
               <Input />
             </Form.Item>
-            <Form.Item name="birth_date" label="Date of Birth" rules={[{ required: true }]}>
+            <Form.Item
+              name="birth_date"
+              label="Date of Birth"
+              rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} date of birth` }]}
+            >
               <DatePicker disabledDate={disabledDate} style={{ width: "100%" }} format={dateFormatList} />
             </Form.Item>
-            <Form.Item name="reason" label="Reason" rules={[{ required: true }]}>
+            <Form.Item
+              name="reason"
+              label="Reason"
+              rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} reason` }]}
+            >
               <TextArea rows={4} placeholder="Why you want to join this club..." />
             </Form.Item>
           </Form>

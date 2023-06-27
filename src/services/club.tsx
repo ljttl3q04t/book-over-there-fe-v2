@@ -2,7 +2,7 @@ import { ApiServiceAuthor } from "../http-common";
 import { axiosApi } from "../http-common";
 
 const getListClub = () => {
-  return axiosApi.get(`/club/list`);
+  return localStorage.getItem("access_token") ? ApiServiceAuthor.get(`/club/list`) : axiosApi.get(`/club/list`);
 };
 
 const joinCLub = (data: any) => {
