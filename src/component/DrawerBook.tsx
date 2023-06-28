@@ -13,7 +13,7 @@ const getBase64 = (file: RcFile): Promise<string> =>
     reader.onerror = (error) => reject(error);
   });
 
-function DawerBook({ open, onSubmit, onClose }: any) {
+function DawerBook({ open, onSubmit, onClose, fetchBookList }: any) {
   const [form] = Form.useForm();
   const formRef = useRef<FormInstance>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -36,6 +36,7 @@ function DawerBook({ open, onSubmit, onClose }: any) {
         message: "Info",
         description: res.result,
       });
+      fetchBookList()
       onClose();
     } catch (err: any) {
       Object.keys(err.response.data.book).forEach((field) => {

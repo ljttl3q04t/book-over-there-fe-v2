@@ -16,6 +16,7 @@ import Carousel from "react-multi-carousel";
 import { getDeviceType } from "@/helpers/fuctionHepler";
 import Section from "@/component/carousel/Section";
 import "./style.scss"
+import bookService from "@/services/book";
 
 const { Title } = Typography;
 
@@ -39,20 +40,36 @@ const Homepage = () => {
   });
   const [chunksSize, setChunksSize] = useState(calculateChunksSize());
 
-  const initFetch = useCallback(async () => {
-    setLoading(true);
-    dispatch(getListBook(option))
-      .then((response) => {
-        if (response.payload) {
-          const data = response.payload;
-          setBookList(data);
-        }
-      })
-      .finally(() => setLoading(false));
-  }, [dispatch, option]);
+  // const initFetch = useCallback(async () => {
+  //   setLoading(true);
+  //   dispatch(getListBook(option))
+  //     .then((response) => {
+  //       if (response.payload) {
+  //         const data = response.payload;
+  //         setBookList(data);
+  //         console.log('data: ',data);
+          
+  //       }
+  //     })
+  //     .finally(() => setLoading(false));
+  // }, [dispatch, option]);
+
+  const getListBookInit = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response: any = await bookService.getListBook(option.pageIndex, option.pageSize, '');
+      console.log("getListBookInit: ",response);
+      setBookList(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("error", error);
+      // Handle error
+    }
+  }, []);
 
   useEffect(() => {
-    initFetch();
+    // initFetch();
+    getListBookInit()
   }, [option]);
 
   useEffect(() => {
@@ -68,11 +85,19 @@ const Homepage = () => {
   }, []);
 
   const handleTableChange = (pagination: any) => {
+    console.log('pagination: ',pagination);
+    
     setOption({
       ...option,
       pageIndex: pagination.current,
       pageSize: pagination.pageSize,
     });
+    console.log(".................: ",{
+      ...option,
+      pageIndex: pagination.current,
+      pageSize: pagination.pageSize,
+    });
+    
   };
   const columns: ColumnsType<any> = [
     {
@@ -296,9 +321,6 @@ const Homepage = () => {
           ))}
         </Carousel>
       </Section>
-      {/* <Section>
-          <Simple deviceType={deviceType} />
-        </Section> */}
 
       <div className="carousel-title">
         <Title level={2} style={{ margin: 0 }}>
@@ -346,6 +368,7 @@ const Homepage = () => {
         searchText={"Search"}
         className="home-page-search_book"
         onFinish={(data) => {
+          
           setOption({
             pageIndex: 1,
             pageSize: 10,
