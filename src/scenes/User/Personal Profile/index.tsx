@@ -68,19 +68,19 @@ const Personal = () => {
       uid: "-1",
       name: "avatar.png",
       status: "done",
-      url: user.avatar,
+      url: user?.avatar,
     });
     // console.log('userInfo: ', userInfo);
 
     formRef.current?.setFieldsValue({
-      username: user.username,
-      full_name: user.full_name,
-      address: user.address,
-      email: user.email,
-      phone_number: user.phone_number,
+      username: user?.username,
+      full_name: user?.full_name,
+      address: user?.address,
+      email: user?.email,
+      phone_number: user?.phone_number,
       gender: "male",
-      birth_date: user.birth_date === null ? "" : dayjs(user.birth_date),
-      avatar: user.avatar,
+      birth_date: user?.birth_date === null ? "" : dayjs(user?.birth_date),
+      avatar: user?.avatar,
     });
 
     setLoading(false);
@@ -126,7 +126,7 @@ const Personal = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        marginTop: "70px",
+        // marginTop: "70px",
       }}
     >
       <div
@@ -139,7 +139,7 @@ const Personal = () => {
         }}
       >
         <div>
-          <Image style={{ float: "left" }} width={200} src={user.avatar} />
+          <Image style={{ float: "left" }} width={200} src={user?.avatar} />
         </div>
         <Form {...layout} ref={formRef} name="control-ref" onFinish={onFinish} style={{ width: 600 }}>
           <Form.Item name="username" label="Username" rules={[{ required: true }]}>
@@ -175,7 +175,7 @@ const Personal = () => {
             </Upload>
           </Form.Item>
           <Form.Item {...tailLayout}>
-            <Button style={{ marginLeft: "235px", marginRight: "10px" }} type="primary" htmlType="submit">
+            <Button style={{ marginRight: "10px" }} type="primary" htmlType="submit">
               Submit
             </Button>
             <Button htmlType="button" onClick={initFetch}>

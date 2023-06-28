@@ -1,0 +1,78 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,500;0,700;0,900;1,400&display=swap");
+$priamry_font: Roboto, Helvetica, Arial, sans-serif;
+$primary_bg_image: linear-gradient(195deg, rgb(73, 163, 241), rgb(26, 115, 232));
+body {
+  font-family: $priamry_font;
+  font-weight: 500;
+}
+.ant-btn-primary,
+.ant-btn-default,
+.ant-menu-item-selected {
+  position: relative;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  outline: 0px;
+  border: 0px;
+  margin: 0px;
+  cursor: pointer;
+  vertical-align: middle;
+  appearance: none;
+  text-decoration: none;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  letter-spacing: 0.02857em;
+  min-width: 64px;
+  display: inline-flex;
+  -webkit-box-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 0.5rem;
+  line-height: 1.4;
+  text-align: center;
+  user-select: none;
+  transition: all 150ms ease-in 0s;
+  min-height: 2.5rem;
+  padding: 0.625rem 1.5rem;
+  background-position-y: initial;
+  background-repeat: initial;
+  background-attachment: initial;
+  background-origin: initial;
+  background-clip: initial;
+  background-color: initial;
+  color: rgb(255, 255, 255);
+  box-shadow: rgba(26, 115, 232, 0.15) 0rem 0.1875rem 0.1875rem 0rem,
+    rgba(26, 115, 232, 0.2) 0rem 0.1875rem 0.0625rem -0.125rem, rgba(26, 115, 232, 0.15) 0rem 0.0625rem 0.3125rem 0rem;
+  background-size: 150% !important;
+  background-position-x: 25% !important;
+  &:disabled {
+    background-color: #f5f5f5;
+    background-image: none;
+  }
+}
+
+.ant-btn-primary {
+  background-image: $primary_bg_image;
+}
+
+.ant-btn-default {
+  background-image: linear-gradient(195deg, rgb(66, 66, 74), rgb(25, 25, 25));
+  &:hover {
+    color: rgb(255, 255, 255);
+  }
+  &:focus {
+    color: rgb(255, 255, 255);
+  }
+}
+.ant-menu-item-selected {
+  background-image: $primary_bg_image;
+}
+
+.ant-btn-primary + .ant-btn-dangerous {
+  background-image: linear-gradient(195deg, rgb(239, 83, 80), rgb(229, 57, 53));
+}
+
+.ant-layout-sider {
+  font-family: $priamry_font;
+}
