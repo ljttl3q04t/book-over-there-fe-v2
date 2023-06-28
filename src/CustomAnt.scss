@@ -18,7 +18,8 @@ body {
   vertical-align: middle;
   appearance: none;
   text-decoration: none;
-  font-family: Roboto, Helvetica, Arial, sans-serif;
+  font-family: $priamry_font;
+  font-size: 12px;
   letter-spacing: 0.02857em;
   min-width: 64px;
   display: inline-flex;
@@ -26,7 +27,6 @@ body {
   justify-content: center;
   -webkit-box-align: center;
   align-items: center;
-  font-size: 0.75rem;
   font-weight: 700;
   border-radius: 0.5rem;
   line-height: 1.4;
@@ -67,6 +67,7 @@ body {
 }
 .ant-menu-item-selected {
   background-image: $primary_bg_image;
+  font-size: 15px;
 }
 
 .ant-btn-primary + .ant-btn-dangerous {
