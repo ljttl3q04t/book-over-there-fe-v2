@@ -129,6 +129,7 @@ function MyBook() {
       console.log("response getUserShareClub: ", response);
       setLoading(false);
       handleCloseJoin()
+      fetchBookList()
       notification.info({ message: response.data.result });
     } catch (error) {
       console.error("error", error);
