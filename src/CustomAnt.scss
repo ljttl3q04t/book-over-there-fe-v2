@@ -76,3 +76,38 @@ body {
 .ant-layout-sider {
   font-family: $priamry_font;
 }
+.ant-pro-query-filter-row {
+  align-items: center;
+}
+
+
+.ant-layout-sider{
+  box-shadow: rgba(0, 0, 0, 0.05) 0rem 1.25rem 1.6875rem 0rem;
+  margin-bottom: inherit;
+  background: linear-gradient(195deg, rgb(66, 66, 74), rgb(25, 25, 25)) !important;
+  color: rgba(0, 0, 0, 0.87);
+  transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  box-shadow: none;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+  z-index: 1200;
+  position: fixed;
+  top: 0px;
+  outline: 0px;
+  left: 0px;
+  width: 15.625rem;
+  background-color: rgb(255, 255, 255);
+  height: calc(100vh - 2rem);
+  margin: 1rem;
+  border-radius: 0.75rem;
+  border: none;
+}
+.ant-menu-root,.ant-menu-sub{
+  background: transparent !important;
+
+}
+.ant-dropdown-menu-item {
+  font-family: $priamry_font;
+}

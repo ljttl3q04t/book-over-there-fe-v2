@@ -37,8 +37,8 @@ const StyledSectionCarousel = styled.section`
   }
 `;
 const calculateChunksSize = () => {
-  const screenWidth = window.innerWidth - 300; // Get the width of the screen
-  const itemWidth = 290; // Width of each carousel item
+  const screenWidth = window.innerWidth - 322; // Get the width of the screen
+  const itemWidth = 280; // Width of each carousel item
   const gutter = 16; // Optional gutter between items if any
 
   const availableWidth = screenWidth - gutter; // Adjust for gutter if needed
@@ -260,7 +260,7 @@ const Homepage = () => {
           </div>
         </StyledHeader>
         <QueryFilter
-          style={{ padding: 10 }}
+          style={{ padding: 10}}
           layout="vertical"
           resetText={"Reset"}
           searchText={"Search"}

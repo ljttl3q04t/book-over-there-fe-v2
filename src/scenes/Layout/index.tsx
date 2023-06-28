@@ -22,9 +22,7 @@ const LayoutCustom = () => {
       />
       <Layout>
         <Navbar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
-        <Divider style={{ margin: "0", boxShadow: "rgb(0 0 0 / 12%) 0px 3px 4px" }} />
-        <BreadcrumbNav />
-
+        <BreadcrumbNav displayPageName={true} />
         <Content style={{ padding: "24px", overflow: "auto" }}>
           <Outlet />
         </Content>
