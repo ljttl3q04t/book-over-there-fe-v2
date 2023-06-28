@@ -1,15 +1,16 @@
-import { Avatar, Button, Select, Dropdown, Space, MenuProps, Form, SelectProps, Modal } from "antd";
+import { Avatar, Tag, InputRef, Button, Select, Dropdown, Space, MenuProps, Form, notification, SelectProps, Modal } from "antd";
 import { MoreOutlined } from '@ant-design/icons';
 import Table, { ColumnsType } from "antd/es/table";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import type { FormInstance } from "antd/es/form";
 import styled from "styled-components";
 
-import DawerBook from "../../../component/DrawerBook";
-import bookService from "../../../services/book";
-import { BookCopy, Club, ListView } from "../../../services/types";
-import clubService from "@/services/club";
+import DawerBook from "@/component/DrawerBook";
+import bookService from "@/services/book";
+import { BookCopy, Club, ListView } from "@/services/types";
 import userService from "@/services/user";
+import { FilterConfirmProps } from "antd/lib/table/interface";
+import { getColumnSearchProps } from "@/helpers/CommonTable";
 
 const StyledMyBookContainer = styled.div`
   border-radius: 12px;
@@ -39,8 +40,13 @@ const layout = {
   wrapperCol: { span: 16 },
 };
 
+const statusColors:any = {
+  sharing_club: "green",
+  new: "geekblue",
+};
+
 function MyBook() {
-  const [books, setBooks] = useState<BookCopy[]>([]);
+  const [books, setBooks] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [open, setOpen] = useState(false);
   const [modalJoin, setModalJoin] = useState(false);
@@ -64,17 +70,14 @@ function MyBook() {
       ?.validateFields()
       .then((formValues) => {
         const data = {
-          // club_id: clubId,
-          full_name: formValues.full_name,
-          phone_number: formValues.phone_number,
-          email: formValues.email,
-          address: formValues.address,
-          reason: formValues.reason,
+          book_copy_ids: formValues.book_copy_ids,
+          club_id: formValues.club_id
         };
+        shareBooksToClub(data)
 
       })
       .catch((_errors) => {
-        // notification.info({ message: "Please make sure that you enter all field" });
+        notification.info({ message: "Please make sure that you enter all field" });
       });
   };
 
@@ -82,7 +85,23 @@ function MyBook() {
     try {
       setLoading(true);
       const response: BookCopy[] = await bookService.getMyBookList();
-      setBooks(response);
+      const data = response.map((item: any, index: any) => {
+        return {
+          id: item.id,
+          bookName: item?.book?.name,
+          bookCategory: item?.book?.category?.name,
+          bookAuthor: item?.book?.author?.name,
+          bookPublisher: item?.book?.publisher?.name,
+          bookImage: item?.book?.image,
+          createdAt: item?.created_at,
+          iupdatedAt: item?.updated_at,
+          bookStatus: item?.book_status,
+          bookDepositPrice: item?.book_deposit_price,
+          bookDepositStatus: item?.book_deposit_status,
+          user: item?.user
+        }
+      })
+      setBooks(data)
       setLoading(false);
     } catch (error) {
       console.error("error", error);
@@ -94,10 +113,24 @@ function MyBook() {
     try {
       setLoading(true);
       const response: any = await userService.getUserMembership();
-      console.log("response club joined list: ", response);
 
       setClubListJoined(response.data);
       setLoading(false);
+    } catch (error) {
+      console.error("error", error);
+      // Handle error
+    }
+  }, []);
+
+  const shareBooksToClub = useCallback(async (data: any) => {
+    try {
+      setLoading(true);
+      const response: any = await userService.getUserShareClub(data);
+      console.log("response getUserShareClub: ", response);
+      setLoading(false);
+      handleCloseJoin()
+      fetchBookList()
+      notification.info({ message: response.data.result });
     } catch (error) {
       console.error("error", error);
       // Handle error
@@ -112,43 +145,77 @@ function MyBook() {
     fetchBookList();
   }, [fetchBookList]);
 
+  const [searchText, setSearchText] = useState("");
+  const [searchedColumn, setSearchedColumn] = useState("");
+  const searchInput = useRef<InputRef>(null);
+
+  type DataIndex = keyof BookCopy;
+  const handleSearch = (
+    selectedKeys: string[],
+    confirm: (param?: FilterConfirmProps) => void,
+    dataIndex: DataIndex,
+  ) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+
+  const handleReset = (clearFilters: () => void) => {
+    clearFilters();
+    setSearchText("");
+  };
+
   const columns: ColumnsType<any> = [
     {
       title: "Avatar",
-      dataIndex: ["book", "image"],
+      dataIndex: "bookImage",
       key: "avatar",
       render: (image: string) => <Avatar shape="square" size={98} src={image} />,
     },
     {
       title: "Name",
-      dataIndex: ["book", "name"],
-      key: "name",
+      dataIndex: "bookName",
+      key: "bookName",
+      ...getColumnSearchProps("bookName", searchInput,
+        searchText, setSearchText, searchedColumn, setSearchedColumn,
+        handleReset, handleSearch),
     },
     {
       title: "BookStatus",
-      dataIndex: "book_status",
-      key: "book_status",
+      dataIndex: "bookStatus",
+      key: "bookStatus",
+      render: (bookStatus: any) => {
+        
+        return (
+          <Tag color={statusColors[bookStatus]} key={status}>
+            {bookStatus}
+          </Tag>
+        );
+      },
     },
     {
       title: "Category",
-      dataIndex: ["book", "category", "name"],
+      dataIndex: "bookCategory",
       key: "category",
+      ...getColumnSearchProps("bookCategory", searchInput,
+        searchText, setSearchText, searchedColumn, setSearchedColumn,
+        handleReset, handleSearch),
     },
     {
       title: "Author",
-      dataIndex: ["book", "author", "name"],
+      dataIndex: "bookAuthor",
       key: "author",
+      ...getColumnSearchProps("bookAuthor", searchInput,
+        searchText, setSearchText, searchedColumn, setSearchedColumn,
+        handleReset, handleSearch),
     },
     {
       title: "Publisher",
-      dataIndex: ["book", "publisher", "name"],
+      dataIndex: "bookPublisher",
       key: "publisher",
-    },
-
-    {
-      title: "Stauts",
-      dataIndex: ["book_status"],
-      key: "book_status",
+      ...getColumnSearchProps("bookPublisher", searchInput,
+        searchText, setSearchText, searchedColumn, setSearchedColumn,
+        handleReset, handleSearch),
     },
     {
       title: "Action",
@@ -235,28 +302,26 @@ function MyBook() {
         dataSource={books}
         loading={loading}
       />
-      <DawerBook open={open} onClose={() => setOpen(false)} />
-      <Modal width={800} open={modalJoin} onCancel={handleCloseJoin} onOk={onFinish}>
+      <DawerBook open={open} onClose={() => setOpen(false)} fetchBookList={fetchBookList} />
+      <Modal title="Share to club" width={800} open={modalJoin} onCancel={handleCloseJoin} onOk={onFinish}>
         <Form {...layout} ref={formRef} name="control-ref" style={{ width: 800 }}>
           <Form.Item name="book_copy_ids" label="My books" rules={[{ required: true }]}>
             <Select
               mode="multiple"
               size='middle'
               placeholder="Please select"
-              // defaultValue={['a10', 'c12']}
               onChange={handleChange}
               style={{ width: '100%' }}
-            // options={books}
             >{
                 books.map((book, index) => {
-                  if (book.book_status !== 'sharing_club') {
+                  if (book.bookStatus !== 'sharing_club') {
                     return (
-                      <Option key={index} value={book.id} label={book.book.name}>
+                      <Option key={index} value={book.id} label={book.bookName}>
                         <div className="demo-option-label-item">
                           {/* <span role="img" aria-label="China">
                           🇨🇳
                         </span> */}
-                          {book.book.name}
+                          {book.bookName}
                         </div>
                       </Option>
                     )
@@ -272,10 +337,8 @@ function MyBook() {
             <Select
               size='middle'
               placeholder="Please select"
-              // defaultValue={['a10', 'c12']}
               onChange={handleChange}
               style={{ width: '100%' }}
-            // options={books}
             >{
                 clubListJoined.map((club, index) => (
                   <Option key={index} value={club?.id} label={club.book_club.name}>

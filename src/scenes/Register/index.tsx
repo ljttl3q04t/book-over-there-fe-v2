@@ -1,16 +1,30 @@
 import { LockOutlined, MailOutlined, PhoneOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Form, Input, notification, Typography } from "antd";
+import { Button, Form, Input, notification } from "antd";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import UserService from "@/services/user";
 import styled from "styled-components";
-const { Title } = Typography;
 const StyledRegisterForm = styled.div`
-  border-radius: 12px;
-  padding: 30px;
-  background: #fff;
-  width: 40%;
-  margin-top: 70px;
+  min-width: 600px;
+  color: rgba(0, 0, 0, 0.87);
+  transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-wrap: break-word;
+  background-color: rgb(255, 255, 255);
+  background-clip: border-box;
+  border: 0px solid rgba(0, 0, 0, 0.125);
+  border-radius: 0.75rem;
+  box-shadow: rgba(0, 0, 0, 0.1) 0rem 0.25rem 0.375rem -0.0625rem, rgba(0, 0, 0, 0.06) 0rem 0.125rem 0.25rem -0.0625rem;
+  overflow: visible;
+  justify-content: center;
+  align-items: center;
+  /* height: 60%; */
+  >.register-form{
+    padding: 20px;
+    width: 100%;
+  }
 `;
 const StyledActionGroup = styled.div`
   display: flex;
@@ -23,6 +37,32 @@ const StyledRegisterPage = styled.div`
   align-items: center;
   background-color: #f5f5f5;
   height: 100vh;
+`;
+const StyledRegisterAccessibility = styled.div`
+  margin: -24px 16px 8px;
+  padding: 16px;
+  text-align: center;
+  width: 90%;
+  height: 30%;
+  opacity: 1;
+  background: linear-gradient(195deg, rgb(73, 163, 241), rgb(26, 115, 232));
+  color: rgb(52, 71, 103);
+  border-radius: 0.75rem;
+  box-shadow: rgba(0, 0, 0, 0.14) 0rem 0.25rem 1.25rem 0rem, rgba(0, 187, 212, 0.4) 0rem 0.4375rem 0.625rem -0.3125rem;
+  margin-bottom: 70px;
+  > .title {
+    margin: 8px 0px 0px;
+    font-size: 1.5rem;
+    line-height: 1.375;
+    font-family: Roboto, Helvetica, Arial, sans-serif;
+    letter-spacing: 0.00735em;
+    opacity: 1;
+    text-transform: none;
+    vertical-align: unset;
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+    font-weight: 600;
+  }
 `;
 const Register = () => {
   const navigate = useNavigate();
@@ -55,9 +95,12 @@ const Register = () => {
   return (
     <StyledRegisterPage>
       <StyledRegisterForm>
+        <StyledRegisterAccessibility>
+          <h1 className="title"> Welcome to Book Over There!</h1>
+        </StyledRegisterAccessibility>
         <Form
           name="normal_login"
-          className="login-form"
+          className="register-form"
           layout="vertical"
           form={form}
           initialValues={{
@@ -65,9 +108,6 @@ const Register = () => {
           }}
           onFinish={onFinish}
         >
-          <Title level={2} style={{ textAlign: "center" }}>
-            Welcome to Book Over There
-          </Title>
           <Form.Item
             name="username"
             label="Username"

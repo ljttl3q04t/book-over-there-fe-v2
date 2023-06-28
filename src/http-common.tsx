@@ -1,5 +1,6 @@
 import { notification } from "antd";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export const axiosApi = axios.create({
   baseURL: import.meta.env.VITE_REACT_APP_API_URL,
@@ -13,6 +14,7 @@ axiosApi.interceptors.response.use(
     return response;
   },
   async (error: any) => {
+    const navigate = useNavigate();
     if (!error.response) {
       notification.error({
         message: error.message,
@@ -21,10 +23,10 @@ axiosApi.interceptors.response.use(
 
     if (error.response && error.response.status === 401) {
       removeAccessToken();
-      localStorage.clear()
+      localStorage.clear();
+      navigate("/login");
       return;
     }
-
     return Promise.reject(error);
   },
 );
@@ -49,7 +51,6 @@ const buildHeaders = (params?: any) => {
 
 export class ApiServiceAuthor {
   static async post(path: string, data: any) {
-    console.log("data: ",data);
     
     return axiosApi.post(path, data, buildHeaders());
   }

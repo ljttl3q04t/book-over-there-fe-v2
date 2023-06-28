@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
 export const getTokenExpiration = (token: string): Date | undefined => {
   try {
@@ -9,7 +9,7 @@ export const getTokenExpiration = (token: string): Date | undefined => {
     }
     return undefined;
   } catch (error) {
-    console.error('Error decoding token:', error);
+    console.error("Error decoding token:", error);
     return undefined;
   }
 };

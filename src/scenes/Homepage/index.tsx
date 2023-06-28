@@ -1,44 +1,28 @@
 /* eslint-disable react/react-in-jsx-scope */
 import { ProFormText, QueryFilter } from "@ant-design/pro-form";
 import { ThunkDispatch } from "@reduxjs/toolkit";
-import { Button, Carousel, Col, Row, Typography } from "antd";
+import { Button, Col, Row, Typography, MenuProps, Dropdown, Space } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import styled from "styled-components";
 import { Layout } from "antd";
-import { EyeFilled, PlusCircleFilled, HeartFilled } from "@ant-design/icons";
+import { HeartTwoTone, EyeTwoTone, PlusCircleTwoTone, MoreOutlined } from "@ant-design/icons";
 import CardBook from "../../component/CardBook";
 import { getListBook } from "../../store/bookStore";
-const { Content } = Layout;
+
+import "semantic-ui-css/semantic.min.css";
+import "react-multi-carousel/lib/styles.css";
+import Carousel from "react-multi-carousel";
+import { getDeviceType } from "@/helpers/fuctionHepler";
+import Section from "@/component/carousel/Section";
+import "./style.scss"
+import bookService from "@/services/book";
 
 const { Title } = Typography;
-const StyledBookList = styled.div`
-  border-radius: 12px;
-  padding: 30px;
-  background: #fff;
-  width: 100%;
-  margin-top: 70px;
-`;
-const StyledHeader = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-`;
-const StyledSectionCarousel = styled.section`
-  display: flex;
-  flex-direction: column;
-  padding-bottom: 50px;
-  > .carousel-title {
-    padding: 20px;
-  }
-  > .carousel-content {
-    padding-left: 20px;
-  }
-`;
+
 const calculateChunksSize = () => {
-  const screenWidth = window.innerWidth - 300; // Get the width of the screen
-  const itemWidth = 290; // Width of each carousel item
+  const screenWidth = window.innerWidth - 322; // Get the width of the screen
+  const itemWidth = 280; // Width of each carousel item
   const gutter = 16; // Optional gutter between items if any
 
   const availableWidth = screenWidth - gutter; // Adjust for gutter if needed
@@ -56,20 +40,36 @@ const Homepage = () => {
   });
   const [chunksSize, setChunksSize] = useState(calculateChunksSize());
 
-  const initFetch = useCallback(async () => {
-    setLoading(true);
-    dispatch(getListBook(option))
-      .then((response) => {
-        if (response.payload) {
-          const data = response.payload;
-          setBookList(data);
-        }
-      })
-      .finally(() => setLoading(false));
-  }, [dispatch, option]);
+  // const initFetch = useCallback(async () => {
+  //   setLoading(true);
+  //   dispatch(getListBook(option))
+  //     .then((response) => {
+  //       if (response.payload) {
+  //         const data = response.payload;
+  //         setBookList(data);
+  //         console.log('data: ',data);
+          
+  //       }
+  //     })
+  //     .finally(() => setLoading(false));
+  // }, [dispatch, option]);
+
+  const getListBookInit = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response: any = await bookService.getListBook(option.pageIndex, option.pageSize, '');
+      console.log("getListBookInit: ",response);
+      setBookList(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("error", error);
+      // Handle error
+    }
+  }, []);
 
   useEffect(() => {
-    initFetch();
+    // initFetch();
+    getListBookInit()
   }, [option]);
 
   useEffect(() => {
@@ -85,11 +85,19 @@ const Homepage = () => {
   }, []);
 
   const handleTableChange = (pagination: any) => {
+    console.log('pagination: ',pagination);
+    
     setOption({
       ...option,
       pageIndex: pagination.current,
       pageSize: pagination.pageSize,
     });
+    console.log(".................: ",{
+      ...option,
+      pageIndex: pagination.current,
+      pageSize: pagination.pageSize,
+    });
+    
   };
   const columns: ColumnsType<any> = [
     {
@@ -137,25 +145,82 @@ const Homepage = () => {
       key: "",
       dataIndex: "",
       fixed: "right",
+      // render: (_values: any) => {
+      //   return (
+      //     <>
+      //       <Button icon={<EyeFilled />} /* onClick={handleOpenJoin*/>View</Button>
+      //       <Button
+      //         style={{ margin: "0 5px" }}
+      //         type="primary"
+      //         icon={<PlusCircleFilled />} /* onClick={handleOpenJoin} */
+      //       >
+      //         Cart
+      //       </Button>
+      //       <Button type="primary" danger icon={<HeartFilled />} /* onClick={handleOpenJoin} */>
+      //         Wishlist
+      //       </Button>
+      //     </>
+      //   );
+      // },
       render: (_values: any) => {
+
         return (
-          <>
-            <Button icon={<EyeFilled />} /* onClick={handleOpenJoin*/>View</Button>
-            <Button
-              style={{ margin: "0 5px" }}
-              type="primary"
-              icon={<PlusCircleFilled />} /* onClick={handleOpenJoin} */
-            >
-              Cart
-            </Button>
-            <Button type="primary" danger icon={<HeartFilled />} /* onClick={handleOpenJoin} */>
-              Wishlist
-            </Button>
-          </>
+          <Dropdown menu={menuProps} trigger={['click']}>
+            <a onClick={(e) => {
+              e.preventDefault()
+              console.log("_values", _values)
+            }
+            }>
+              <Space>
+                <MoreOutlined />
+              </Space>
+            </a>
+          </Dropdown>
         );
       },
     },
   ];
+
+
+  const items: MenuProps['items'] = [
+    {
+      label: "View",
+      key: '0',
+      icon: <EyeTwoTone />,
+    },
+    {
+      label: "Cart",
+      key: '1',
+      icon: <PlusCircleTwoTone />,
+    },
+    {
+      label: 'Wishlist',
+      key: '2',
+      icon: <HeartTwoTone twoToneColor="#eb2f96"/>,
+    },
+    {
+      type: 'divider',
+    },
+  ];
+
+  const handleMenuClick: MenuProps['onClick'] = (e) => {
+    console.log('click', e);
+    if (e.key === '0') {
+      console.log("000000");
+
+    } else if (e.key === '1') {
+      console.log("11111111");
+
+    } else if (e.key === '2') {
+      console.log("click Delete");
+
+    }
+  };
+
+  const menuProps = {
+    items,
+    onClick: handleMenuClick,
+  };
 
   const books = [
     { title: "Book 1", description: "Description 1" },
@@ -175,134 +240,172 @@ const Homepage = () => {
     { title: "Book 15", description: "Description 15" },
   ];
 
-  const chunks = books.reduce((resultArray, item, index) => {
-    const chunkIndex = Math.floor(index / chunksSize);
-    if (!resultArray[chunkIndex]) {
-      resultArray[chunkIndex] = [];
+
+  const [deviceType, setDeviceType] = useState('');
+
+  useEffect(() => {
+    const handleResize = () => {
+      const newDeviceType = getDeviceType();
+      setDeviceType(newDeviceType);
+    };
+    handleResize(); // Initial check
+    // Attach event listener for window resize
+    window.addEventListener('resize', handleResize);
+    // Clean up event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  const responsive = {
+    desktop: {
+      breakpoint: { max: 3000, min: 1550 },
+      items: 5,
+      paritialVisibilityGutter: 60
+    },
+    desktop1: {
+      breakpoint: { max: 1550, min: 1024 },
+      items: 4,
+      paritialVisibilityGutter: 50
+    },
+    tablet: {
+      breakpoint: { max: 1024, min: 464 },
+      items: 2,
+      paritialVisibilityGutter: 40
+    },
+    mobile: {
+      breakpoint: { max: 464, min: 0 },
+      items: 1,
+      paritialVisibilityGutter: 30
     }
-    resultArray[chunkIndex].push(item);
-    return resultArray;
-  }, [] as any[]);
+  };
 
   return (
-    <Content style={{ margin: "24px 16px 0", overflow: "initial" }}>
-      <div>
-        {" "}
-        <StyledSectionCarousel>
-          <div className="carousel-title">
-            <Title level={2} style={{ margin: 0 }}>
-              Popular Books
-            </Title>
-          </div>
-          <div className="carousel-content">
-            {" "}
-            <Carousel autoplay>
-              {chunks.map((chunk, index) => (
-                <div key={index}>
-                  <Row gutter={[16, 16]}>
-                    {chunk.map((book: any, bookIndex: any) => (
-                      <Col key={bookIndex}>
-                        <CardBook
-                          height="350px"
-                          heightImg="260px"
-                          content={{
-                            title: book.title,
-                            description: book.description,
-                          }}
-                          router={`/book-detail/:id}`}
-                        />
-                      </Col>
-                    ))}
-                  </Row>
-                </div>
-              ))}
-            </Carousel>
-          </div>
-        </StyledSectionCarousel>
-        <StyledSectionCarousel>
-          <div className="carousel-title">
-            <Title level={2} style={{ margin: 0 }}>
-              Popular Club
-            </Title>
-          </div>
-          <div className="carousel-content">
-            {" "}
-            <Carousel autoplay>
-              {chunks.map((chunk, index) => (
-                <div key={index}>
-                  <Row gutter={[16, 16]}>
-                    {chunk.map((book: any, bookIndex: any) => (
-                      <Col key={bookIndex}>
-                        <CardBook
-                          height="350px"
-                          heightImg="260px"
-                          content={{
-                            title: book.title,
-                            description: book.description,
-                          }}
-                          router={`/book-detail/:id}`}
-                        />
-                      </Col>
-                    ))}
-                  </Row>
-                </div>
-              ))}
-            </Carousel>
-          </div>
-        </StyledSectionCarousel>
-      </div>
-      <StyledBookList>
-        <StyledHeader>
-          <div style={{ textAlign: "center" }}>
-            <Title level={2} style={{ margin: 0 }}>
-              Book List
-            </Title>
-          </div>
-        </StyledHeader>
-        <QueryFilter
-          style={{ padding: 10 }}
-          layout="vertical"
-          resetText={"Reset"}
-          searchText={"Search"}
-          className="home-page-search_book"
-          onFinish={(data) => {
-            setOption({
-              pageIndex: 1,
-              pageSize: 10,
-              ...data,
-            });
+    <>
 
-            return Promise.resolve(true);
-          }}
-          onReset={() => {
-            setOption({
-              pageIndex: 1,
-              pageSize: 10,
-            });
-          }}
+      <div className="carousel-title">
+        <Title level={2} style={{ margin: 0 }}>
+          Popular Books
+        </Title>
+      </div>
+      <Section>
+        <Carousel
+          swipeable={true}
+          draggable={true}
+          showDots={false}
+          responsive={responsive}
+          ssr={true} // means to render carousel on server-side.
+          infinite={true}
+          autoPlay={deviceType !== "mobile" ? true : false}
+          // autoPlay={false}
+          autoPlaySpeed={3000}
+          keyBoardControl={true}
+          // customTransition="linear 1"
+          transitionDuration={300}
+          containerClass="carousel-container"
+          removeArrowOnDeviceType={["tablet", "mobile"]}
+          deviceType={deviceType}
+          dotListClass="custom-dot-list-style"
+          itemClass="image-item"
         >
-          <ProFormText
-            labelAlign="right"
-            style={{ display: "flex" }}
-            name="filter"
-            label={"Search"}
-            placeholder={"Input name to search"}
-          />
-        </QueryFilter>
-        <Table
-          loading={loading}
-          scroll={{ x: "max-content" }}
-          columns={columns}
-          dataSource={bookList?.results}
-          onChange={handleTableChange}
-          pagination={{
-            total: bookList.count,
-            pageSize: option.pageSize,
-            current: option.pageIndex,
-          }}
+          {books.map((book, index) => (
+            <CardBook
+              key={index}
+              height="400px"
+              content={{
+                title: deviceType,
+                description: book.description,
+              }}
+              router={`/book-detail/:id}`}
+            />
+          ))}
+        </Carousel>
+      </Section>
+
+      <div className="carousel-title">
+        <Title level={2} style={{ margin: 0 }}>
+          Popular Club
+        </Title>
+      </div>
+      <Section>
+        <Carousel
+          swipeable={true}
+          draggable={true}
+          showDots={false}
+          responsive={responsive}
+          ssr={true} // means to render carousel on server-side.
+          infinite={true}
+          autoPlay={deviceType !== "mobile" ? true : false}
+          // autoPlay={false}
+          autoPlaySpeed={3000}
+          keyBoardControl={true}
+          // customTransition="linear 1"
+          transitionDuration={300}
+          containerClass="carousel-container"
+          removeArrowOnDeviceType={["tablet", "mobile"]}
+          deviceType={deviceType}
+          dotListClass="custom-dot-list-style"
+          itemClass="image-item"
+        >
+          {books.map((book, index) => (
+            <CardBook
+              key={index}
+              height="400px"
+              content={{
+                title: deviceType,
+                description: book.description,
+              }}
+              router={`/book-detail/:id}`}
+            />
+          ))}
+        </Carousel>
+      </Section>
+
+      <QueryFilter
+        style={{ padding: 10 }}
+        layout="vertical"
+        resetText={"Reset"}
+        searchText={"Search"}
+        className="home-page-search_book"
+        onFinish={(data) => {
+          
+          setOption({
+            pageIndex: 1,
+            pageSize: 10,
+            ...data,
+          });
+
+          return Promise.resolve(true);
+        }}
+        onReset={() => {
+          setOption({
+            pageIndex: 1,
+            pageSize: 10,
+          });
+        }}
+      >
+        <ProFormText
+          labelAlign="right"
+          style={{ display: "flex" }}
+          name="filter"
+          label={"Search"}
+          placeholder={"Input name to search"}
         />
-      </StyledBookList>
-    </Content>
+      </QueryFilter>
+      <Table
+        loading={loading}
+        scroll={{ x: "max-content" }}
+        columns={columns}
+        dataSource={bookList?.results}
+        onChange={handleTableChange}
+        pagination={{
+          total: bookList.count,
+          pageSize: option.pageSize,
+          current: option.pageIndex,
+        }}
+      />
+
+    </>
   );
 };
 

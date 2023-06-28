@@ -12,6 +12,10 @@ const getUserMembership = () => {
   return ApiServiceAuthor.get("/user/membership");
 };
 
+const getUserShareClub = (data: any) => {
+  return ApiServiceAuthor.post("/user/book/share-club",data);
+};
+
 const updateUser = (data: any) => {
   const formData = new FormData();
   formData.append('email', data.email);
@@ -27,6 +31,7 @@ const userService = {
   registerUser,
   getUser,
   updateUser,
-  getUserMembership
+  getUserMembership,
+  getUserShareClub
 };
 export default userService;

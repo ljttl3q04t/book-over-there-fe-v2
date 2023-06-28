@@ -4,9 +4,9 @@ import { Link, useLocation, matchPath } from "react-router-dom";
 import styled from "styled-components";
 
 const StyledBreadCrumb = styled.div`
-  padding: 30px 30px 10px 30px;
+  padding: 10px 30px 10px;
   background: transparent;
-  > .page-title{
+  > .page-title {
     padding: 10px 0;
     font-weight: 700;
     font-size: 25px;
@@ -31,7 +31,7 @@ const breadcrumbItems = [
   { path: "/book-wishlist", breadcrumbName: "Book Wishlist" },
 ];
 
-const BreadcrumbNav = () => {
+const BreadcrumbNav = ({ displayPageName }: any) => {
   const location = useLocation();
   const pathSegments = location.pathname.split("/");
   const breadcrumbItem = breadcrumbItems.find((item) => {
@@ -43,7 +43,7 @@ const BreadcrumbNav = () => {
   return (
     <StyledBreadCrumb>
       <Breadcrumb>
-        {pathSegments.map((segment, index) => {
+        {!displayPageName && pathSegments.map((segment, index) => {
           const path = `/${pathSegments.slice(1, index + 1).join("/")}`;
           const breadcrumbItem = breadcrumbItems.find((item) => {
             const match = matchPath(path, item.path); // Update this line
@@ -61,7 +61,7 @@ const BreadcrumbNav = () => {
           }
         })}
       </Breadcrumb>
-      <h1 className="page-title">{pageName}</h1> {/* Display the last segment as the page name */}
+      {displayPageName && <h1 className="page-title">{pageName}</h1>} {/* Display the last segment as the page name */}
     </StyledBreadCrumb>
   );
 };

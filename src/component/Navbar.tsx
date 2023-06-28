@@ -1,12 +1,28 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BellOutlined, ProfileOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import { Badge, Dropdown, Image, Modal, Space } from "antd";
+import { Badge, Button, Dropdown, Image, Modal, Space } from "antd";
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import styled from "styled-components";
 import { UserContext } from "@/context/UserContext";
+import BreadcrumbNav from "@/component/BreadcrumbNav";
 
+const StyledNavBar = styled.div`
+  padding: 10px 20px 10px 0;
+  margin-bottom: 0px;
+  background: rgb(255, 255, 255);
+  margin: 1rem 1rem 1rem 0;
+  border-radius: 0.75rem;
+  /* border-bottom: 2px; */
+  box-shadow: rgba(0, 0, 0, 0.05) 0rem 1.25rem 1.6875rem 0rem;
+  display: flex;
+  justify-content: space-between;
+`;
+const StyledActionLog = styled.div`
+  display: flex;
+  gap: 8px;
+`;
 interface NavbarProps {
   isSidebarOpen: boolean;
   setIsSidebarOpen: (value: boolean) => void;
@@ -59,7 +75,7 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
   ];
 
   return (
-    <div style={{ padding: "10px 40px 10px 400px", marginBottom: "0", background: "#fff" }}>
+    <StyledNavBar>
       {/* <Search
                 placeholder="Enter book name to search...."
                 allowClear
@@ -67,6 +83,7 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
                 size="large"
             onSearch={onSearch}
             /> */}
+      <BreadcrumbNav displayPageName={false} />
       <div style={{ float: "right", display: "flex", alignItems: "center" }}>
         {access !== null ? (
           <>
@@ -98,8 +115,9 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
             <Modal open={changePW} onCancel={() => setChangePW(false)}></Modal>
           </>
         ) : (
-          <>
-            <a
+          <StyledActionLog>
+            <Button
+              type="primary"
               onClick={(e) => {
                 e.preventDefault();
                 navigate("/login");
@@ -114,9 +132,8 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
               >
                 Login
               </Space>
-            </a>
-            <p>/</p>
-            <a
+            </Button>
+            <Button
               onClick={(e) => {
                 e.preventDefault();
                 navigate("/register");
@@ -131,11 +148,11 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
               >
                 Register
               </Space>
-            </a>
-          </>
+            </Button>
+          </StyledActionLog>
         )}
       </div>
-    </div>
+    </StyledNavBar>
   );
 };
 
