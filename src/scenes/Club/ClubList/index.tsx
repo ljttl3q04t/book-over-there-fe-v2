@@ -70,11 +70,11 @@ const ClubList = () => {
     console.log(user, "useruseruser");
 
     form.setFieldsValue({
-      full_name: user.full_name,
-      phone_number: user.phone_number,
-      email: user.email,
-      address: user.address,
-      birth_date: user.birth_date ? dayjs(user.birth_date) : "",
+      full_name: user?.full_name,
+      phone_number: user?.phone_number,
+      email: user?.email,
+      address: user?.address,
+      birth_date: user?.birth_date ? dayjs(user?.birth_date) : "",
     });
     setModalJoin(true);
   };

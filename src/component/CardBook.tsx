@@ -13,9 +13,9 @@ const { Meta } = Card;
 const { confirm } = Modal;
 
 function CardBook({
-  width = 270,
+  width = 290,
   height = 200,
-  srcImg = "https://symbols.vn/wp-content/uploads/2021/12/Cap-nhat-them-bo-suu-tap-Anh-nen-dien-thoai-One-Piece-an-tuong.jpg",
+  srcImg = "https://cdn0.fahasa.com/media/catalog/product/b/_/b_a-1---g_u-tr_c-l_n-v_-r_ng-t_-hon---copy.jpg",
   content,
   onEdit,
   onDelete,
@@ -41,11 +41,21 @@ function CardBook({
       <Card
         className="card-book"
         hoverable
-        style={{ width: width, height: height, minWidth: "200px" }}
-        cover={<img alt="example" src={srcImg} style={{ height: "100%" }} />}
+        style={{ width: width, height: height }}
+        cover={
+          <img
+            alt="example"
+            src={srcImg}
+            style={{
+              width: width,
+              height: 260,
+              objectFit: "cover",
+            }}
+          />
+        }
       >
         <Meta title={content && content.title} description={content && content.description} />
-        <div className="overlay" style={{ width: width, height: height, minWidth: "201px" }}></div>
+        {/* <div className="overlay" style={{ maxWidth: width, height: height }}></div> */}
         {permissionAdmin ? (
           <>
             <Row>
@@ -57,21 +67,27 @@ function CardBook({
           </>
         ) : (
           <Row>
-            <Button style={{ marginRight: "10px" }} shape="circle" icon={<ShoppingCartOutlined />} size="small" />
-
             <Button
               style={{ marginRight: "10px" }}
               shape="circle"
+              icon={<ShoppingCartOutlined />}
+            />
+
+            <Button
+              type="primary"
+              style={{ marginRight: "10px" }}
+              shape="circle"
               icon={<InfoCircleOutlined />}
-              size="small"
               onClick={() => navigate(`${router}`)}
             />
 
             <Button
+              type="primary"
+              danger
+              className="carousel-btn"
               shape="circle"
               icon={isLike ? <LikeFilled /> : <LikeOutlined />}
-              style={{ color: isLike && "#1890ff" }}
-              size="small"
+              style={{ color: isLike && "gray" }}
             />
           </Row>
         )}
