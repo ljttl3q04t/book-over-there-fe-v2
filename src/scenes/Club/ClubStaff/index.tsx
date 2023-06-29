@@ -83,6 +83,7 @@ interface DataTypeBooks {
   publisherName: string;
   image: string;
   totalCopyCount: number;
+  memberName: string;
 }
 type DataIndex = keyof DataType;
 type DataIndexBooks = keyof DataTypeBooks;
@@ -98,7 +99,7 @@ const ClubStaff = () => {
   const [clubMemberTableSource, setClubMemberTableSource] = useState<DataType[]>([]);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
-  const [modalItem, setModalItem] = useState<DataType>();
+  const modalItem = useRef<DataType | null>();
   const searchInput = useRef<InputRef>(null);
   const bookClubName = useRef<string>("");
   const [activeModal, setActiveModal] = useState("");
@@ -210,10 +211,11 @@ const ClubStaff = () => {
 
   const handleCloseModal = () => {
     form.resetFields();
+    modalItem.current = null;
     setActiveModal("");
   };
   const handleOpenOrderModal = (item: any) => {
-    Promise.all([setModalItem(item),fetchClubBookList(true), setActiveModal(MODAL_CODE.ORDER)])
+    Promise.all([(modalItem.current = item), fetchClubBookList(true), setActiveModal(MODAL_CODE.ORDER)])
       .then(() => {
         form.setFieldsValue({
           full_name: item?.memberName,
@@ -227,13 +229,13 @@ const ClubStaff = () => {
   };
 
   const handleOpenDepositModal = (item: any) => {
-    setModalItem(item);
+    modalItem.current = item;
     setActiveModal(MODAL_CODE.DEPOSIT);
   };
 
   const handleOpenWithdrawModal = (item: any) => {
     setActiveModal(MODAL_CODE.WITHDRAW);
-    setModalItem(item);
+    modalItem.current = item;
   };
   const handleOpenViewAllModal = () => {
     fetchClubBookList();
@@ -253,6 +255,7 @@ const ClubStaff = () => {
               categoryName: item.book_copy?.book?.category?.name,
               publisherName: item.book_copy?.book?.publisher?.name,
               image: item.book_copy?.book?.image,
+              memberName: item.membership.member.full_name,
               totalCopyCount: 0,
             };
             return book;
@@ -267,10 +270,10 @@ const ClubStaff = () => {
 
   const handleDepositBooks = useCallback((item: DataType) => {}, []);
   const handleWithdrawBooks = useCallback((item: DataType) => {}, []);
-  const handleOrderBooks = useCallback(() => {
+  const handleOrderBooks = () => {
     const list_books_id = form.getFieldValue("select_books").map((item: any) => item.split("-")[0]);
     const formData: ClubMemberOrderCreateForm = {
-      membership_id: modalItem?.membershipId,
+      membership_id: modalItem.current?.membershipId,
       member_book_copy_ids: list_books_id && list_books_id,
       due_date: form.getFieldValue("due_date"),
       note: form.getFieldValue("note"),
@@ -281,7 +284,7 @@ const ClubStaff = () => {
           message: "Order create successfully!",
           type: "success",
         });
-        handleCloseModal()
+        handleCloseModal();
       })
       .catch((error) => {
         notification.error({
@@ -290,7 +293,7 @@ const ClubStaff = () => {
         });
       })
       .finally(() => {});
-  }, []);
+  };
   const displayAction = (item: DataType) => {
     if (item.memberStatus === MEMBER_STATUS.PENDING) {
       return (
@@ -479,7 +482,11 @@ const ClubStaff = () => {
               >
                 <Select placeholder="Find books..." mode="multiple" showArrow style={{ width: "100%" }}>
                   {clubBookList.map((item: DataTypeBooks) => {
-                    return <Select.Option value={item.id + "-" + item.bookName}>{item.bookName}</Select.Option>;
+                    return (
+                      <Select.Option value={item.id + "-" + item.bookName}>{`${
+                        item.memberName + " - " + item.bookName
+                      }`}</Select.Option>
+                    );
                   })}
                 </Select>
               </Form.Item>
@@ -618,7 +625,7 @@ const ClubStaff = () => {
           width={modalContent[activeModal].width}
           {...layout}
           title={modalContent[activeModal].title}
-          open={activeModal !==""}
+          open={activeModal !== ""}
           onCancel={handleCloseModal}
           onOk={modalContent[activeModal].onOk}
           destroyOnClose={true}

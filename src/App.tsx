@@ -54,6 +54,7 @@ const App = () => {
             <Route path="/clublist" Component={ClubList} />
             {token ? (
               <>
+                {user?.is_staff && <Route path="/clubstaff/member-order" Component={ClubStaff} />}
                 {user?.is_staff && <Route path="/clubstaff" Component={ClubStaff} />}
                 <Route path="/clubbook" Component={ClubBook} />
                 <Route path="/bookclub" Component={ClubBook} />
