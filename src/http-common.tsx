@@ -51,7 +51,6 @@ const buildHeaders = (params?: any) => {
 
 export class ApiServiceAuthor {
   static async post(path: string, data: any) {
-    
     return axiosApi.post(path, data, buildHeaders());
   }
 

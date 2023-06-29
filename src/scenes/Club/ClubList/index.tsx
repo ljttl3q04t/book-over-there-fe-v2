@@ -1,5 +1,6 @@
 /* eslint-disable no-extra-boolean-cast */
 import { Button, DatePicker, Form, Input, Modal, notification } from "antd";
+import { ExportOutlined } from "@ant-design/icons";
 import type { RangePickerProps } from "antd/es/date-picker";
 import Table, { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
@@ -21,7 +22,7 @@ const StyledBookList = styled.div`
   padding: 30px;
   background: #fff;
   width: 100%;
-  margin-top: 70px;
+  margin-top: 30px;
 `;
 const StyledModalContent = styled.div`
   padding: 30px;
@@ -163,7 +164,12 @@ const ClubList = () => {
       render: (_values: any) => {
         return (
           <>
-            <Button type="primary" disabled={disableJoinedClubBtn(_values)} onClick={() => handleOpenJoin(_values)}>
+            <Button
+              type="primary"
+              icon={<ExportOutlined />}
+              disabled={disableJoinedClubBtn(_values)}
+              onClick={() => handleOpenJoin(_values)}
+            >
               Join Club
             </Button>
           </>

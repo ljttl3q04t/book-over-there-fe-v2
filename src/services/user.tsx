@@ -13,17 +13,17 @@ const getUserMembership = () => {
 };
 
 const getUserShareClub = (data: any) => {
-  return ApiServiceAuthor.post("/user/book/share-club",data);
+  return ApiServiceAuthor.post("/user/book/share-club", data);
 };
 
 const updateUser = (data: any) => {
   const formData = new FormData();
-  formData.append('email', data.email);
-  formData.append('phone_number', data.phone_number);
-  formData.append('address', data.address);
-  formData.append('full_name', data.full_name);
-  formData.append('birth_date', data.birth_date);
-  formData.append('avatar', data.avatar);
+  formData.append("email", data.email);
+  formData.append("phone_number", data.phone_number);
+  formData.append("address", data.address);
+  formData.append("full_name", data.full_name);
+  formData.append("birth_date", data.birth_date);
+  formData.append("avatar", data.avatar);
   return ApiServiceAuthor.put("/user/info/update", formData);
 };
 
@@ -32,6 +32,6 @@ const userService = {
   getUser,
   updateUser,
   getUserMembership,
-  getUserShareClub
+  getUserShareClub,
 };
 export default userService;

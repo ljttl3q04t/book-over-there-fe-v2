@@ -47,6 +47,7 @@ const Personal = () => {
       const newFileList = fileList.slice();
       newFileList.splice(index, 1);
       setFileList(newFileList);
+      setFileListPreview([])
     },
     beforeUpload: (file) => {
       setFileList([...fileList, file]);
@@ -127,7 +128,6 @@ const Personal = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        // marginTop: "70px",
       }}
     >
       <div

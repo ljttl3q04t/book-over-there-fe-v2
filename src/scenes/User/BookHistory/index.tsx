@@ -10,7 +10,7 @@ const StyledMyBookContainer = styled.div`
   padding: 30px;
   background: #fff;
   width: 100%;
-  margin-top: 70px;
+  margin-top: 30px;
   box-shadow: 0 20px 27px rgb(0 0 0/5%);
   > .table-header {
     display: flex;
@@ -22,7 +22,6 @@ const StyledMyBookContainer = styled.div`
 const { Option } = Select;
 
 const BookHistory = () => {
-
   const columns = [
     {
       title: "Avatar",
@@ -76,8 +75,8 @@ const BookHistory = () => {
     fetchBookList();
   }, [fetchBookList]);
 
-  return(
-  <StyledMyBookContainer>
+  return (
+    <StyledMyBookContainer>
       <div className="table-header">
         <Select defaultValue={"All"} style={{ width: 120 }}>
           <Option value="All">ALL</Option>

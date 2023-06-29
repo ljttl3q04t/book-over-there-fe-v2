@@ -15,10 +15,26 @@ import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { UserContext } from "@/context/UserContext";
 import { getAccessToken } from "../http-common";
-
+import styled from "styled-components";
 const { Sider } = Layout;
 const { Title } = Typography;
-
+const StyledSidebarDivider = styled.hr`
+  flex-shrink: 0;
+  border-top: 0px solid rgba(0, 0, 0, 0.08);
+  border-right: 0px solid rgba(0, 0, 0, 0.08);
+  border-left: 0px solid rgba(0, 0, 0, 0.08);
+  height: 0.0625rem;
+  margin: 1rem 0px;
+  border-bottom: none;
+  opacity: 0.25;
+  background-color: transparent;
+  background-image: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0),
+    rgb(255, 255, 255),
+    rgba(255, 255, 255, 0)
+  ) !important;
+`;
 interface SidebarProps {
   drawerWidth: string;
   isSidebarOpen: boolean;
@@ -103,6 +119,7 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSide
       <Title level={3} style={{ textAlign: "center", color: "#fff", marginTop: "30px" }}>
         Book Over There
       </Title>
+      <StyledSidebarDivider />
       <Menu
         style={{ marginTop: "30px" }}
         theme="dark"

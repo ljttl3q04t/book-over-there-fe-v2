@@ -21,7 +21,7 @@ const StyledRegisterForm = styled.div`
   justify-content: center;
   align-items: center;
   /* height: 60%; */
-  >.register-form{
+  > .register-form {
     padding: 20px;
     width: 100%;
   }

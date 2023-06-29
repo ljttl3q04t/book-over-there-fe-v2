@@ -19,7 +19,7 @@ const StyledMyBookContainer = styled.div`
   padding: 30px;
   background: #fff;
   width: 100%;
-  margin-top: 70px;
+  margin-top: 30px;
   box-shadow: 0 20px 27px rgb(0 0 0/5%);
   > .table-header {
     display: flex;
@@ -58,12 +58,12 @@ function MyBook() {
   const [bookEdit, setBookEdit] = useState<EditBook | null>(null);
   const [title, setTitle] = useState<any>("Add Book");
 
-  const handleCloseJoin = () => {
+  const handleCloseModalShareBook = () => {
     formRef.current?.resetFields();
     setModalJoin(false);
   };
 
-  const handleOpenJoin = (_item: any) => {
+  const handleOpenShareBook = (_item: any) => {
     // setClubId(_item.id);
     setModalJoin(true);
   };
@@ -90,6 +90,7 @@ function MyBook() {
       const response: BookCopy[] = await bookService.getMyBookList();
       const data = response.map((item: any, index: any) => {
         return {
+          key: index+1,
           id: item.id,
           bookName: item?.book?.name,
           bookCategory: item?.book?.category?.name,
@@ -131,12 +132,13 @@ function MyBook() {
       const response: any = await userService.getUserShareClub(data);
       console.log("response getUserShareClub: ", response);
       setLoading(false);
-      handleCloseJoin()
+      handleCloseModalShareBook()
       fetchBookList()
       notification.info({ message: response.data.result });
     } catch (error) {
       console.error("error", error);
       notification.error({ message: "System error" });
+      setLoading(false);
       // Handle error
     }
   }, []);
@@ -170,6 +172,12 @@ function MyBook() {
   };
 
   const columns: ColumnsType<any> = [
+    {
+      title: "Row No",
+      dataIndex: "key",
+      key: "key",
+      // render: (image: string) => <Avatar shape="square" size={98} src={image} />,
+    },
     {
       title: "Avatar",
       dataIndex: "bookImage",
@@ -269,7 +277,7 @@ function MyBook() {
     console.log('click', e);
     if (e.key === '0') {
       console.log("000000");
-      handleOpenJoin(null)
+      handleOpenShareBook(null)
 
     } else if (e.key === '1') {
       console.log("11111111");
@@ -306,7 +314,7 @@ function MyBook() {
         }}>
           Add Book
         </Button>
-        <Button type="primary" onClick={() => handleOpenJoin(null)}>
+        <Button type="primary" onClick={() => handleOpenShareBook(null)}>
           Share my book
         </Button>
       </div>
@@ -318,7 +326,7 @@ function MyBook() {
         loading={loading}
       />
       <DawerBook open={open} onClose={() => setOpen(false)} fetchBookList={fetchBookList} bookEdit={bookEdit} title={title} />
-      <Modal title="Share to club" width={800} open={modalJoin} onCancel={handleCloseJoin} onOk={onFinish}>
+      <Modal title="Share to club" width={800} open={modalJoin} onCancel={handleCloseModalShareBook} onOk={onFinish}>
         <Form {...layout} ref={formRef} name="control-ref" style={{ width: 800 }}>
           <Form.Item name="book_copy_ids" label="My books" rules={[{ required: true }]}>
             <Select

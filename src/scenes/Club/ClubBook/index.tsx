@@ -1,12 +1,13 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import Table, { ColumnsType } from "antd/es/table";
 import styled from "styled-components";
 import ClubService from "@/services/club";
-import { Avatar, Button, DatePicker, Form, Input, Modal } from "antd";
+import { Avatar, Button, DatePicker, Form, Input, InputRef, Modal } from "antd";
 import { PlusCircleFilled } from "@ant-design/icons";
 import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
-import { RangePickerProps } from "antd/es/date-picker";
-import dayjs from "dayjs";
+
+import { getColumnSearchProps } from "@/helpers/CommonTable";
+import { FilterConfirmProps } from "antd/es/table/interface";
 
 const { RangePicker } = DatePicker;
 
@@ -20,7 +21,7 @@ const StyledClubBookList = styled.div`
   padding: 30px;
   background: #fff;
   width: 100%;
-  margin-top: 70px;
+  margin-top: 30px;
 `;
 const StyledModalContent = styled.div`
   padding: 30px;
@@ -35,7 +36,7 @@ interface DataType {
   club: string;
   totalCopyCount: number;
 }
-
+type DataIndex = keyof DataType;
 const { TextArea } = Input;
 
 const ClubBook = () => {
@@ -47,9 +48,23 @@ const ClubBook = () => {
     pageIndex: 1,
     pageSize: 10,
   });
+  const [searchText, setSearchText] = useState("");
+  const [searchedColumn, setSearchedColumn] = useState("");
+  const searchInput = useRef<InputRef>(null);
   const dateFormatList = ["DD/MM/YYYY"];
-  const disabledDate: RangePickerProps["disabledDate"] = (current) => {
-    return current && current > dayjs().endOf("day");
+  const handleSearch = (
+    selectedKeys: string[],
+    confirm: (param?: FilterConfirmProps) => void,
+    dataIndex: DataIndex,
+  ) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+
+  const handleReset = (clearFilters: () => void) => {
+    clearFilters();
+    setSearchText("");
   };
   const handleTableChange = (pagination: any) => {
     setOption({
@@ -77,7 +92,6 @@ const ClubBook = () => {
             return book;
           });
           setClubBookList(data);
-          console.log(response);
         }
       })
       .finally(() => {
@@ -110,6 +124,16 @@ const ClubBook = () => {
       title: "Name",
       dataIndex: "bookName",
       key: "bookName",
+      ...getColumnSearchProps(
+        "bookName",
+        searchInput,
+        searchText,
+        setSearchText,
+        searchedColumn,
+        setSearchedColumn,
+        handleReset,
+        handleSearch,
+      ),
     },
     {
       title: "Category",
@@ -142,15 +166,15 @@ const ClubBook = () => {
       dataIndex: "totalCopyCount",
       key: "totalCopyCount",
     },
-    {
-      title: "Action",
-      key: "action",
-      render: (_values: DataType) => (
-        <Button icon={<PlusCircleFilled />} type="primary" onClick={() => handleOpenOrder(_values)}>
-          Order
-        </Button>
-      ),
-    },
+    // {
+    //   title: "Action",
+    //   key: "action",
+    //   render: (_values: DataType) => (
+    //     <Button icon={<PlusCircleFilled />} type="primary" onClick={() => handleOpenOrder(_values)}>
+    //       Order
+    //     </Button>
+    //   ),
+    // },
   ];
   return (
     <StyledClubBookList>

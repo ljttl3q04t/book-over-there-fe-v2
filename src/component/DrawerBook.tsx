@@ -83,11 +83,9 @@ function DawerBook({ open, onSubmit, onClose, fetchBookList, bookEdit, title }: 
       const newFileList = fileList.slice();
       newFileList.splice(index, 1);
       setFileList(newFileList);
+      setFileListPreview([])
     },
     beforeUpload: (file) => {
-      console.log("file: ", file);
-
-      console.log("url: ", URL.createObjectURL(file));
       setFileListPreview([{
         uid: '-xxx',
         percent: 50,

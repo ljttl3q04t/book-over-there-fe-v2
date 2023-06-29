@@ -20,10 +20,14 @@ const getClubMemberList = () => {
 const updateMemberClub = (data: UpdateMemberClubForm) => {
   return ApiServiceAuthor.post("/club/member/update", data);
 };
+const getClubStaffBookList = () => {
+  return ApiServiceAuthor.get(`/club/staff/book/list?page=1&page_size=10000`);
+};
 export default {
   getListClub,
   joinCLub,
   getClubBookList,
   getClubMemberList,
-  updateMemberClub
+  updateMemberClub,
+  getClubStaffBookList
 };
