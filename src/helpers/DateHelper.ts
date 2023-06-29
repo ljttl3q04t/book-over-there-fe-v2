@@ -8,6 +8,10 @@ export const dateFormatList = ["DD/MM/YYYY"];
  * @param current - The current date being evaluated.
  * @returns a boolean value.
  */
-export const disabledDate: RangePickerProps["disabledDate"] = (current) => {
+export const disabledDate: RangePickerProps["disabledDate"] = (current: any) => {
   return current && current > dayjs().endOf("day");
+};
+
+export const disabledDateBefore: RangePickerProps["disabledDate"] = (current: any) => {
+  return current && current < dayjs().endOf("day");
 };

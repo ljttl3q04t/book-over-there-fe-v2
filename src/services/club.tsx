@@ -3,6 +3,12 @@ export interface UpdateMemberClubForm {
   membership_id: number;
   member_status: string;
 }
+export interface ClubMemberOrderCreateForm {
+  membership_id: number | undefined;
+  member_book_copy_ids: number[];
+  due_date:string;
+  note:string;
+}
 const getListClub = () => {
   return localStorage.getItem("access_token") ? ApiServiceAuthor.get(`/club/list`) : axiosApi.get(`/club/list`);
 };
@@ -20,8 +26,11 @@ const getClubMemberList = () => {
 const updateMemberClub = (data: UpdateMemberClubForm) => {
   return ApiServiceAuthor.post("/club/member/update", data);
 };
-const getClubStaffBookList = () => {
-  return ApiServiceAuthor.get(`/club/staff/book/list?page=1&page_size=10000`);
+const getClubStaffBookList = (searchText = "") => {
+  return ApiServiceAuthor.get(`/club/staff/book/list?search=${searchText}&page=1&page_size=10000`);
+};
+const clubMemberOrderCreate = (data: ClubMemberOrderCreateForm) => {
+  return ApiServiceAuthor.post("/club/member/order/create", data);
 };
 export default {
   getListClub,
@@ -29,5 +38,6 @@ export default {
   getClubBookList,
   getClubMemberList,
   updateMemberClub,
-  getClubStaffBookList
+  getClubStaffBookList,
+  clubMemberOrderCreate
 };

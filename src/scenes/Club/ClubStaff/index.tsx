@@ -3,15 +3,16 @@ import Table, { ColumnType, ColumnsType } from "antd/es/table";
 import { IssuesCloseOutlined, PlusCircleFilled, UploadOutlined, DownloadOutlined } from "@ant-design/icons";
 
 import styled from "styled-components";
-import ClubService, { UpdateMemberClubForm } from "@/services/club";
+import ClubService, { UpdateMemberClubForm, ClubMemberOrderCreateForm } from "@/services/club";
 
-import { Button, Form, Input, InputRef, Modal, Space, Tag, notification, DatePicker, Select } from "antd";
+import { Button, Form, Input, InputRef, Modal, Space, Tag, notification, DatePicker, Select, Avatar } from "antd";
 import dayjs from "dayjs";
 import { FilterConfirmProps } from "antd/es/table/interface";
 import { getColumnSearchProps } from "@/helpers/CommonTable";
 import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
-import { disabledDate, dateFormatList } from "@/helpers/DateHelper";
-import type { CustomTagProps } from "rc-select/lib/BaseSelect";
+import { disabledDateBefore, dateFormatList } from "@/helpers/DateHelper";
+import { Item } from "semantic-ui-react";
+const { Option } = Select;
 
 const StyledModalContent = styled.div`
   padding: 30px;
@@ -32,7 +33,7 @@ const StyledClubStaffList = styled.div`
     }
     a {
       font-size: 18px;
-      margin-top: 5px;
+      margin-top: 2px;
     }
   }
 `;
@@ -56,7 +57,7 @@ interface ModalContent {
     title: any;
     onOk: (item: DataType) => void;
     content: JSX.Element;
-    width:string | number;
+    width: string | number;
   };
 }
 interface DataType {
@@ -73,8 +74,19 @@ interface DataType {
   isStaff: boolean;
   membershipId: number;
 }
-
+interface DataTypeBooks {
+  id: number;
+  no: number;
+  bookName: string;
+  categoryName: string;
+  authorName: string;
+  publisherName: string;
+  image: string;
+  totalCopyCount: number;
+}
 type DataIndex = keyof DataType;
+type DataIndexBooks = keyof DataTypeBooks;
+
 const layout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 16 },
@@ -83,7 +95,6 @@ const { TextArea } = Input;
 
 const ClubStaff = () => {
   const [loading, setLoading] = useState(false);
-  const [clubMemberList, setClubMemberList] = useState([]);
   const [clubMemberTableSource, setClubMemberTableSource] = useState<DataType[]>([]);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
@@ -91,15 +102,35 @@ const ClubStaff = () => {
   const searchInput = useRef<InputRef>(null);
   const bookClubName = useRef<string>("");
   const [activeModal, setActiveModal] = useState("");
+  const [clubBookList, setClubBookList] = useState([]);
   const [form] = Form.useForm();
-  const options = [{ value: "gold" }, { value: "lime" }, { value: "green" }, { value: "cyan" }];
-
+  const [option, setOption] = useState({
+    pageIndex: 1,
+    pageSize: 10,
+  });
+  const [optionTableModal, setOptionTableModal] = useState({
+    pageIndex: 1,
+    pageSize: 10,
+  });
+  const handleTableChange = (pagination: any) => {
+    setOption({
+      ...option,
+      pageIndex: pagination.current,
+      pageSize: pagination.pageSize,
+    });
+  };
+  const handleTableModalChange = (pagination: any) => {
+    setOptionTableModal({
+      ...optionTableModal,
+      pageIndex: pagination.current,
+      pageSize: pagination.pageSize,
+    });
+  };
   const initFetch = useCallback(async () => {
     setLoading(true);
     ClubService.getClubMemberList()
       .then((response) => {
         if (response.data) {
-          setClubMemberList(response.data);
           const data = response.data.map((item: any, index: any) => {
             return {
               no: index + 1,
@@ -107,7 +138,7 @@ const ClubStaff = () => {
               memberName: item.member.full_name,
               memberStatus: item.member_status,
               memberEmail: item.member.email,
-              memberPhone: item.member.phone,
+              memberPhone: item.member.phone_number,
               memberAvatar: item.member.avatar_url,
               createdAt: dayjs(item.created_at).format("YYYY-MM-DD"),
               joinedAt: dayjs(item.joined_at).format("YYYY-MM-DD"),
@@ -162,7 +193,7 @@ const ClubStaff = () => {
   const handleSearch = (
     selectedKeys: string[],
     confirm: (param?: FilterConfirmProps) => void,
-    dataIndex: DataIndex,
+    dataIndex: DataIndex | DataIndexBooks,
   ) => {
     confirm();
     setSearchText(selectedKeys[0]);
@@ -178,16 +209,26 @@ const ClubStaff = () => {
   };
 
   const handleCloseModal = () => {
+    form.resetFields();
     setActiveModal("");
   };
   const handleOpenOrderModal = (item: any) => {
-    setActiveModal(MODAL_CODE.ORDER);
-    setModalItem(item);
+    Promise.all([setModalItem(item),fetchClubBookList(true), setActiveModal(MODAL_CODE.ORDER)])
+      .then(() => {
+        form.setFieldsValue({
+          full_name: item?.memberName,
+          phone_number: item?.memberPhone,
+        });
+      })
+      .catch((error) => {
+        // Handle any errors that occurred during concurrent execution
+        console.error(error);
+      });
   };
 
   const handleOpenDepositModal = (item: any) => {
-    setActiveModal(MODAL_CODE.DEPOSIT);
     setModalItem(item);
+    setActiveModal(MODAL_CODE.DEPOSIT);
   };
 
   const handleOpenWithdrawModal = (item: any) => {
@@ -195,11 +236,61 @@ const ClubStaff = () => {
     setModalItem(item);
   };
   const handleOpenViewAllModal = () => {
+    fetchClubBookList();
     setActiveModal(MODAL_CODE.VIEW_ALL);
   };
+  const fetchClubBookList = useCallback((useForSelect = false) => {
+    !useForSelect && setLoading(true);
+    ClubService.getClubStaffBookList()
+      .then((response) => {
+        if (response.data) {
+          const data = response.data.results.map((item: any, index: any) => {
+            const book: DataTypeBooks = {
+              id: item.id,
+              no: index + 1,
+              authorName: item.book_copy?.book?.author?.name,
+              bookName: item.book_copy?.book?.name,
+              categoryName: item.book_copy?.book?.category?.name,
+              publisherName: item.book_copy?.book?.publisher?.name,
+              image: item.book_copy?.book?.image,
+              totalCopyCount: 0,
+            };
+            return book;
+          });
+          setClubBookList(data);
+        }
+      })
+      .finally(() => {
+        !useForSelect && setLoading(false);
+      });
+  }, []);
+
   const handleDepositBooks = useCallback((item: DataType) => {}, []);
   const handleWithdrawBooks = useCallback((item: DataType) => {}, []);
-  const handleOrderBooks = useCallback((item: DataType) => {}, []);
+  const handleOrderBooks = useCallback(() => {
+    const list_books_id = form.getFieldValue("select_books").map((item: any) => item.split("-")[0]);
+    const formData: ClubMemberOrderCreateForm = {
+      membership_id: modalItem?.membershipId,
+      member_book_copy_ids: list_books_id && list_books_id,
+      due_date: form.getFieldValue("due_date"),
+      note: form.getFieldValue("note"),
+    };
+    ClubService.clubMemberOrderCreate(formData)
+      .then((response) => {
+        notification.success({
+          message: "Order create successfully!",
+          type: "success",
+        });
+        handleCloseModal()
+      })
+      .catch((error) => {
+        notification.error({
+          message: `Order create failed, please try again!`,
+          type: "error",
+        });
+      })
+      .finally(() => {});
+  }, []);
   const displayAction = (item: DataType) => {
     if (item.memberStatus === MEMBER_STATUS.PENDING) {
       return (
@@ -225,6 +316,58 @@ const ClubStaff = () => {
       );
     }
   };
+  const columnsBookList: ColumnsType<DataTypeBooks> = [
+    {
+      title: "",
+      dataIndex: "image",
+      key: "image",
+      render: (image: string) => <Avatar shape="square" size={98} src={image} />,
+    },
+    {
+      title: "Name",
+      dataIndex: "bookName",
+      key: "bookName",
+      ...getColumnSearchProps(
+        "bookName",
+        searchInput,
+        searchText,
+        setSearchText,
+        searchedColumn,
+        setSearchedColumn,
+        handleReset,
+        handleSearch,
+      ),
+    },
+    {
+      title: "Category",
+      dataIndex: "categoryName",
+      key: "categoryName",
+    },
+    {
+      title: "Author",
+      dataIndex: "authorName",
+      key: "authorName",
+    },
+    {
+      title: "Publisher",
+      dataIndex: "publisherName",
+      key: "publisherName",
+    },
+    {
+      title: "Total Copy Count",
+      dataIndex: "totalCopyCount",
+      key: "totalCopyCount",
+    },
+    // {
+    //   title: "Action",
+    //   key: "action",
+    //   render: (_values: DataType) => (
+    //     <Button icon={<PlusCircleFilled />} type="primary" onClick={() => handleOpenOrder(_values)}>
+    //       Order
+    //     </Button>
+    //   ),
+    // },
+  ];
   const columns: ColumnsType<DataType> = [
     {
       title: "No",
@@ -250,6 +393,7 @@ const ClubStaff = () => {
       title: "Member Name",
       dataIndex: "memberName",
       key: "memberName",
+      width: "25%",
       ...getColumnSearchProps(
         "memberName",
         searchInput,
@@ -272,15 +416,18 @@ const ClubStaff = () => {
     {
       title: "Created Date",
       key: "createdAt",
+      width: "120px",
       dataIndex: "createdAt",
     },
     {
       title: "Joined Date",
+      width: "120px",
       key: "joinedAt",
       dataIndex: "joinedAt",
     },
     {
       title: "Leave Date",
+      width: "120px",
       key: "leaveAt",
       dataIndex: "leaveAt",
     },
@@ -330,21 +477,18 @@ const ClubStaff = () => {
                 name="select_books"
                 rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} select at least one book` }]}
               >
-                <Select
-                  placeholder="Find books..."
-                  mode="multiple"
-                  showArrow
-                  defaultValue={["gold", "cyan"]}
-                  style={{ width: "100%" }}
-                  options={options}
-                />
+                <Select placeholder="Find books..." mode="multiple" showArrow style={{ width: "100%" }}>
+                  {clubBookList.map((item: DataTypeBooks) => {
+                    return <Select.Option value={item.id + "-" + item.bookName}>{item.bookName}</Select.Option>;
+                  })}
+                </Select>
               </Form.Item>
               <Form.Item
                 name="due_date"
                 label="Due Date"
                 rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} due date` }]}
               >
-                <DatePicker disabledDate={disabledDate} style={{ width: "100%" }} format={dateFormatList} />
+                <DatePicker disabledDate={disabledDateBefore} style={{ width: "100%" }} format={dateFormatList} />
               </Form.Item>
               <Form.Item name="note" label="Note" rules={[{ required: false }]}>
                 <TextArea rows={4} placeholder="Note..." />
@@ -367,10 +511,25 @@ const ClubStaff = () => {
       content: <>{/* Content for withdraw modal */}</>,
     },
     view_all: {
-      title:`${bookClubName.current}`,
+      title: `${bookClubName.current}`,
       width: "60%",
       onOk: handleWithdrawBooks,
-      content: <>{/* Content for withdraw modal */}</>,
+      content: (
+        <>
+          <Table
+            scroll={{ x: 1500, y: 700 }}
+            pagination={{
+              total: clubBookList.length,
+              pageSize: optionTableModal.pageSize,
+              current: optionTableModal.pageIndex,
+            }}
+            onChange={handleTableModalChange}
+            loading={loading}
+            columns={columnsBookList}
+            dataSource={clubBookList}
+          />
+        </>
+      ),
     },
   };
 
@@ -386,7 +545,18 @@ const ClubStaff = () => {
         </Button> */}
       </div>
 
-      <Table loading={loading} columns={columns} dataSource={clubMemberTableSource} />
+      <Table
+        scroll={{ x: "max-content" }}
+        pagination={{
+          total: clubMemberTableSource.length,
+          pageSize: option.pageSize,
+          current: option.pageIndex,
+        }}
+        onChange={handleTableChange}
+        loading={loading}
+        columns={columns}
+        dataSource={clubMemberTableSource}
+      />
       {/* {activeModal === MODAL_CODE.ORDER && (
         <Modal title="Book Order" width={800} visible={true} onCancel={handleCloseModal} onOk={handleOkOrder}>
           <StyledModalContent>
@@ -448,9 +618,10 @@ const ClubStaff = () => {
           width={modalContent[activeModal].width}
           {...layout}
           title={modalContent[activeModal].title}
-          visible={true}
+          open={activeModal !==""}
           onCancel={handleCloseModal}
           onOk={modalContent[activeModal].onOk}
+          destroyOnClose={true}
         >
           <StyledModalContent>{modalContent[activeModal].content}</StyledModalContent>
         </Modal>
