@@ -53,6 +53,7 @@ function MyBook() {
   const formRef = React.useRef<FormInstance>(null);
   const [idBook, setIdBook] = useState<any>(null);
   const [clubListJoined, setClubListJoined] = useState<Club[]>([]);
+  const [bookEdit, setBookEdit] = useState<any>(null);
 
 
   const handleCloseJoin = () => {
@@ -133,6 +134,7 @@ function MyBook() {
       notification.info({ message: response.data.result });
     } catch (error) {
       console.error("error", error);
+      notification.error({ message: "System error" });
       // Handle error
     }
   }, []);
@@ -248,10 +250,10 @@ function MyBook() {
       key: '0',
       // icon: <UserOutlined />,
     },
-    // {
-    //   label: "Add to cart",
-    //   key: '1',
-    // },
+    {
+      label: "Edit",
+      key: '1',
+    },
     {
       type: 'divider',
     },
@@ -269,6 +271,12 @@ function MyBook() {
 
     } else if (e.key === '1') {
       console.log("11111111");
+      setOpen(true)
+      const bookEdit = {
+        category: 'category book',
+        name: 'name Book'
+      }
+      setBookEdit(bookEdit)
 
     } else if (e.key === '2') {
       console.log("click Delete");
@@ -302,7 +310,7 @@ function MyBook() {
         dataSource={books}
         loading={loading}
       />
-      <DawerBook open={open} onClose={() => setOpen(false)} fetchBookList={fetchBookList} />
+      <DawerBook open={open} onClose={() => setOpen(false)} fetchBookList={fetchBookList} bookEdit={bookEdit} />
       <Modal title="Share to club" width={800} open={modalJoin} onCancel={handleCloseJoin} onOk={onFinish}>
         <Form {...layout} ref={formRef} name="control-ref" style={{ width: 800 }}>
           <Form.Item name="book_copy_ids" label="My books" rules={[{ required: true }]}>

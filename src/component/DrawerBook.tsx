@@ -13,15 +13,38 @@ const getBase64 = (file: RcFile): Promise<string> =>
     reader.onerror = (error) => reject(error);
   });
 
-function DawerBook({ open, onSubmit, onClose, fetchBookList }: any) {
+function DawerBook({ open, onSubmit, onClose, fetchBookList, bookEdit }: any) {
+  console.log("bookEdit: ", bookEdit);
+
+
   const [form] = Form.useForm();
   const formRef = useRef<FormInstance>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [previewTitle, setPreviewTitle] = useState("");
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [fileListPreview, setFileListPreview] = useState<UploadFile[]>([]);
+
+
+  useEffect(() => {
+    if (bookEdit) {
+      formRef.current?.setFieldsValue({
+        name: bookEdit.name,
+        category: bookEdit.category
+
+      });
+      setFileListPreview([{
+        uid: '-1',
+        name: 'image.png',
+        status: 'done',
+        url: 'https://css-tricks.com/wp-content/uploads/2015/02/cover-and-contain.jpg',
+      }])
+    }
+  }, [bookEdit])
 
   const onFinish = async (values: any) => {
+    console.log("values: ", values);
+
     let formData = new FormData();
     formData.append('book.name', values.name);
     formData.append('book.category.name', values.category);
@@ -59,10 +82,21 @@ function DawerBook({ open, onSubmit, onClose, fetchBookList }: any) {
       setFileList(newFileList);
     },
     beforeUpload: (file) => {
+      console.log("file: ", file);
+
+      console.log("url: ",URL.createObjectURL(file));
+      setFileListPreview([{
+        uid: '-xxx',
+        percent: 50,
+        name: 'image.png',
+        status: 'done',
+        url: URL.createObjectURL(file),
+      }])
+      
       setFileList([file]);
       return false;
     },
-    // fileList,
+    fileList: fileListPreview,
   };
 
   useEffect(() => {
@@ -112,7 +146,8 @@ function DawerBook({ open, onSubmit, onClose, fetchBookList }: any) {
             onPreview={handlePreview}
             {...props}
           >
-            {fileList.length >= 1 ? null : uploadButton}
+            {/* {fileList.length >= 1 ? null : uploadButton} */}
+            {uploadButton}
           </Upload>
           <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
             <img alt="example" style={{ width: "100%" }} src={previewImage} />
@@ -120,7 +155,12 @@ function DawerBook({ open, onSubmit, onClose, fetchBookList }: any) {
         </Form.Item>
 
         <Form.Item name="name" label="Name" rules={[{ required: true, message: "Please enter name" }]}>
-          <Input style={{ width: "100%" }} placeholder="Please enter name" min={1} />
+          <Input
+            style={{ width: "100%" }}
+            placeholder="Please enter name"
+            min={1}
+          // value={bookEdit?.namee}
+          />
         </Form.Item>
         <Form.Item
           name="bookStatus"
@@ -140,7 +180,11 @@ function DawerBook({ open, onSubmit, onClose, fetchBookList }: any) {
         </Form.Item>
 
         <Form.Item name="category" label="Category" rules={[{ required: true, message: "Please enter category" }]}>
-          <Input style={{ width: "100%" }} placeholder="Please enter category" />
+          <Input
+            style={{ width: "100%" }}
+            placeholder="Please enter category"
+          // value={bookEdit?.category}
+          />
         </Form.Item>
         <Form.Item name="author" label="Author" rules={[{ required: true, message: "Please enter author" }]}>
           <Input style={{ width: "100%" }} placeholder="Please enter author" />
