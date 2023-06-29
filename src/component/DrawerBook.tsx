@@ -13,7 +13,7 @@ const getBase64 = (file: RcFile): Promise<string> =>
     reader.onerror = (error) => reject(error);
   });
 
-function DawerBook({ open, onSubmit, onClose, fetchBookList, bookEdit }: any) {
+function DawerBook({ open, onSubmit, onClose, fetchBookList, bookEdit, title }: any) {
   console.log("bookEdit: ", bookEdit);
 
 
@@ -29,15 +29,18 @@ function DawerBook({ open, onSubmit, onClose, fetchBookList, bookEdit }: any) {
   useEffect(() => {
     if (bookEdit) {
       formRef.current?.setFieldsValue({
-        name: bookEdit.name,
-        category: bookEdit.category
-
+        name: bookEdit?.bookName,
+        category: bookEdit?.bookCategory,
+        image: bookEdit?.bookImage,
+        bookStatus: bookEdit?.bookStatus,
+        author: bookEdit?.bookAuthor,
+        publisher: bookEdit?.bookPublisher
       });
       setFileListPreview([{
         uid: '-1',
         name: 'image.png',
         status: 'done',
-        url: 'https://css-tricks.com/wp-content/uploads/2015/02/cover-and-contain.jpg',
+        url: bookEdit?.bookImage,
       }])
     }
   }, [bookEdit])
@@ -84,7 +87,7 @@ function DawerBook({ open, onSubmit, onClose, fetchBookList, bookEdit }: any) {
     beforeUpload: (file) => {
       console.log("file: ", file);
 
-      console.log("url: ",URL.createObjectURL(file));
+      console.log("url: ", URL.createObjectURL(file));
       setFileListPreview([{
         uid: '-xxx',
         percent: 50,
@@ -92,7 +95,7 @@ function DawerBook({ open, onSubmit, onClose, fetchBookList, bookEdit }: any) {
         status: 'done',
         url: URL.createObjectURL(file),
       }])
-      
+
       setFileList([file]);
       return false;
     },
@@ -124,7 +127,7 @@ function DawerBook({ open, onSubmit, onClose, fetchBookList, bookEdit }: any) {
   const handleCancel = () => setPreviewOpen(false);
   return (
     <Drawer
-      title="Add Book"
+      title={title}
       onClose={onClose}
       open={open}
       bodyStyle={{ paddingBottom: 80 }}

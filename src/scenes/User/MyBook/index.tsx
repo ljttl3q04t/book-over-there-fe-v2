@@ -11,6 +11,8 @@ import { BookCopy, Club, ListView } from "@/services/types";
 import userService from "@/services/user";
 import { FilterConfirmProps } from "antd/lib/table/interface";
 import { getColumnSearchProps } from "@/helpers/CommonTable";
+import { getObjectByIdInArray } from "@/helpers/fuctionHepler";
+import { EditBook } from "./type";
 
 const StyledMyBookContainer = styled.div`
   border-radius: 12px;
@@ -40,7 +42,7 @@ const layout = {
   wrapperCol: { span: 16 },
 };
 
-const statusColors:any = {
+const statusColors: any = {
   sharing_club: "green",
   new: "geekblue",
 };
@@ -53,8 +55,8 @@ function MyBook() {
   const formRef = React.useRef<FormInstance>(null);
   const [idBook, setIdBook] = useState<any>(null);
   const [clubListJoined, setClubListJoined] = useState<Club[]>([]);
-  const [bookEdit, setBookEdit] = useState<any>(null);
-
+  const [bookEdit, setBookEdit] = useState<EditBook | null>(null);
+  const [title, setTitle] = useState<any>("Add Book");
 
   const handleCloseJoin = () => {
     formRef.current?.resetFields();
@@ -187,7 +189,7 @@ function MyBook() {
       dataIndex: "bookStatus",
       key: "bookStatus",
       render: (bookStatus: any) => {
-        
+
         return (
           <Tag color={statusColors[bookStatus]} key={status}>
             {bookStatus}
@@ -272,11 +274,13 @@ function MyBook() {
     } else if (e.key === '1') {
       console.log("11111111");
       setOpen(true)
-      const bookEdit = {
-        category: 'category book',
-        name: 'name Book'
-      }
+
+      let xxx = getObjectByIdInArray(books, idBook)
+      console.log("xxx", xxx);
+      
+      const bookEdit:EditBook = getObjectByIdInArray(books, idBook)
       setBookEdit(bookEdit)
+      setTitle("Edit Book")
 
     } else if (e.key === '2') {
       console.log("click Delete");
@@ -296,7 +300,10 @@ function MyBook() {
   return (
     <StyledMyBookContainer>
       <div className="table-header">
-        <Button type="primary" onClick={() => setOpen(true)}>
+        <Button type="primary" onClick={() => {
+          setOpen(true)
+          setTitle("Add Book")
+        }}>
           Add Book
         </Button>
         <Button type="primary" onClick={() => handleOpenJoin(null)}>
@@ -310,7 +317,7 @@ function MyBook() {
         dataSource={books}
         loading={loading}
       />
-      <DawerBook open={open} onClose={() => setOpen(false)} fetchBookList={fetchBookList} bookEdit={bookEdit} />
+      <DawerBook open={open} onClose={() => setOpen(false)} fetchBookList={fetchBookList} bookEdit={bookEdit} title={title} />
       <Modal title="Share to club" width={800} open={modalJoin} onCancel={handleCloseJoin} onOk={onFinish}>
         <Form {...layout} ref={formRef} name="control-ref" style={{ width: 800 }}>
           <Form.Item name="book_copy_ids" label="My books" rules={[{ required: true }]}>
