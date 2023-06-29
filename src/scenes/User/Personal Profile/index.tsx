@@ -22,14 +22,6 @@ const tailLayout = {
   wrapperCol: { offset: 8, span: 16 },
 };
 
-// const getBase64 = (file: RcFile): Promise<string> =>
-//   new Promise((resolve, reject) => {
-//     const reader = new FileReader();
-//     reader.readAsDataURL(file);
-//     reader.onload = () => resolve(reader.result as string);
-//     reader.onerror = (error) => reject(error);
-//   });
-
 const Personal = () => {
   const formRef = React.useRef<FormInstance>(null);
   const [loading, setLoading] = useState(false);
@@ -39,6 +31,7 @@ const Personal = () => {
   };
 
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [fileListPreview, setFileListPreview] = useState<UploadFile[]>([]);
   const { user, setLoggedInUser } = useContext(UserContext);
 
   const uploadButton = (
@@ -57,20 +50,20 @@ const Personal = () => {
     },
     beforeUpload: (file) => {
       setFileList([...fileList, file]);
+      setFileListPreview([{
+        uid: '-xxx',
+        percent: 50,
+        name: 'image.png',
+        status: 'done',
+        url: URL.createObjectURL(file),
+      }])
       return false;
     },
-    // fileList,
+    fileList: fileListPreview,
   };
 
   const initFetch = useCallback(async () => {
     setLoading(true);
-    fileList.push({
-      uid: "-1",
-      name: "avatar.png",
-      status: "done",
-      url: user?.avatar,
-    });
-    // console.log('userInfo: ', userInfo);
 
     formRef.current?.setFieldsValue({
       username: user?.username,
@@ -82,6 +75,13 @@ const Personal = () => {
       birth_date: user?.birth_date === null ? "" : dayjs(user?.birth_date),
       avatar: user?.avatar,
     });
+
+    setFileListPreview([{
+      uid: '-1',
+      name: 'image.png',
+      status: 'done',
+      url: user?.avatar,
+    }])
 
     setLoading(false);
   }, [user]);
@@ -99,8 +99,9 @@ const Personal = () => {
       email: values.email,
       phone_number: values.phone_number,
       birth_date: dayjs(values.birth_date).format("YYYY-MM-DD"),
-      avatar: null,
+      avatar: fileList[0] as RcFile,
     };
+    
     UserService.updateUser(data)
       .then((res: any) => {
         if (res?.error?.message) {
@@ -144,7 +145,7 @@ const Personal = () => {
         <Form {...layout} ref={formRef} name="control-ref" onFinish={onFinish} style={{ width: 600 }}>
           <Form.Item name="username" label="Username" rules={[{ required: true }]}>
             <Input
-            // disabled
+            disabled
             />
           </Form.Item>
           <Form.Item name="full_name" label="Full Name" rules={[{ required: true }]}>
