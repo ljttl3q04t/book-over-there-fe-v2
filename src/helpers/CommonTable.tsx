@@ -43,12 +43,11 @@ export const getColumnSearchProps = (
   dataIndex: any,
   searchInput: any,
   searchText: any,
-  setSearchText:any,
+  setSearchText: any,
   searchedColumn: any,
   setSearchedColumn: any,
   handleReset: Function,
-  handleSearch: Function
-
+  handleSearch: Function,
 ): ColumnType<DataType> => ({
   filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
     <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>

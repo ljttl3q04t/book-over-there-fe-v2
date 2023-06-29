@@ -23,11 +23,11 @@ function DawerBook({ open, onSubmit, onClose, fetchBookList }: any) {
 
   const onFinish = async (values: any) => {
     let formData = new FormData();
-    formData.append('book.name', values.name);
-    formData.append('book.category.name', values.category);
-    formData.append('book.author.name', values.author);
-    formData.append('book.publisher.name', values.publisher);
-    formData.append('book.image', fileList[0] as RcFile);
+    formData.append("book.name", values.name);
+    formData.append("book.category.name", values.category);
+    formData.append("book.author.name", values.author);
+    formData.append("book.publisher.name", values.publisher);
+    formData.append("book.image", fileList[0] as RcFile);
     try {
       const res = await bookService.createBook(formData);
       console.log("res: ", res);
@@ -36,7 +36,7 @@ function DawerBook({ open, onSubmit, onClose, fetchBookList }: any) {
         message: "Info",
         description: res.result,
       });
-      fetchBookList()
+      fetchBookList();
       onClose();
     } catch (err: any) {
       Object.keys(err.response.data.book).forEach((field) => {
@@ -104,14 +104,8 @@ function DawerBook({ open, onSubmit, onClose, fetchBookList }: any) {
       }
     >
       <Form layout="vertical" form={form} onFinish={onFinish} ref={formRef}>
-        <Form.Item name="image" label="Cover" >
-          <Upload
-            accept="image/*"
-            multiple={false}
-            listType="picture-card"
-            onPreview={handlePreview}
-            {...props}
-          >
+        <Form.Item name="image" label="Cover">
+          <Upload accept="image/*" multiple={false} listType="picture-card" onPreview={handlePreview} {...props}>
             {fileList.length >= 1 ? null : uploadButton}
           </Upload>
           <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
@@ -125,7 +119,7 @@ function DawerBook({ open, onSubmit, onClose, fetchBookList }: any) {
         <Form.Item
           name="bookStatus"
           label="BookStatus"
-        // rules={[{ required: true, message: "Please select book status" }]}
+          // rules={[{ required: true, message: "Please select book status" }]}
         >
           <Select
             placeholder="Please enter book status"

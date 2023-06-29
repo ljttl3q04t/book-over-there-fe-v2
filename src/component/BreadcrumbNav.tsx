@@ -43,23 +43,24 @@ const BreadcrumbNav = ({ displayPageName }: any) => {
   return (
     <StyledBreadCrumb>
       <Breadcrumb>
-        {!displayPageName && pathSegments.map((segment, index) => {
-          const path = `/${pathSegments.slice(1, index + 1).join("/")}`;
-          const breadcrumbItem = breadcrumbItems.find((item) => {
-            const match = matchPath(path, item.path); // Update this line
-            return match ? true : false;
-          });
+        {!displayPageName &&
+          pathSegments.map((segment, index) => {
+            const path = `/${pathSegments.slice(1, index + 1).join("/")}`;
+            const breadcrumbItem = breadcrumbItems.find((item) => {
+              const match = matchPath(path, item.path); // Update this line
+              return match ? true : false;
+            });
 
-          if (breadcrumbItem) {
-            return (
-              <Breadcrumb.Item key={path}>
-                <Link to={path}>{breadcrumbItem.breadcrumbName}</Link>
-              </Breadcrumb.Item>
-            );
-          } else {
-            return null;
-          }
-        })}
+            if (breadcrumbItem) {
+              return (
+                <Breadcrumb.Item key={path}>
+                  <Link to={path}>{breadcrumbItem.breadcrumbName}</Link>
+                </Breadcrumb.Item>
+              );
+            } else {
+              return null;
+            }
+          })}
       </Breadcrumb>
       {displayPageName && <h1 className="page-title">{pageName}</h1>} {/* Display the last segment as the page name */}
     </StyledBreadCrumb>

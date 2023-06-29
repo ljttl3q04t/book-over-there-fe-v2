@@ -1,5 +1,18 @@
-import { Avatar, Tag, InputRef, Button, Select, Dropdown, Space, MenuProps, Form, notification, SelectProps, Modal } from "antd";
-import { MoreOutlined } from '@ant-design/icons';
+import {
+  Avatar,
+  Tag,
+  InputRef,
+  Button,
+  Select,
+  Dropdown,
+  Space,
+  MenuProps,
+  Form,
+  notification,
+  SelectProps,
+  Modal,
+} from "antd";
+import { MoreOutlined } from "@ant-design/icons";
 import Table, { ColumnsType } from "antd/es/table";
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import type { FormInstance } from "antd/es/form";
@@ -26,7 +39,7 @@ const StyledMyBookContainer = styled.div`
   }
 `;
 const { Option } = Select;
-const options: SelectProps['options'] = [];
+const options: SelectProps["options"] = [];
 
 for (let i = 10; i < 36; i++) {
   options.push({
@@ -40,7 +53,7 @@ const layout = {
   wrapperCol: { span: 16 },
 };
 
-const statusColors:any = {
+const statusColors: any = {
   sharing_club: "green",
   new: "geekblue",
 };
@@ -53,7 +66,6 @@ function MyBook() {
   const formRef = React.useRef<FormInstance>(null);
   const [idBook, setIdBook] = useState<any>(null);
   const [clubListJoined, setClubListJoined] = useState<Club[]>([]);
-
 
   const handleCloseJoin = () => {
     formRef.current?.resetFields();
@@ -71,10 +83,9 @@ function MyBook() {
       .then((formValues) => {
         const data = {
           book_copy_ids: formValues.book_copy_ids,
-          club_id: formValues.club_id
+          club_id: formValues.club_id,
         };
-        shareBooksToClub(data)
-
+        shareBooksToClub(data);
       })
       .catch((_errors) => {
         notification.info({ message: "Please make sure that you enter all field" });
@@ -98,10 +109,10 @@ function MyBook() {
           bookStatus: item?.book_status,
           bookDepositPrice: item?.book_deposit_price,
           bookDepositStatus: item?.book_deposit_status,
-          user: item?.user
-        }
-      })
-      setBooks(data)
+          user: item?.user,
+        };
+      });
+      setBooks(data);
       setLoading(false);
     } catch (error) {
       console.error("error", error);
@@ -128,8 +139,8 @@ function MyBook() {
       const response: any = await userService.getUserShareClub(data);
       console.log("response getUserShareClub: ", response);
       setLoading(false);
-      handleCloseJoin()
-      fetchBookList()
+      handleCloseJoin();
+      fetchBookList();
       notification.info({ message: response.data.result });
     } catch (error) {
       console.error("error", error);
@@ -176,16 +187,22 @@ function MyBook() {
       title: "Name",
       dataIndex: "bookName",
       key: "bookName",
-      ...getColumnSearchProps("bookName", searchInput,
-        searchText, setSearchText, searchedColumn, setSearchedColumn,
-        handleReset, handleSearch),
+      ...getColumnSearchProps(
+        "bookName",
+        searchInput,
+        searchText,
+        setSearchText,
+        searchedColumn,
+        setSearchedColumn,
+        handleReset,
+        handleSearch,
+      ),
     },
     {
       title: "BookStatus",
       dataIndex: "bookStatus",
       key: "bookStatus",
       render: (bookStatus: any) => {
-        
         return (
           <Tag color={statusColors[bookStatus]} key={status}>
             {bookStatus}
@@ -197,40 +214,61 @@ function MyBook() {
       title: "Category",
       dataIndex: "bookCategory",
       key: "category",
-      ...getColumnSearchProps("bookCategory", searchInput,
-        searchText, setSearchText, searchedColumn, setSearchedColumn,
-        handleReset, handleSearch),
+      ...getColumnSearchProps(
+        "bookCategory",
+        searchInput,
+        searchText,
+        setSearchText,
+        searchedColumn,
+        setSearchedColumn,
+        handleReset,
+        handleSearch,
+      ),
     },
     {
       title: "Author",
       dataIndex: "bookAuthor",
       key: "author",
-      ...getColumnSearchProps("bookAuthor", searchInput,
-        searchText, setSearchText, searchedColumn, setSearchedColumn,
-        handleReset, handleSearch),
+      ...getColumnSearchProps(
+        "bookAuthor",
+        searchInput,
+        searchText,
+        setSearchText,
+        searchedColumn,
+        setSearchedColumn,
+        handleReset,
+        handleSearch,
+      ),
     },
     {
       title: "Publisher",
       dataIndex: "bookPublisher",
       key: "publisher",
-      ...getColumnSearchProps("bookPublisher", searchInput,
-        searchText, setSearchText, searchedColumn, setSearchedColumn,
-        handleReset, handleSearch),
+      ...getColumnSearchProps(
+        "bookPublisher",
+        searchInput,
+        searchText,
+        setSearchText,
+        searchedColumn,
+        setSearchedColumn,
+        handleReset,
+        handleSearch,
+      ),
     },
     {
       title: "Action",
       key: "id",
       dataIndex: ["id"],
       render: (_values: any) => {
-
         return (
-          <Dropdown menu={menuProps} trigger={['click']}>
-            <a onClick={(e) => {
-              e.preventDefault()
-              setIdBook(_values)
-              console.log("_values", _values)
-            }
-            }>
+          <Dropdown menu={menuProps} trigger={["click"]}>
+            <a
+              onClick={(e) => {
+                e.preventDefault();
+                setIdBook(_values);
+                console.log("_values", _values);
+              }}
+            >
               <Space>
                 <MoreOutlined />
               </Space>
@@ -238,14 +276,14 @@ function MyBook() {
           </Dropdown>
         );
       },
-      fixed: 'right',
+      fixed: "right",
     },
   ];
 
-  const items: MenuProps['items'] = [
+  const items: MenuProps["items"] = [
     {
       label: "Asign to club",
-      key: '0',
+      key: "0",
       // icon: <UserOutlined />,
     },
     // {
@@ -253,26 +291,23 @@ function MyBook() {
     //   key: '1',
     // },
     {
-      type: 'divider',
+      type: "divider",
     },
     {
-      label: 'Delete',
-      key: '2',
+      label: "Delete",
+      key: "2",
     },
   ];
 
-  const handleMenuClick: MenuProps['onClick'] = (e) => {
-    console.log('click', e);
-    if (e.key === '0') {
+  const handleMenuClick: MenuProps["onClick"] = (e) => {
+    console.log("click", e);
+    if (e.key === "0") {
       console.log("000000");
-      handleOpenJoin(null)
-
-    } else if (e.key === '1') {
+      handleOpenJoin(null);
+    } else if (e.key === "1") {
       console.log("11111111");
-
-    } else if (e.key === '2') {
+    } else if (e.key === "2") {
       console.log("click Delete");
-
     }
   };
 
@@ -296,65 +331,49 @@ function MyBook() {
         </Button>
       </div>
 
-      <Table
-        scroll={{ x: "max-content" }}
-        columns={columns}
-        dataSource={books}
-        loading={loading}
-      />
+      <Table scroll={{ x: "max-content" }} columns={columns} dataSource={books} loading={loading} />
       <DawerBook open={open} onClose={() => setOpen(false)} fetchBookList={fetchBookList} />
       <Modal title="Share to club" width={800} open={modalJoin} onCancel={handleCloseJoin} onOk={onFinish}>
         <Form {...layout} ref={formRef} name="control-ref" style={{ width: 800 }}>
           <Form.Item name="book_copy_ids" label="My books" rules={[{ required: true }]}>
             <Select
               mode="multiple"
-              size='middle'
+              size="middle"
               placeholder="Please select"
               onChange={handleChange}
-              style={{ width: '100%' }}
-            >{
-                books.map((book, index) => {
-                  if (book.bookStatus !== 'sharing_club') {
-                    return (
-                      <Option key={index} value={book.id} label={book.bookName}>
-                        <div className="demo-option-label-item">
-                          {/* <span role="img" aria-label="China">
+              style={{ width: "100%" }}
+            >
+              {books.map((book, index) => {
+                if (book.bookStatus !== "sharing_club") {
+                  return (
+                    <Option key={index} value={book.id} label={book.bookName}>
+                      <div className="demo-option-label-item">
+                        {/* <span role="img" aria-label="China">
                           🇨🇳
                         </span> */}
-                          {book.bookName}
-                        </div>
-                      </Option>
-                    )
-                  }
-
-                })
-              }
-
+                        {book.bookName}
+                      </div>
+                    </Option>
+                  );
+                }
+              })}
             </Select>
           </Form.Item>
 
           <Form.Item name="club_id" label="Asign to club" rules={[{ required: true }]}>
-            <Select
-              size='middle'
-              placeholder="Please select"
-              onChange={handleChange}
-              style={{ width: '100%' }}
-            >{
-                clubListJoined.map((club, index) => (
-                  <Option key={index} value={club?.id} label={club.book_club.name}>
-                    <div className="demo-option-label-item">
-                      {/* <span role="img" aria-label="China">
+            <Select size="middle" placeholder="Please select" onChange={handleChange} style={{ width: "100%" }}>
+              {clubListJoined.map((club, index) => (
+                <Option key={index} value={club?.id} label={club.book_club.name}>
+                  <div className="demo-option-label-item">
+                    {/* <span role="img" aria-label="China">
                         🇨🇳
                       </span> */}
-                      {club.book_club.name} {clubListJoined.length}
-                    </div>
-                  </Option>
-                ))
-              }
-
+                    {club.book_club.name} {clubListJoined.length}
+                  </div>
+                </Option>
+              ))}
             </Select>
           </Form.Item>
-
         </Form>
       </Modal>
     </StyledMyBookContainer>

@@ -22,7 +22,6 @@ const StyledMyBookContainer = styled.div`
 const { Option } = Select;
 
 const BookHistory = () => {
-
   const columns = [
     {
       title: "Avatar",
@@ -76,8 +75,8 @@ const BookHistory = () => {
     fetchBookList();
   }, [fetchBookList]);
 
-  return(
-  <StyledMyBookContainer>
+  return (
+    <StyledMyBookContainer>
       <div className="table-header">
         <Select defaultValue={"All"} style={{ width: 120 }}>
           <Option value="All">ALL</Option>

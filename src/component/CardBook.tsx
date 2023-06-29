@@ -67,11 +67,7 @@ function CardBook({
           </>
         ) : (
           <Row>
-            <Button
-              style={{ marginRight: "10px" }}
-              shape="circle"
-              icon={<ShoppingCartOutlined />}
-            />
+            <Button style={{ marginRight: "10px" }} shape="circle" icon={<ShoppingCartOutlined />} />
 
             <Button
               type="primary"

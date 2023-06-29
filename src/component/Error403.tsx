@@ -1,6 +1,6 @@
-import {Button, Result} from "antd";
+import { Button, Result } from "antd";
 import React from "react";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export function Error403() {
   const navigate = useNavigate();

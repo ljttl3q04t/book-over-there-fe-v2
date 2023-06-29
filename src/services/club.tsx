@@ -25,5 +25,5 @@ export default {
   joinCLub,
   getClubBookList,
   getClubMemberList,
-  updateMemberClub
+  updateMemberClub,
 };

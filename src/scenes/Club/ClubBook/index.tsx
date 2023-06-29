@@ -166,15 +166,15 @@ const ClubBook = () => {
       dataIndex: "totalCopyCount",
       key: "totalCopyCount",
     },
-    {
-      title: "Action",
-      key: "action",
-      render: (_values: DataType) => (
-        <Button icon={<PlusCircleFilled />} type="primary" onClick={() => handleOpenOrder(_values)}>
-          Order
-        </Button>
-      ),
-    },
+    // {
+    //   title: "Action",
+    //   key: "action",
+    //   render: (_values: DataType) => (
+    //     <Button icon={<PlusCircleFilled />} type="primary" onClick={() => handleOpenOrder(_values)}>
+    //       Order
+    //     </Button>
+    //   ),
+    // },
   ];
   return (
     <StyledClubBookList>

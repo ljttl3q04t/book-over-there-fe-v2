@@ -15,7 +15,7 @@ import "react-multi-carousel/lib/styles.css";
 import Carousel from "react-multi-carousel";
 import { getDeviceType } from "@/helpers/fuctionHepler";
 import Section from "@/component/carousel/Section";
-import "./style.scss"
+import "./style.scss";
 import bookService from "@/services/book";
 
 const { Title } = Typography;
@@ -48,7 +48,7 @@ const Homepage = () => {
   //         const data = response.payload;
   //         setBookList(data);
   //         console.log('data: ',data);
-          
+
   //       }
   //     })
   //     .finally(() => setLoading(false));
@@ -57,8 +57,8 @@ const Homepage = () => {
   const getListBookInit = useCallback(async () => {
     try {
       setLoading(true);
-      const response: any = await bookService.getListBook(option.pageIndex, option.pageSize, '');
-      console.log("getListBookInit: ",response);
+      const response: any = await bookService.getListBook(option.pageIndex, option.pageSize, "");
+      console.log("getListBookInit: ", response);
       setBookList(response.data);
       setLoading(false);
     } catch (error) {
@@ -69,7 +69,7 @@ const Homepage = () => {
 
   useEffect(() => {
     // initFetch();
-    getListBookInit()
+    getListBookInit();
   }, [option]);
 
   useEffect(() => {
@@ -85,19 +85,18 @@ const Homepage = () => {
   }, []);
 
   const handleTableChange = (pagination: any) => {
-    console.log('pagination: ',pagination);
-    
+    console.log("pagination: ", pagination);
+
     setOption({
       ...option,
       pageIndex: pagination.current,
       pageSize: pagination.pageSize,
     });
-    console.log(".................: ",{
+    console.log(".................: ", {
       ...option,
       pageIndex: pagination.current,
       pageSize: pagination.pageSize,
     });
-    
   };
   const columns: ColumnsType<any> = [
     {
@@ -163,14 +162,14 @@ const Homepage = () => {
       //   );
       // },
       render: (_values: any) => {
-
         return (
-          <Dropdown menu={menuProps} trigger={['click']}>
-            <a onClick={(e) => {
-              e.preventDefault()
-              console.log("_values", _values)
-            }
-            }>
+          <Dropdown menu={menuProps} trigger={["click"]}>
+            <a
+              onClick={(e) => {
+                e.preventDefault();
+                console.log("_values", _values);
+              }}
+            >
               <Space>
                 <MoreOutlined />
               </Space>
@@ -181,39 +180,35 @@ const Homepage = () => {
     },
   ];
 
-
-  const items: MenuProps['items'] = [
+  const items: MenuProps["items"] = [
     {
       label: "View",
-      key: '0',
+      key: "0",
       icon: <EyeTwoTone />,
     },
     {
       label: "Cart",
-      key: '1',
+      key: "1",
       icon: <PlusCircleTwoTone />,
     },
     {
-      label: 'Wishlist',
-      key: '2',
-      icon: <HeartTwoTone twoToneColor="#eb2f96"/>,
+      label: "Wishlist",
+      key: "2",
+      icon: <HeartTwoTone twoToneColor="#eb2f96" />,
     },
     {
-      type: 'divider',
+      type: "divider",
     },
   ];
 
-  const handleMenuClick: MenuProps['onClick'] = (e) => {
-    console.log('click', e);
-    if (e.key === '0') {
+  const handleMenuClick: MenuProps["onClick"] = (e) => {
+    console.log("click", e);
+    if (e.key === "0") {
       console.log("000000");
-
-    } else if (e.key === '1') {
+    } else if (e.key === "1") {
       console.log("11111111");
-
-    } else if (e.key === '2') {
+    } else if (e.key === "2") {
       console.log("click Delete");
-
     }
   };
 
@@ -240,8 +235,7 @@ const Homepage = () => {
     { title: "Book 15", description: "Description 15" },
   ];
 
-
-  const [deviceType, setDeviceType] = useState('');
+  const [deviceType, setDeviceType] = useState("");
 
   useEffect(() => {
     const handleResize = () => {
@@ -250,10 +244,10 @@ const Homepage = () => {
     };
     handleResize(); // Initial check
     // Attach event listener for window resize
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
     // Clean up event listener on component unmount
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -261,28 +255,27 @@ const Homepage = () => {
     desktop: {
       breakpoint: { max: 3000, min: 1550 },
       items: 5,
-      paritialVisibilityGutter: 60
+      paritialVisibilityGutter: 60,
     },
     desktop1: {
       breakpoint: { max: 1550, min: 1024 },
       items: 4,
-      paritialVisibilityGutter: 50
+      paritialVisibilityGutter: 50,
     },
     tablet: {
       breakpoint: { max: 1024, min: 464 },
       items: 2,
-      paritialVisibilityGutter: 40
+      paritialVisibilityGutter: 40,
     },
     mobile: {
       breakpoint: { max: 464, min: 0 },
       items: 1,
-      paritialVisibilityGutter: 30
-    }
+      paritialVisibilityGutter: 30,
+    },
   };
 
   return (
     <>
-
       <div className="carousel-title">
         <Title level={2} style={{ margin: 0 }}>
           Popular Books
@@ -368,7 +361,6 @@ const Homepage = () => {
         searchText={"Search"}
         className="home-page-search_book"
         onFinish={(data) => {
-          
           setOption({
             pageIndex: 1,
             pageSize: 10,
@@ -404,7 +396,6 @@ const Homepage = () => {
           current: option.pageIndex,
         }}
       />
-
     </>
   );
 };
