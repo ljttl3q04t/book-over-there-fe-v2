@@ -22,6 +22,19 @@ const StyledClubStaffList = styled.div`
   background: #fff;
   width: 100%;
   margin-top: 70px;
+  > .table-extra-content {
+    padding: 20px 10px 30px 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    h1 {
+      font-size: 24px;
+    }
+    a {
+      font-size: 18px;
+      margin-top: 5px;
+    }
+  }
 `;
 type MemberStatus = "active" | "pending";
 const statusColors = {
@@ -36,12 +49,14 @@ const MODAL_CODE = {
   ORDER: "order",
   DEPOSIT: "deposit",
   WITHDRAW: "withdraw",
+  VIEW_ALL: "view_all",
 };
 interface ModalContent {
   [key: string]: {
-    title: string;
+    title: any;
     onOk: (item: DataType) => void;
     content: JSX.Element;
+    width:string | number;
   };
 }
 interface DataType {
@@ -74,6 +89,7 @@ const ClubStaff = () => {
   const [searchedColumn, setSearchedColumn] = useState("");
   const [modalItem, setModalItem] = useState<DataType>();
   const searchInput = useRef<InputRef>(null);
+  const bookClubName = useRef<string>("");
   const [activeModal, setActiveModal] = useState("");
   const [form] = Form.useForm();
   const options = [{ value: "gold" }, { value: "lime" }, { value: "green" }, { value: "cyan" }];
@@ -100,6 +116,7 @@ const ClubStaff = () => {
               membershipId: item.id,
             };
           });
+          bookClubName.current = data[0]?.bookClubName;
           setClubMemberTableSource(data);
         }
       })
@@ -177,6 +194,9 @@ const ClubStaff = () => {
     setActiveModal(MODAL_CODE.WITHDRAW);
     setModalItem(item);
   };
+  const handleOpenViewAllModal = () => {
+    setActiveModal(MODAL_CODE.VIEW_ALL);
+  };
   const handleDepositBooks = useCallback((item: DataType) => {}, []);
   const handleWithdrawBooks = useCallback((item: DataType) => {}, []);
   const handleOrderBooks = useCallback((item: DataType) => {}, []);
@@ -211,21 +231,21 @@ const ClubStaff = () => {
       dataIndex: "no",
       key: "no",
     },
-    {
-      title: "Club Name",
-      dataIndex: "bookClubName",
-      key: "bookClubName",
-      ...getColumnSearchProps(
-        "bookClubName",
-        searchInput,
-        searchText,
-        setSearchText,
-        searchedColumn,
-        setSearchedColumn,
-        handleReset,
-        handleSearch,
-      ),
-    },
+    // {
+    //   title: "Club Name",
+    //   dataIndex: "bookClubName",
+    //   key: "bookClubName",
+    //   ...getColumnSearchProps(
+    //     "bookClubName",
+    //     searchInput,
+    //     searchText,
+    //     setSearchText,
+    //     searchedColumn,
+    //     setSearchedColumn,
+    //     handleReset,
+    //     handleSearch,
+    //   ),
+    // },
     {
       title: "Member Name",
       dataIndex: "memberName",
@@ -285,6 +305,7 @@ const ClubStaff = () => {
   const modalContent: ModalContent = {
     order: {
       title: "Book Order",
+      width: 800,
       onOk: handleOrderBooks,
       content: (
         <>
@@ -335,11 +356,19 @@ const ClubStaff = () => {
     },
     deposit: {
       title: "Deposit Books",
+      width: 800,
       onOk: handleDepositBooks,
       content: <>{/* Content for deposit modal */}</>,
     },
     withdraw: {
       title: "Withdraw Books",
+      width: 800,
+      onOk: handleWithdrawBooks,
+      content: <>{/* Content for withdraw modal */}</>,
+    },
+    view_all: {
+      title:`${bookClubName.current}`,
+      width: "60%",
       onOk: handleWithdrawBooks,
       content: <>{/* Content for withdraw modal */}</>,
     },
@@ -347,6 +376,16 @@ const ClubStaff = () => {
 
   return (
     <StyledClubStaffList>
+      <div className="table-extra-content">
+        <h1>{bookClubName.current}</h1>
+        <a onClick={handleOpenViewAllModal} href="javascript:void(0)" rel="noopener noreferrer">
+          (View all books)
+        </a>
+        {/* <Button type="primary" loading={loading}>
+          Club Books
+        </Button> */}
+      </div>
+
       <Table loading={loading} columns={columns} dataSource={clubMemberTableSource} />
       {/* {activeModal === MODAL_CODE.ORDER && (
         <Modal title="Book Order" width={800} visible={true} onCancel={handleCloseModal} onOk={handleOkOrder}>
@@ -406,7 +445,7 @@ const ClubStaff = () => {
       )} */}
       {activeModal && (
         <Modal
-          width={800}
+          width={modalContent[activeModal].width}
           {...layout}
           title={modalContent[activeModal].title}
           visible={true}
