@@ -52,11 +52,11 @@ const StyledLoginForm = styled.div`
   }
 `;
 const StyledLoginAccessibility = styled.div`
-  margin: -24px 16px 8px;
+  margin: -24px 16px 8px 10%;
   padding: 16px;
   text-align: center;
-  width: 90%;
-  height: 40%;
+  width: 100%;
+  height: 30%;
   opacity: 1;
   background: linear-gradient(195deg, rgb(73, 163, 241), rgb(26, 115, 232));
   color: rgb(52, 71, 103);
@@ -64,17 +64,43 @@ const StyledLoginAccessibility = styled.div`
   box-shadow: rgba(0, 0, 0, 0.14) 0rem 0.25rem 1.25rem 0rem, rgba(0, 187, 212, 0.4) 0rem 0.4375rem 0.625rem -0.3125rem;
   margin-bottom: 70px;
   > .title {
-    margin: 8px 0px 0px;
-    font-size: 1.5rem;
-    line-height: 1.375;
-    font-family: Roboto, Helvetica, Arial, sans-serif;
-    letter-spacing: 0.00735em;
-    opacity: 1;
-    text-transform: none;
-    vertical-align: unset;
-    text-decoration: none;
-    color: rgb(255, 255, 255);
-    font-weight: 600;
+    font-family: "Titillium Web", sans-serif;
+    font-weight: 700;
+    font-size: 30px;
+    letter-spacing: 0.1em;
+    display: grid;
+    place-items: center;
+    grid-template-areas: "text";
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    background-image: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(255, 255, 255, 1) 35%,
+      rgba(255, 255, 255, 1) 100%
+    );
+    margin: 0;
+
+    & > *,
+    &::after {
+      grid-area: text;
+    }
+
+    &::after {
+      font-size: 48px;
+      content: attr(data-text);
+      transform: translate(0.1em, 0.1em);
+      filter: drop-shadow(0.015em 0.015em 0.025em var(--shadow));
+      -webkit-background-clip: text;
+      color: transparent;
+      background-image: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 1) 0%,
+        rgba(255, 255, 255, 1) 35%,
+        rgba(255, 255, 255, 1) 100%
+      );
+    }
   }
 `;
 const Login = () => {
@@ -115,7 +141,9 @@ const Login = () => {
       <div className="login-page-container">
         <StyledLoginForm>
           <StyledLoginAccessibility>
-            <h1 className="title"> Book Over There</h1>
+            <h1 data-text="Book Over There" className="title">
+              Read, Lead, Succeed
+            </h1>
           </StyledLoginAccessibility>
           <Form
             layout="vertical"

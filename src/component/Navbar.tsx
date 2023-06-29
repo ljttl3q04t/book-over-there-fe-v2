@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { BellOutlined, ProfileOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import { BellOutlined, ProfileOutlined, HeartTwoTone, UserAddOutlined, UserOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Badge, Button, Dropdown, Image, Modal, Space } from "antd";
 import React, { useContext, useEffect, useState } from "react";
@@ -39,7 +39,8 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
     return (
       <Space size="middle" style={{ marginRight: 15 }}>
         <Badge size="small" count={5}>
-          <ShoppingCartOutlined
+          <HeartTwoTone
+            twoToneColor="#eb2f96"
             style={{ fontSize: "20px", cursor: "pointer" }}
             onClick={() => navigate("/book-wishlist")}
           />
@@ -117,6 +118,7 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
         ) : (
           <StyledActionLog>
             <Button
+              icon={<UserOutlined />}
               type="primary"
               onClick={(e) => {
                 e.preventDefault();
@@ -134,6 +136,7 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
               </Space>
             </Button>
             <Button
+              icon={<UserAddOutlined />}
               onClick={(e) => {
                 e.preventDefault();
                 navigate("/register");

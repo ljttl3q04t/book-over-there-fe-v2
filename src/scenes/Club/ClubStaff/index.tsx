@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import Table, { ColumnType, ColumnsType } from "antd/es/table";
+import { IssuesCloseOutlined } from "@ant-design/icons";
+
 import styled from "styled-components";
 import ClubService, { UpdateMemberClubForm } from "@/services/club";
-import { SearchOutlined } from "@ant-design/icons";
 
 import { Button, Input, InputRef, Space, Tag, notification } from "antd";
 import dayjs from "dayjs";
@@ -128,7 +129,7 @@ const ClubStaff = () => {
     clearFilters();
     setSearchText("");
   };
-  
+
   const columns: ColumnsType<DataType> = [
     {
       title: "No",
@@ -139,17 +140,31 @@ const ClubStaff = () => {
       title: "Club Name",
       dataIndex: "bookClubName",
       key: "bookClubName",
-      ...getColumnSearchProps("bookClubName",searchInput,
-       searchText,setSearchText, searchedColumn, setSearchedColumn,
-        handleReset,handleSearch ),
+      ...getColumnSearchProps(
+        "bookClubName",
+        searchInput,
+        searchText,
+        setSearchText,
+        searchedColumn,
+        setSearchedColumn,
+        handleReset,
+        handleSearch,
+      ),
     },
     {
       title: "Member Name",
       dataIndex: "memberName",
       key: "memberName",
-      ...getColumnSearchProps("memberName",searchInput,
-      searchText,setSearchText, searchedColumn, setSearchedColumn,
-       handleReset,handleSearch),
+      ...getColumnSearchProps(
+        "memberName",
+        searchInput,
+        searchText,
+        setSearchText,
+        searchedColumn,
+        setSearchedColumn,
+        handleReset,
+        handleSearch,
+      ),
     },
     {
       title: "Member Status",
@@ -191,7 +206,7 @@ const ClubStaff = () => {
         return (
           <>
             {item.memberStatus === MEMBER_STATUS.PENDING && (
-              <Button type="primary" onClick={() => handleApproveMember(item)}>
+              <Button type="primary" icon={<IssuesCloseOutlined />} onClick={() => handleApproveMember(item)}>
                 Approve
               </Button>
             )}
