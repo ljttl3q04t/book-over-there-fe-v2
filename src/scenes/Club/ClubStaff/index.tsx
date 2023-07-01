@@ -1,17 +1,40 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import Table, { ColumnType, ColumnsType } from "antd/es/table";
-import { IssuesCloseOutlined, PlusCircleFilled, UploadOutlined, DownloadOutlined } from "@ant-design/icons";
+import {
+  IssuesCloseOutlined,
+  PlusCircleFilled,
+  UploadOutlined,
+  DownloadOutlined,
+  LoadingOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 
 import styled from "styled-components";
-import ClubService, { UpdateMemberClubForm, ClubMemberOrderCreateForm } from "@/services/club";
-
-import { Button, Form, Input, InputRef, Modal, Space, Tag, notification, DatePicker, Select, Avatar } from "antd";
+import ClubService, { UpdateMemberClubForm, ClubMemberOrderCreateForm, ClubStaffBookListParams } from "@/services/club";
+import { debounce } from "@/helpers/fuctionHepler";
+import {
+  Button,
+  Form,
+  Input,
+  InputRef,
+  Modal,
+  Space,
+  Tag,
+  notification,
+  DatePicker,
+  Select,
+  Avatar,
+  UploadProps,
+  Upload,
+  UploadFile,
+} from "antd";
 import dayjs from "dayjs";
 import { FilterConfirmProps } from "antd/es/table/interface";
 import { getColumnSearchProps } from "@/helpers/CommonTable";
 import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
 import { disabledDateBefore, dateFormatList } from "@/helpers/DateHelper";
 import { Item } from "semantic-ui-react";
+import { RcFile } from "antd/es/upload";
 const { Option } = Select;
 
 const StyledModalContent = styled.div`
@@ -51,6 +74,9 @@ const MODAL_CODE = {
   DEPOSIT: "deposit",
   WITHDRAW: "withdraw",
   VIEW_ALL: "view_all",
+};
+const BOOK_COPY_STATUS = {
+  sharing_club: "sharing_club",
 };
 interface ModalContent {
   [key: string]: {
@@ -94,6 +120,11 @@ const layout = {
 };
 const { TextArea } = Input;
 
+const defaultSearchBooklistForm: ClubStaffBookListParams = {
+  searchText: "",
+  page: 1,
+  pageSize: 10,
+};
 const ClubStaff = () => {
   const [loading, setLoading] = useState(false);
   const [clubMemberTableSource, setClubMemberTableSource] = useState<DataType[]>([]);
@@ -104,7 +135,38 @@ const ClubStaff = () => {
   const bookClubName = useRef<string>("");
   const [activeModal, setActiveModal] = useState("");
   const [clubBookList, setClubBookList] = useState([]);
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [fileListPreview, setFileListPreview] = useState<UploadFile[]>([]);
   const [form] = Form.useForm();
+  const uploadButton = (
+    <div>
+      {loading ? <LoadingOutlined /> : <PlusOutlined />}
+      <div style={{ marginTop: 8 }}>Upload</div>
+    </div>
+  );
+  const props: UploadProps = {
+    onRemove: (file) => {
+      const index = fileList.indexOf(file);
+      const newFileList = fileList.slice();
+      newFileList.splice(index, 1);
+      setFileList(newFileList);
+      setFileListPreview([]);
+    },
+    beforeUpload: (file) => {
+      setFileList([...fileList, file]);
+      setFileListPreview([
+        {
+          uid: "-xxx",
+          percent: 50,
+          name: "image.png",
+          status: "done",
+          url: URL.createObjectURL(file),
+        },
+      ]);
+      return false;
+    },
+    fileList: fileListPreview,
+  };
   const [option, setOption] = useState({
     pageIndex: 1,
     pageSize: 10,
@@ -214,8 +276,12 @@ const ClubStaff = () => {
     modalItem.current = null;
     setActiveModal("");
   };
-  const handleOpenOrderModal = (item: any) => {
-    Promise.all([(modalItem.current = item), fetchClubBookList(true), setActiveModal(MODAL_CODE.ORDER)])
+  const handleOpenOrderModal = (item: DataType) => {
+    Promise.all([
+      (modalItem.current = item),
+      fetchClubBookList(true, { ...defaultSearchBooklistForm }),
+      setActiveModal(MODAL_CODE.ORDER),
+    ])
       .then(() => {
         form.setFieldsValue({
           full_name: item?.memberName,
@@ -228,22 +294,63 @@ const ClubStaff = () => {
       });
   };
 
-  const handleOpenDepositModal = (item: any) => {
-    modalItem.current = item;
-    setActiveModal(MODAL_CODE.DEPOSIT);
+  const handleOpenDepositModal = async (item: DataType) => {
+    try {
+      const searchForm: ClubStaffBookListParams = {
+        ...defaultSearchBooklistForm,
+        membership_id: item.membershipId,
+        book_copy__book_status: BOOK_COPY_STATUS.sharing_club,
+      };
+
+      await fetchClubBookList(true, searchForm);
+
+      modalItem.current = item;
+
+      await setActiveModal(MODAL_CODE.DEPOSIT);
+
+      form.setFieldsValue({
+        full_name: item?.memberName,
+        phone_number: item?.memberPhone,
+      });
+    } catch (error) {
+      // Handle any errors that occurred during the steps
+      console.error(error);
+    }
   };
 
   const handleOpenWithdrawModal = (item: any) => {
-    setActiveModal(MODAL_CODE.WITHDRAW);
-    modalItem.current = item;
+    Promise.all([
+      (modalItem.current = item),
+      fetchClubBookList(true, { ...defaultSearchBooklistForm }),
+      setActiveModal(MODAL_CODE.WITHDRAW),
+    ])
+      .then(() => {
+        form.setFieldsValue({
+          full_name: item?.memberName,
+          phone_number: item?.memberPhone,
+        });
+      })
+      .catch((error) => {
+        // Handle any errors that occurred during concurrent execution
+        console.error(error);
+      });
   };
   const handleOpenViewAllModal = () => {
-    fetchClubBookList();
+    // fetchClubBookList();
     setActiveModal(MODAL_CODE.VIEW_ALL);
   };
-  const fetchClubBookList = useCallback((useForSelect = false) => {
+  const handleSelectBooksChange = debounce((value: string) => {
+    const searchForm: ClubStaffBookListParams = {
+      ...defaultSearchBooklistForm,
+      searchText: value,
+      page: 1,
+      pageSize: 10,
+    };
+    fetchClubBookList(true, searchForm);
+  }, 1000);
+  const fetchClubBookList = (useForSelect = false, searchForm: ClubStaffBookListParams) => {
     !useForSelect && setLoading(true);
-    ClubService.getClubStaffBookList()
+    ClubService.getClubStaffBookList(searchForm)
       .then((response) => {
         if (response.data) {
           const data = response.data.results.map((item: any, index: any) => {
@@ -266,17 +373,18 @@ const ClubStaff = () => {
       .finally(() => {
         !useForSelect && setLoading(false);
       });
-  }, []);
+  };
 
   const handleDepositBooks = useCallback((item: DataType) => {}, []);
   const handleWithdrawBooks = useCallback((item: DataType) => {}, []);
   const handleOrderBooks = () => {
-    const list_books_id = form.getFieldValue("select_books").map((item: any) => item.split("-")[0]);
+    const list_books_id = form.getFieldValue("select_books").map((item: any) => Number(item.split("-")[0]));
     const formData: ClubMemberOrderCreateForm = {
       membership_id: modalItem.current?.membershipId,
       member_book_copy_ids: list_books_id && list_books_id,
-      due_date: form.getFieldValue("due_date"),
+      due_date: dayjs(form.getFieldValue("due_date")).format(dateFormatList[0]),
       note: form.getFieldValue("note"),
+      attachment: fileList[0] as RcFile,
     };
     ClubService.clubMemberOrderCreate(formData)
       .then((response) => {
@@ -284,6 +392,7 @@ const ClubStaff = () => {
           message: "Order create successfully!",
           type: "success",
         });
+        setFileList([]);
         handleCloseModal();
       })
       .catch((error) => {
@@ -452,70 +561,99 @@ const ClubStaff = () => {
       },
     },
   ];
+  const defaultFormContent = (optionalField?: JSX.Element) => {
+    return (
+      <>
+        <Form {...layout} form={form} name="control-ref" style={{ width: 800 }}>
+          <Form.Item
+            name="full_name"
+            label="Full Name"
+            rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} full name` }]}
+          >
+            <Input disabled />
+          </Form.Item>
+          <Form.Item
+            name="phone_number"
+            label="Phone Number"
+            rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} phone number` }]}
+          >
+            <Input disabled />
+          </Form.Item>
+          <Form.Item
+            label="Select Books"
+            name="select_books"
+            rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} select at least one book` }]}
+          >
+            <Select
+              onSearch={handleSelectBooksChange}
+              placeholder="Find books..."
+              mode="multiple"
+              showArrow
+              style={{ width: "100%" }}
+            >
+              {clubBookList.map((item: DataTypeBooks) => {
+                return (
+                  <Select.Option value={item.id + "-" + item.bookName}>{`${
+                    item.memberName + " - " + item.bookName
+                  }`}</Select.Option>
+                );
+              })}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} attachment` }]}
+            name="attachment"
+            label="Attachment"
+          >
+            <Upload multiple={false} accept="image/*" {...props} listType="picture-card">
+              {uploadButton}
+            </Upload>
+          </Form.Item>
+          {optionalField}
+        </Form>
+      </>
+    );
+  };
   const modalContent: ModalContent = {
     order: {
       title: "Book Order",
       width: 800,
       onOk: handleOrderBooks,
-      content: (
+      content: defaultFormContent(
         <>
-          {
-            <Form {...layout} form={form} name="control-ref" style={{ width: 800 }}>
-              <Form.Item
-                name="full_name"
-                label="Full Name"
-                rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} full name` }]}
-              >
-                <Input disabled />
-              </Form.Item>
-              <Form.Item
-                name="phone_number"
-                label="Phone Number"
-                rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} phone number` }]}
-              >
-                <Input disabled />
-              </Form.Item>
-              <Form.Item
-                label="Select Books"
-                name="select_books"
-                rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} select at least one book` }]}
-              >
-                <Select placeholder="Find books..." mode="multiple" showArrow style={{ width: "100%" }}>
-                  {clubBookList.map((item: DataTypeBooks) => {
-                    return (
-                      <Select.Option value={item.id + "-" + item.bookName}>{`${
-                        item.memberName + " - " + item.bookName
-                      }`}</Select.Option>
-                    );
-                  })}
-                </Select>
-              </Form.Item>
-              <Form.Item
-                name="due_date"
-                label="Due Date"
-                rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} due date` }]}
-              >
-                <DatePicker disabledDate={disabledDateBefore} style={{ width: "100%" }} format={dateFormatList} />
-              </Form.Item>
-              <Form.Item name="note" label="Note" rules={[{ required: false }]}>
-                <TextArea rows={4} placeholder="Note..." />
-              </Form.Item>
-            </Form>
-          }
-        </>
+          <Form.Item
+            name="due_date"
+            label="Due Date"
+            rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} due date` }]}
+          >
+            <DatePicker disabledDate={disabledDateBefore} style={{ width: "100%" }} format={dateFormatList} />
+          </Form.Item>
+          <Form.Item name="note" label="Note" rules={[{ required: false }]}>
+            <TextArea rows={4} placeholder="Note..." />
+          </Form.Item>
+          ,
+        </>,
       ),
     },
     deposit: {
       title: "Deposit Books",
       width: 800,
       onOk: handleDepositBooks,
-      content: <>{/* Content for deposit modal */}</>,
+      content: defaultFormContent(
+        <Form.Item name="description" label="Description" rules={[{ required: false }]}>
+          <TextArea rows={4} placeholder="Description..." />
+        </Form.Item>,
+      ),
     },
     withdraw: {
       title: "Withdraw Books",
       width: 800,
       onOk: handleWithdrawBooks,
-      content: <>{/* Content for withdraw modal */}</>,
+      content: defaultFormContent(
+        <Form.Item name="description" label="Description" rules={[{ required: false }]}>
+          <TextArea rows={4} placeholder="Description..." />
+        </Form.Item>,
+      ),
     },
     view_all: {
       title: `${bookClubName.current}`,
@@ -544,9 +682,9 @@ const ClubStaff = () => {
     <StyledClubStaffList>
       <div className="table-extra-content">
         <h1>{bookClubName.current}</h1>
-        <a onClick={handleOpenViewAllModal} href="javascript:void(0)" rel="noopener noreferrer">
+        {/* <a onClick={handleOpenViewAllModal} href="javascript:void(0)" rel="noopener noreferrer">
           (View all books)
-        </a>
+        </a> */}
         {/* <Button type="primary" loading={loading}>
           Club Books
         </Button> */}

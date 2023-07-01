@@ -16,3 +16,25 @@ export const getDeviceType = () => {
 export const getObjectByIdInArray = (array: any, id: any) => {
   return array.find((obj: any) => obj.id === id);
 } 
+
+/**
+ * The debounce function takes a callback function and a delay time, and returns a new function that
+ * delays the execution of the callback until the delay time has passed, ensuring that the callback is
+ * only called once within that time period.
+ * @param {Function} callback - The `callback` parameter is a function that will be executed after the
+ * specified delay.
+ * @param {number} delay - The `delay` parameter is the amount of time in milliseconds that the
+ * `callback` function should be delayed before being executed.
+ * @returns The debounce function returns a new function that will execute the provided callback
+ * function after a specified delay.
+ */
+export const debounce = (callback: Function, delay: number) => {
+  let timeoutId: NodeJS.Timeout;
+
+  return (...args: any[]) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      callback.apply(null, args);
+    }, delay);
+  };
+};

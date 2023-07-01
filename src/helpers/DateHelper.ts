@@ -1,6 +1,6 @@
 import type { RangePickerProps } from "antd/es/date-picker";
 import dayjs from "dayjs";
-export const dateFormatList = ["DD/MM/YYYY"];
+export const dateFormatList = ["YYYY-MM-DD"];
 
 /**
  * The function `disabledDate` is a TypeScript arrow function that takes a `current` parameter and

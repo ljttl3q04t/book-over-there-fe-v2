@@ -14,6 +14,7 @@ const Checkout = loadable(() => import("@/scenes/Checkout"));
 const ClubBook = loadable(() => import("@/scenes/Club/ClubBook"));
 const ClubList = loadable(() => import("@/scenes/Club/ClubList"));
 const ClubStaff = loadable(() => import("@/scenes/Club/ClubStaff"));
+const ClubBookManagement = loadable(() => import("@/scenes/Club/ClubBookManagement"));
 const Homepage = loadable(() => import("@/scenes/Homepage"));
 const LayoutCustom = loadable(() => import("@/scenes/Layout/index"));
 const Login = loadable(() => import("@/scenes/Login"));
@@ -55,7 +56,7 @@ const App = () => {
             {token ? (
               <>
                 {user?.is_staff && <Route path="/clubstaff/member-order" Component={ClubStaff} />}
-                {user?.is_staff && <Route path="/clubstaff" Component={ClubStaff} />}
+                {user?.is_staff && <Route path="/clubstaff/books-management" Component={ClubBookManagement} />}
                 <Route path="/clubbook" Component={ClubBook} />
                 <Route path="/bookclub" Component={ClubBook} />
                 <Route path="/my-profile" Component={Personal} />
