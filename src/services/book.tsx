@@ -28,7 +28,27 @@ const createBook = async (data: any) => {
 
 const getHistoryBook = async () => {
   try {
-    const response = await ApiServiceAuthor.get(`/user/book/add`);
+    const response = await ApiServiceAuthor.get(`/user/book/history`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error;
+  }
+};
+
+const getBookByLink = async (data:any) => {
+  try {
+    const response = await ApiServiceAuthor.post(`/book/check`,data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error;
+  }
+};
+
+const getBookborrow = async () => {
+  try {
+    const response = await ApiServiceAuthor.get(`user/book/borrowing`);
     return response.data;
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -41,5 +61,7 @@ const bookService = {
   getMyBookList,
   createBook,
   getHistoryBook,
+  getBookByLink,
+  getBookborrow
 };
 export default bookService;

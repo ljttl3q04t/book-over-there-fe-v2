@@ -15,4 +15,16 @@ export const getDeviceType = () => {
 
 export const getObjectByIdInArray = (array: any, id: any) => {
   return array.find((obj: any) => obj.id === id);
-} 
+}
+
+export const createFileFromImageLink = async (imageLink: string, fileName: string) => {
+  try {
+    const response = await fetch(imageLink);
+    const blob = await response.blob();
+    const file = new File([blob], fileName, { type: blob.type });
+    return file;
+  } catch (error) {
+    console.error("Lỗi khi tạo File từ liên kết hình ảnh:", error);
+    throw error;
+  }
+}

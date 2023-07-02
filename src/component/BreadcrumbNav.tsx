@@ -28,6 +28,7 @@ const breadcrumbItems = [
   { path: "/transactionhistory", breadcrumbName: "Transaction History" },
   { path: "/my-book", breadcrumbName: "My Book" },
   { path: "/book-history", breadcrumbName: "Book History" },
+  { path: "/book-borrow", breadcrumbName: "Book Borrow" },
   { path: "/book-wishlist", breadcrumbName: "Book Wishlist" },
 ];
 

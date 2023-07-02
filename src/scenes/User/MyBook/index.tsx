@@ -6,13 +6,13 @@ import type { FormInstance } from "antd/es/form";
 import styled from "styled-components";
 
 import DawerBook from "@/component/DrawerBook";
-import bookService from "@/services/book";
 import { BookCopy, Club, ListView } from "@/services/types";
 import userService from "@/services/user";
 import { FilterConfirmProps } from "antd/lib/table/interface";
 import { getColumnSearchProps } from "@/helpers/CommonTable";
 import { getObjectByIdInArray } from "@/helpers/fuctionHepler";
 import { EditBook } from "./type";
+import { fetchBookList } from "./callService";
 
 const StyledMyBookContainer = styled.div`
   border-radius: 12px;
@@ -84,35 +84,6 @@ function MyBook() {
       });
   };
 
-  const fetchBookList = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response: BookCopy[] = await bookService.getMyBookList();
-      const data = response.map((item: any, index: any) => {
-        return {
-          key: index+1,
-          id: item.id,
-          bookName: item?.book?.name,
-          bookCategory: item?.book?.category?.name,
-          bookAuthor: item?.book?.author?.name,
-          bookPublisher: item?.book?.publisher?.name,
-          bookImage: item?.book?.image,
-          createdAt: item?.created_at,
-          iupdatedAt: item?.updated_at,
-          bookStatus: item?.book_status,
-          bookDepositPrice: item?.book_deposit_price,
-          bookDepositStatus: item?.book_deposit_status,
-          user: item?.user
-        }
-      })
-      setBooks(data)
-      setLoading(false);
-    } catch (error) {
-      console.error("error", error);
-      // Handle error
-    }
-  }, []);
-
   const fetchClubList = useCallback(async () => {
     try {
       setLoading(true);
@@ -133,10 +104,10 @@ function MyBook() {
       console.log("response getUserShareClub: ", response);
       setLoading(false);
       handleCloseModalShareBook()
-      fetchBookList()
+      const bookList: any = await fetchBookList();
+      setBooks(bookList)
       notification.info({ message: response.data.result });
     } catch (error) {
-      console.error("error", error);
       notification.error({ message: "System error" });
       setLoading(false);
       // Handle error
@@ -148,8 +119,18 @@ function MyBook() {
   }, []);
 
   useEffect(() => {
-    fetchBookList();
-  }, [fetchBookList]);
+    const fetchData = async () => {
+      try {
+        const bookList: any = await fetchBookList();
+        setBooks(bookList);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching book list:", error);
+        // Handle error
+      }
+    };
+    fetchData();
+  }, [fetchBookList, open]);
 
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
@@ -285,8 +266,8 @@ function MyBook() {
 
       let xxx = getObjectByIdInArray(books, idBook)
       console.log("xxx", xxx);
-      
-      const bookEdit:EditBook = getObjectByIdInArray(books, idBook)
+
+      const bookEdit: EditBook = getObjectByIdInArray(books, idBook)
       setBookEdit(bookEdit)
       setTitle("Edit Book")
 

@@ -70,7 +70,7 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSide
 
   let items: MenuProps["items"] = [
     getItem("Home Page", "", <HomeOutlined />),
-    getItem("Checkout", "checkout", <CheckCircleOutlined />),
+    // getItem("Checkout", "checkout", <CheckCircleOutlined />),
   ];
   const getClubStaffItem = (isStaff: any): MenuItem => {
     if (isStaff) {
@@ -90,11 +90,13 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSide
       getItem("User", "sub0", <UserOutlined />, [
         getItem("My Account", "sub3", <UserOutlined />, [
           getItem("Personal profile", "my-profile"),
-          getItem("Payment", "payment"),
-          getItem("Transaction history", "transactionhistory"),
+          // getItem("Payment", "payment"),
+          // getItem("Transaction history", "transactionhistory"),
         ]),
 
-        getItem("Book Status", "sub2", <BookOutlined />, [getItem("My book", "my-book")]),
+        getItem("Book Status", "sub2", <BookOutlined />, [
+          getItem("My book", "my-book"),
+          getItem("Book Borrow", "book-borrow")]),
         getItem("Book History", "book-history", <HistoryOutlined />),
         getItem("Wishlist", "book-wishlist", <UnorderedListOutlined />),
       ]),

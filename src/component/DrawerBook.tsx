@@ -1,10 +1,15 @@
+import { createFileFromImageLink } from "@/helpers/fuctionHepler";
+import { getBookByLink, getListBookInit } from "@/scenes/User/MyBook/callService";
 import bookService from "@/services/book";
 import { PlusOutlined } from "@ant-design/icons";
 import { Button, Drawer, Form, FormInstance, Input, Modal, Select, Space, Upload, notification } from "antd";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
+import Tooltip from "antd/lib/tooltip";
 import { useEffect, useRef, useState } from "react";
 import React from "react";
 
+const { Option } = Select;
+const { Search } = Input;
 const getBase64 = (file: RcFile): Promise<string> =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -14,7 +19,6 @@ const getBase64 = (file: RcFile): Promise<string> =>
   });
 
 function DawerBook({ open, onSubmit, onClose, fetchBookList, bookEdit, title }: any) {
-  console.log("bookEdit: ", bookEdit);
 
 
   const [form] = Form.useForm();
@@ -24,6 +28,13 @@ function DawerBook({ open, onSubmit, onClose, fetchBookList, bookEdit, title }: 
   const [previewTitle, setPreviewTitle] = useState("");
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [fileListPreview, setFileListPreview] = useState<UploadFile[]>([]);
+  const [books, setBooks] = useState<any[]>([]);
+  const [booksTemp, setBooksTemp] = useState<any[]>([]);
+  const [option, setOption] = useState({
+    pageIndex: 1,
+    pageSize: 1000,
+    txtSearch: ''
+  });
 
 
   useEffect(() => {
@@ -45,15 +56,42 @@ function DawerBook({ open, onSubmit, onClose, fetchBookList, bookEdit, title }: 
     }
   }, [bookEdit])
 
-  const onFinish = async (values: any) => {
-    console.log("values: ", values);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const bookList: any = await getListBookInit(option);
+        console.log("bookList: ", bookList);
+        setBooks(bookList);
+      } catch (error) {
+        console.error("Error fetching book list:", error);
 
+        // Handle error
+      }
+    };
+    fetchData();
+  }, [])
+
+  const onFinish = async (values: any) => {
+    console.log("fileList[0]: ", fileList[0]);
     let formData = new FormData();
-    formData.append('book.name', values.name);
-    formData.append('book.category.name', values.category);
-    formData.append('book.author.name', values.author);
-    formData.append('book.publisher.name', values.publisher);
-    formData.append('book.image', fileList[0] as RcFile);
+    if (fileList[0]) {
+
+      formData.append('book.name', values.name);
+      formData.append('book.category.name', values.category);
+      formData.append('book.author.name', values.author);
+      formData.append('book.publisher.name', values.publisher);
+      formData.append('book.image', fileList[0] as RcFile ? fileList[0] as RcFile : '');
+    } else {
+      formData.append('book.name', values.name);
+      formData.append('book.category.name', values.category);
+      formData.append('book.author.name', values.author);
+      formData.append('book.publisher.name', values.publisher);
+      formData.append('book.image_url', 'https://salt.tikicdn.com/cache/400x400/ts/product/e2/32/b3/085ee546b06b792e847edd88b02b8f15.jpg.webp');
+    }
+
+
+    console.log('formData; ', formData);
+
     try {
       const res = await bookService.createBook(formData);
       console.log("res: ", res);
@@ -62,9 +100,17 @@ function DawerBook({ open, onSubmit, onClose, fetchBookList, bookEdit, title }: 
         message: "Info",
         description: res.result,
       });
-      fetchBookList()
+      // fetchBookList()
       onClose();
+      setFileListPreview([])
     } catch (err: any) {
+      console.log("err create: ", err.response);
+      if (!fileList[0]) {
+        notification.error({
+          message: `Validation Error: }`,
+          description: "please choose a file",
+        });
+      }
       Object.keys(err.response.data.book).forEach((field) => {
         const errors = err.response.data.book[field];
         errors.forEach((errorMessage: any) => {
@@ -123,15 +169,56 @@ function DawerBook({ open, onSubmit, onClose, fetchBookList, bookEdit, title }: 
     </div>
   );
   const handleCancel = () => setPreviewOpen(false);
+
+  // const handleChangeNameBook = (value: any) => {
+  //   setBooksTemp([...books]) 
+  // };
+
+  const changeLink = async (value: string) => {
+    try {
+      const book: any = await getBookByLink({ remote_url: value });
+      console.log("book: ", book);
+
+      if (book) {
+        formRef.current?.setFieldsValue({
+          name: book?.book_name,
+          category: book?.book_category_name,
+          image: book?.book_image,
+          author: book?.book_author_name,
+          publisher: book?.book_publisher_name
+        });
+        setFileListPreview([{
+          uid: '-1',
+          name: 'image.png',
+          status: 'done',
+          url: book?.book_image,
+        }])
+      }
+
+
+    } catch (error) {
+      console.error("Error fetching book list:", error);
+
+      // Handle error
+    }
+
+  }
+
   return (
     <Drawer
+      size={'large'}
       title={title}
-      onClose={onClose}
+      onClose={() => {
+        onClose();
+        setFileListPreview([])
+      }}
       open={open}
       bodyStyle={{ paddingBottom: 80 }}
       extra={
         <Space>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={() => {
+            onClose()
+          }}>Cancel</Button>
           <Button onClick={() => form.submit()} type="primary">
             Save
           </Button>
@@ -139,6 +226,17 @@ function DawerBook({ open, onSubmit, onClose, fetchBookList, bookEdit, title }: 
       }
     >
       <Form layout="vertical" form={form} onFinish={onFinish} ref={formRef}>
+        <Form.Item name="link" label="Link">
+          <Tooltip title="You can select link book from Tiki or Fahasa " color={'#108ee9'}>
+            <Search
+              size="large"
+              style={{ width: "100%" }}
+              placeholder="Please enter link"
+              onSearch={changeLink}
+            // value={bookEdit?.category}
+            />
+          </Tooltip>
+        </Form.Item>
         <Form.Item name="image" label="Cover" >
           <Upload
             accept="image/*"
@@ -160,25 +258,10 @@ function DawerBook({ open, onSubmit, onClose, fetchBookList, bookEdit, title }: 
             style={{ width: "100%" }}
             placeholder="Please enter name"
             min={1}
-          // value={bookEdit?.namee}
           />
+
         </Form.Item>
-        <Form.Item
-          name="bookStatus"
-          label="BookStatus"
-        // rules={[{ required: true, message: "Please select book status" }]}
-        >
-          <Select
-            placeholder="Please enter book status"
-            allowClear
-            options={[
-              { value: "jack", label: "Jack" },
-              { value: "lucy", label: "Lucy" },
-              { value: "Yiminghe", label: "yiminghe" },
-              { value: "disabled", label: "Disabled" },
-            ]}
-          />
-        </Form.Item>
+
 
         <Form.Item name="category" label="Category" rules={[{ required: true, message: "Please enter category" }]}>
           <Input
