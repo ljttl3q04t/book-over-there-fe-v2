@@ -307,7 +307,7 @@ function MyBook() {
           setOpen(true)
           setTitle("Add Book")
         }}>
-          Add Book{books.length}
+          Add Book
         </Button>
         <Button type="primary" onClick={() => handleOpenShareBook(null)}>
           Share my book
