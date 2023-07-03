@@ -1,14 +1,15 @@
-import { Avatar, Tag, Col, Row, Select, InputRef } from "antd";
+import { Avatar, Button, Col, InputRef, Select } from "antd";
 import Table from "antd/es/table";
 import styled from "styled-components";
-import React, { useCallback, useEffect, useState ,useRef } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import { BookCopy } from "@/services/types";
 import bookService from "@/services/book";
-import { getBookHistory } from "../MyBook/callService";
+import { getBookBorrow } from "../MyBook/callService";
 import { FilterConfirmProps } from "antd/es/table/interface";
 import { getColumnSearchProps } from "@/helpers/CommonTable";
+import { formatDate } from "@/helpers/fuctionHepler";
 
-const StyledMyBookContainer = styled.div`
+const StyledBookBorrowContainer = styled.div`
   border-radius: 12px;
   padding: 30px;
   background: #fff;
@@ -21,13 +22,10 @@ const StyledMyBookContainer = styled.div`
     padding-bottom: 20px;
   }
 `;
-const statusColors: any = {
-  sharing_club: "green",
-  new: "geekblue",
-};
+
 const { Option } = Select;
 
-const BookHistory = () => {
+const BookBorrow = () => {
 
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
@@ -48,68 +46,56 @@ const BookHistory = () => {
     clearFilters();
     setSearchText("");
   };
-
   const columns = [
     {
       title: "Avatar",
-      dataIndex: ["bookImage"],
-      key: "bookImage",
+      dataIndex: ["book_image"],
+      key: "avatar",
       render: (image: string) => <Avatar shape="square" size={148} src={image} />,
+      
     },
     {
       title: "Name",
-      dataIndex: ["bookName"],
-      key: "bookName",
-      ...getColumnSearchProps("bookName", searchInput,
+      dataIndex: ["book_name"],
+      key: "name",
+      ...getColumnSearchProps("book_name", searchInput,
         searchText, setSearchText, searchedColumn, setSearchedColumn,
         handleReset, handleSearch),
     },
     {
-      title: "BookStatus",
-      dataIndex: ["bookStatus"],
-      key: "bookStatus",
-      render: (bookStatus: any) => {
-
-        return (
-          <Tag color={statusColors[bookStatus]} key={status}>
-            {bookStatus}
-          </Tag>
-        );
-      },
+      title: "Start Date",
+      dataIndex: "start_date",
+      key: "start_date",
+      
     },
     {
-      title: "Category",
-      dataIndex: ["bookCategory"],
-      key: "bookCategory",
-      ...getColumnSearchProps("bookCategory", searchInput,
-        searchText, setSearchText, searchedColumn, setSearchedColumn,
-        handleReset, handleSearch),
+      title: "Due Date",
+      dataIndex: ["due_date"],
+      key: "due_date",
+      render: (value:any) => <p>{formatDate(value, 'yyyy-mm-dd, hh:ss')}</p>,
     },
     {
-      title: "Author",
-      dataIndex: ["bookAuthor"],
-      key: "bookAuthor",
-      ...getColumnSearchProps("bookAuthor", searchInput,
-        searchText, setSearchText, searchedColumn, setSearchedColumn,
-        handleReset, handleSearch),
+      title: "Overdue Day Count",
+      dataIndex: ["overdue_day_count"],
+      key: "overdue_day_count",
     },
     {
-      title: "Publisher",
-      dataIndex: ["bookPublisher"],
-      key: "bookPublisher",
-      ...getColumnSearchProps("bookPublisher", searchInput,
+      title: "Club Name",
+      dataIndex: ["club_name"],
+      key: "club_name",
+      ...getColumnSearchProps("club_name", searchInput,
         searchText, setSearchText, searchedColumn, setSearchedColumn,
         handleReset, handleSearch),
     },
   ];
 
-  const [books, setBooks] = useState<any[]>([]);
+  const [books, setBooks] = useState<BookCopy[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const fetchBookHistory = useCallback(async () => {
+  const fetchBookBorrow = useCallback(async () => {
     try {
       setLoading(true);
-      const response: any = await getBookHistory();
+      const response: any = await getBookBorrow();
       setBooks(response);
       setLoading(false);
     } catch (error) {
@@ -119,11 +105,11 @@ const BookHistory = () => {
   }, []);
 
   useEffect(() => {
-    fetchBookHistory();
-  }, [fetchBookHistory]);
+    fetchBookBorrow();
+  }, [fetchBookBorrow]);
 
   return (
-    <StyledMyBookContainer>
+    <StyledBookBorrowContainer>
       <div className="table-header">
         <Select defaultValue={"All"} style={{ width: 120 }}>
           <Option value="All">ALL</Option>
@@ -137,8 +123,8 @@ const BookHistory = () => {
         </Button> */}
       </div>
       <Table<any> columns={columns} dataSource={books} loading={loading} />
-    </StyledMyBookContainer>
+    </StyledBookBorrowContainer>
   );
 };
 
-export default BookHistory;
+export default BookBorrow;

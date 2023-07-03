@@ -46,7 +46,6 @@ const calculateChunksSize = () => {
   return chunksSize;
 };
 const Homepage = () => {
-  const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
   const [loading, setLoading] = useState(false);
   const [bookList, setBookList] = useState<any>({});
   const [option, setOption] = useState({
@@ -54,20 +53,6 @@ const Homepage = () => {
     pageSize: 10,
   });
   const [chunksSize, setChunksSize] = useState(calculateChunksSize());
-
-  // const initFetch = useCallback(async () => {
-  //   setLoading(true);
-  //   dispatch(getListBook(option))
-  //     .then((response) => {
-  //       if (response.payload) {
-  //         const data = response.payload;
-  //         setBookList(data);
-  //         console.log('data: ',data);
-
-  //       }
-  //     })
-  //     .finally(() => setLoading(false));
-  // }, [dispatch, option]);
 
   const getListBookInit = useCallback(async () => {
     try {
@@ -83,7 +68,6 @@ const Homepage = () => {
   }, []);
 
   useEffect(() => {
-    // initFetch();
     getListBookInit();
   }, [option]);
 

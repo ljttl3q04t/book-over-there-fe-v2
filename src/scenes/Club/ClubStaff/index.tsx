@@ -7,10 +7,17 @@ import {
   DownloadOutlined,
   LoadingOutlined,
   PlusOutlined,
+  UnorderedListOutlined,
 } from "@ant-design/icons";
 
 import styled from "styled-components";
-import ClubService, { UpdateMemberClubForm, ClubMemberOrderCreateForm, ClubStaffBookListParams } from "@/services/club";
+import ClubService, {
+  UpdateMemberClubForm,
+  ClubMemberOrderCreateForm,
+  ClubStaffBookListParams,
+  ClubMemberBookBorrowingForm,
+  ClubMemberBookBorrowingExtendForm,
+} from "@/services/club";
 import { debounce } from "@/helpers/fuctionHepler";
 import {
   Button,
@@ -27,18 +34,26 @@ import {
   UploadProps,
   Upload,
   UploadFile,
+  Drawer,
 } from "antd";
 import dayjs from "dayjs";
 import { FilterConfirmProps } from "antd/es/table/interface";
 import { getColumnSearchProps } from "@/helpers/CommonTable";
 import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
 import { disabledDateBefore, dateFormatList } from "@/helpers/DateHelper";
-import { Item } from "semantic-ui-react";
 import { RcFile } from "antd/es/upload";
-const { Option } = Select;
 
 const StyledModalContent = styled.div`
   padding: 30px;
+  > .table-extra-content {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 15px;
+    .table-extra-content-item {
+      display: flex;
+      gap: 10px;
+    }
+  }
 `;
 const StyledClubStaffList = styled.div`
   border-radius: 12px;
@@ -74,6 +89,11 @@ const MODAL_CODE = {
   DEPOSIT: "deposit",
   WITHDRAW: "withdraw",
   VIEW_ALL: "view_all",
+  BORROWING: "borrowing",
+};
+const DRAWER_CODE = {
+  RETURN: "return",
+  EXTEND: "extend",
 };
 const BOOK_COPY_STATUS = {
   sharing_club: "sharing_club",
@@ -84,6 +104,13 @@ interface ModalContent {
     onOk: (item: DataType) => void;
     content: JSX.Element;
     width: string | number;
+  };
+}
+interface DrawerContent {
+  [key: string]: {
+    title: any;
+    onOk: () => void;
+    content: JSX.Element;
   };
 }
 interface DataType {
@@ -111,11 +138,38 @@ interface DataTypeBooks {
   totalCopyCount: number;
   memberName: string;
 }
+
+interface DataTypeBooks {
+  id: number;
+  no: number;
+  bookName: string;
+  categoryName: string;
+  authorName: string;
+  publisherName: string;
+  image: string;
+  totalCopyCount: number;
+  memberName: string;
+}
+interface DataTypeBooksBorrowing {
+  no: number;
+  order_detail_id: number;
+  order_id: number;
+  book_name: string;
+  book_image: string;
+  start_date: string;
+  due_date: string;
+  overdue_day_count: number;
+  club_name: string;
+}
 type DataIndex = keyof DataType;
 type DataIndexBooks = keyof DataTypeBooks;
 
 const layout = {
   labelCol: { span: 4 },
+  wrapperCol: { span: 16 },
+};
+const layoutFormDrawer = {
+  labelCol: { span: 8 },
   wrapperCol: { span: 16 },
 };
 const { TextArea } = Input;
@@ -134,10 +188,13 @@ const ClubStaff = () => {
   const searchInput = useRef<InputRef>(null);
   const bookClubName = useRef<string>("");
   const [activeModal, setActiveModal] = useState("");
+  const [activeDrawer, setActiveDrawer] = useState(DRAWER_CODE.EXTEND);
   const [clubBookList, setClubBookList] = useState([]);
+  const [memberBookBorrowingList, setMemberBookBorrowingList] = useState([]);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [fileListPreview, setFileListPreview] = useState<UploadFile[]>([]);
   const [form] = Form.useForm();
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const uploadButton = (
     <div>
       {loading ? <LoadingOutlined /> : <PlusOutlined />}
@@ -274,7 +331,10 @@ const ClubStaff = () => {
   const handleCloseModal = () => {
     form.resetFields();
     modalItem.current = null;
+    setSelectedRowKeys([]);
     setActiveModal("");
+    setFileList([]);
+    setFileListPreview([]);
   };
   const handleOpenOrderModal = (item: DataType) => {
     Promise.all([
@@ -339,6 +399,80 @@ const ClubStaff = () => {
     // fetchClubBookList();
     setActiveModal(MODAL_CODE.VIEW_ALL);
   };
+  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    console.log("selectedRowKeys changed: ", newSelectedRowKeys);
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
+  const onResetRowSelection = () => {
+    setSelectedRowKeys([]);
+  };
+  const [openBorrowingDrawer, setOpenBorrowingDrawer] = useState(false);
+
+  const showBorrowingDrawer = async (drawerCode: string) => {
+    await setActiveDrawer(drawerCode);
+    await setOpenBorrowingDrawer(true);
+    form.setFieldsValue({
+      full_name: modalItem?.current.memberName,
+      phone_number: modalItem?.current.memberPhone,
+    });
+  };
+
+  const onCloseBorrowingDrawer = () => {
+    setOpenBorrowingDrawer(false);
+    setSelectedRowKeys([]);
+    form.resetFields();
+    setFileList([]);
+    setFileListPreview([]);
+  };
+  const handleOpenBorrowingModal = async (item: DataType) => {
+    try {
+      const searchForm: ClubMemberBookBorrowingForm = {
+        membership_id: item.membershipId,
+      };
+
+      await fetchMemberBookBorrowing(searchForm);
+
+      modalItem.current = item;
+
+      await setActiveModal(MODAL_CODE.BORROWING);
+    } catch (error) {
+      // Handle any errors that occurred during the steps
+      console.error(error);
+    }
+  };
+  const handleExtendBorrowingBooks = () => {
+    const formData: ClubMemberBookBorrowingExtendForm = {
+      membership_order_detail_ids: selectedRowKeys,
+      new_due_date: dayjs(form.getFieldValue("new_due_date")).format(dateFormatList[0]),
+      note: form.getFieldValue("note"),
+      attachment: fileList[0] as RcFile,
+    };
+    ClubService.clubMemberBookBorrowingExtend(formData)
+      .then((response) => {
+        notification.success({
+          message: "Extend successfully!",
+          type: "success",
+        });
+        onCloseBorrowingDrawer() ;
+        setFileList([]);
+        setFileListPreview([]);
+        const searchForm: ClubMemberBookBorrowingForm = {
+          membership_id: modalItem?.current.membershipId,
+        };
+        fetchMemberBookBorrowing(searchForm);
+      })
+      .catch((error) => {
+        notification.error({
+          message: `Extend failed, please try again!`,
+          type: "error",
+        });
+      })
+      .finally(() => {});
+  };
   const handleSelectBooksChange = debounce((value: string) => {
     const searchForm: ClubStaffBookListParams = {
       ...defaultSearchBooklistForm,
@@ -374,10 +508,23 @@ const ClubStaff = () => {
         !useForSelect && setLoading(false);
       });
   };
-
+  const fetchMemberBookBorrowing = (searchForm: ClubMemberBookBorrowingForm) => {
+    setLoading(true);
+    ClubService.getClubMemberBookBorrowing(searchForm)
+      .then((response) => {
+        if (response.data) {
+          setMemberBookBorrowingList(response.data);
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
   const handleDepositBooks = useCallback((item: DataType) => {}, []);
   const handleWithdrawBooks = useCallback((item: DataType) => {}, []);
   const handleOrderBooks = () => {
+    form.validateFields()
+    if (form.getFieldsError()) return;
     const list_books_id = form.getFieldValue("select_books").map((item: any) => Number(item.split("-")[0]));
     const formData: ClubMemberOrderCreateForm = {
       membership_id: modalItem.current?.membershipId,
@@ -392,7 +539,6 @@ const ClubStaff = () => {
           message: "Order create successfully!",
           type: "success",
         });
-        setFileList([]);
         handleCloseModal();
       })
       .catch((error) => {
@@ -417,6 +563,9 @@ const ClubStaff = () => {
         <Space size="middle">
           <Button icon={<PlusCircleFilled />} type="primary" onClick={() => handleOpenOrderModal(item)}>
             Order
+          </Button>
+          <Button icon={<UnorderedListOutlined />} onClick={() => handleOpenBorrowingModal(item)}>
+            Borrowing
           </Button>
           <Button type="primary" icon={<DownloadOutlined />} onClick={() => handleOpenDepositModal(item)}>
             Deposit Books
@@ -470,6 +619,53 @@ const ClubStaff = () => {
       dataIndex: "totalCopyCount",
       key: "totalCopyCount",
     },
+    // {
+    //   title: "Action",
+    //   key: "action",
+    //   render: (_values: DataType) => (
+    //     <Button icon={<PlusCircleFilled />} type="primary" onClick={() => handleOpenOrder(_values)}>
+    //       Order
+    //     </Button>
+    //   ),
+    // },
+  ];
+  const columnsBookBorrowingList: ColumnsType<DataTypeBooksBorrowing> = [
+    {
+      title: "",
+      width: "8%",
+      dataIndex: "book_image",
+      key: "book_image",
+      render: (image: string) => <Avatar shape="square" size={98} src={image} />,
+    },
+    {
+      title: "Name",
+      width: "25%",
+      dataIndex: "book_name",
+      key: "book_name",
+    },
+    {
+      title: "Start Date",
+      dataIndex: "start_date",
+      key: "start_date",
+      render: (start_date: any) => dayjs(start_date).format("YYYY-MM-DD"),
+    },
+    {
+      title: "Due Date",
+      dataIndex: "due_date",
+      key: "due_date",
+      render: (start_date: any) => dayjs(start_date).format("YYYY-MM-DD"),
+    },
+    {
+      title: "Overdue Days",
+      dataIndex: "overdue_day_count",
+      key: "overdue_day_count",
+    },
+    {
+      title: "Club Name",
+      dataIndex: "club_name",
+      key: "club_name",
+    },
+
     // {
     //   title: "Action",
     //   key: "action",
@@ -614,6 +810,56 @@ const ClubStaff = () => {
       </>
     );
   };
+  const drawerContent: DrawerContent = {
+    extend: {
+      title: `Extend Books`,
+      onOk: handleExtendBorrowingBooks,
+      content: (
+        <>
+          <Form onFinish={handleExtendBorrowingBooks} layout="vertical" form={form} name="control-ref" style={{ width: "100%" }}>
+            <Form.Item
+              name="full_name"
+              label="Full Name"
+              rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} full name` }]}
+            >
+              <Input disabled />
+            </Form.Item>
+            <Form.Item
+              name="phone_number"
+              label="Phone Number:"
+              rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} phone number` }]}
+            >
+              <Input disabled />
+            </Form.Item>
+            <Form.Item
+              name="new_due_date"
+              label="New Due Date"
+              rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} new due date` }]}
+            >
+              <DatePicker disabledDate={disabledDateBefore} style={{ width: "100%" }} format={dateFormatList} />
+            </Form.Item>
+            <Form.Item
+              rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} attachment` }]}
+              name="attachment"
+              label="Attachment:"
+            >
+              <Upload multiple={false} accept="image/*" {...props} listType="picture-card">
+                {uploadButton}
+              </Upload>
+            </Form.Item>
+            <Form.Item name="note" label="Note" rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} note` }]}>
+              <TextArea rows={4} placeholder="Note..." />
+            </Form.Item>
+          </Form>
+        </>
+      ),
+    },
+    return: {
+      title: `Return Books`,
+      onOk: () => {},
+      content: <></>,
+    },
+  };
   const modalContent: ModalContent = {
     order: {
       title: "Book Order",
@@ -673,6 +919,75 @@ const ClubStaff = () => {
             columns={columnsBookList}
             dataSource={clubBookList}
           />
+        </>
+      ),
+    },
+    borrowing: {
+      title: `Borrowing Books: ${modalItem.current?.memberName}`,
+      width: "60%",
+      onOk: () => {},
+      content: (
+        <>
+          <div className="table-extra-content">
+            <Button
+              type="primary"
+              onClick={onResetRowSelection}
+              disabled={selectedRowKeys.length === 0}
+              loading={loading}
+            >
+              Reset
+            </Button>
+            <div className="table-extra-content-item">
+              <Button
+                onClick={() => showBorrowingDrawer(DRAWER_CODE.EXTEND)}
+                disabled={selectedRowKeys.length === 0}
+                loading={loading}
+              >
+                Extend
+              </Button>
+              <Button
+                type="primary"
+                onClick={() => showBorrowingDrawer(DRAWER_CODE.RETURN)}
+                disabled={selectedRowKeys.length === 0}
+                loading={loading}
+              >
+                Return
+              </Button>{" "}
+            </div>
+          </div>
+          <Table
+            scroll={{ y: 700 }}
+            pagination={{
+              total: memberBookBorrowingList.length,
+              pageSize: optionTableModal.pageSize,
+              current: optionTableModal.pageIndex,
+            }}
+            rowSelection={rowSelection}
+            rowKey="order_detail_id"
+            onChange={handleTableModalChange}
+            loading={loading}
+            columns={columnsBookBorrowingList}
+            dataSource={memberBookBorrowingList}
+          />
+          <Drawer
+            title={drawerContent[activeDrawer].title}
+            placement="right"
+            width="30%"
+            closable={false}
+            onClose={onCloseBorrowingDrawer}
+            open={openBorrowingDrawer}
+            getContainer={false}
+            extra={
+              <Space>
+                <Button onClick={onCloseBorrowingDrawer}>Close</Button>
+                <Button onClick={()=>form.submit()} type="primary">
+                  Submit
+                </Button>
+              </Space>
+            }
+          >
+            {drawerContent[activeDrawer].content}
+          </Drawer>
         </>
       ),
     },
@@ -760,6 +1075,7 @@ const ClubStaff = () => {
       )} */}
       {activeModal && (
         <Modal
+          closable={false}
           width={modalContent[activeModal].width}
           {...layout}
           title={modalContent[activeModal].title}
@@ -767,6 +1083,7 @@ const ClubStaff = () => {
           onCancel={handleCloseModal}
           onOk={modalContent[activeModal].onOk}
           destroyOnClose={true}
+          maskClosable={false}
         >
           <StyledModalContent>{modalContent[activeModal].content}</StyledModalContent>
         </Modal>

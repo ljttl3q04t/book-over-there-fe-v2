@@ -80,6 +80,10 @@ const menuStructure = {
               label: "My book",
               key: "my-book",
             },
+            {
+              label: "Book borrow",
+              key: "book-borrow",
+            },
           ],
         },
         {

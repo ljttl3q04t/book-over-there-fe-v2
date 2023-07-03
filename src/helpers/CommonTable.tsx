@@ -96,7 +96,7 @@ export const getColumnSearchProps = (
     </div>
   ),
   filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? "#1677ff" : undefined }} />,
-  onFilter: (value, record) =>
+  onFilter: (value, record:any) =>
     record[dataIndex]
       .toString()
       .toLowerCase()

@@ -24,6 +24,15 @@ export interface ClubStaffBookListParams {
   membership_id?: number;
   book_copy__book_status?: string;
 }
+export interface ClubMemberBookBorrowingExtendForm {
+  membership_order_detail_ids: React.Key[];
+  new_due_date: string;
+  note: string;
+  attachment: RcFile;
+}
+export interface ClubMemberBookBorrowingForm {
+  membership_id: number;
+}
 
 const getListClub = () => {
   return localStorage.getItem("access_token") ? ApiServiceAuthor.get(`/club/list`) : axiosApi.get(`/club/list`);
@@ -43,13 +52,7 @@ const updateMemberClub = (data: UpdateMemberClubForm) => {
   return ApiServiceAuthor.post("/club/member/update", data);
 };
 const getClubStaffBookList = (params: ClubStaffBookListParams = {}) => {
-  const {
-    searchText = "",
-    page = 1,
-    pageSize = 10000,
-    membership_id,
-    book_copy__book_status = "",
-  } = params;
+  const { searchText = "", page = 1, pageSize = 10000, membership_id, book_copy__book_status = "" } = params;
 
   let query = `?search=${searchText}&page=${page}&page_size=${pageSize}`;
 
@@ -73,6 +76,7 @@ const clubMemberOrderCreate = (data: ClubMemberOrderCreateForm) => {
   formData.append("attachment", data.attachment);
   return ApiServiceAuthor.post("/club/member/order/create", formData);
 };
+
 const clubMemberDepositCreate = (data: ClubMemberOrderCreateForm) => {
   const formData = new FormData();
   formData.append("membership_id", String(data.membership_id));
@@ -82,6 +86,18 @@ const clubMemberDepositCreate = (data: ClubMemberOrderCreateForm) => {
   formData.append("attachment", data.attachment);
   return ApiServiceAuthor.post("/club/member/order/create", formData);
 };
+
+const getClubMemberBookBorrowing = (data: ClubMemberBookBorrowingForm) => {
+  return ApiServiceAuthor.post("/club/member/book/borrowing", data);
+};
+const clubMemberBookBorrowingExtend = (data: ClubMemberBookBorrowingExtendForm) => {
+  const formData = new FormData();
+  formData.append("membership_order_detail_ids", data.membership_order_detail_ids.join(","));
+  formData.append("new_due_date", data.new_due_date);
+  formData.append("note", data.note);
+  formData.append("attachment", data.attachment);
+  return ApiServiceAuthor.post("/club/member/order/extend", formData);
+};
 export default {
   getListClub,
   joinCLub,
@@ -90,4 +106,6 @@ export default {
   updateMemberClub,
   getClubStaffBookList,
   clubMemberOrderCreate,
+  getClubMemberBookBorrowing,
+  clubMemberBookBorrowingExtend,
 };

@@ -37,4 +37,22 @@ export const debounce = (callback: Function, delay: number) => {
       callback.apply(null, args);
     }, delay);
   };
-};
+};}
+
+export const formatDate = (dateString:string, format: string) => {
+  const date = new Date(dateString);
+  const year = date.getFullYear().toString();
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const seconds = date.getSeconds().toString().padStart(2, "0");
+
+  let formattedDate = format.replace("yyyy", year);
+  formattedDate = formattedDate.replace("mm", month);
+  formattedDate = formattedDate.replace("dd", day);
+  formattedDate = formattedDate.replace("hh", hours);
+  formattedDate = formattedDate.replace("ss", seconds);
+
+  return formattedDate;
+}

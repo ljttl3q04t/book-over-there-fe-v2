@@ -22,6 +22,7 @@ const Register = loadable(() => import("@/scenes/Register"));
 const BookHistory = loadable(() => import("@/scenes/User/BookHistory"));
 const BookWishList = loadable(() => import("@/scenes/User/BookWishList"));
 const MyBook = loadable(() => import("@/scenes/User/MyBook"));
+const BookBorrow = loadable(() => import("@/scenes/User/BookBorrow"));
 const Payment = loadable(() => import("@/scenes/User/Payment"));
 const Personal = loadable(() => import("@/scenes/User/Personal Profile"));
 const Support = loadable(() => import("@/scenes/User/Support"));
@@ -63,6 +64,7 @@ const App = () => {
                 <Route path="/payment" Component={Payment} />
                 <Route path="/transactionhistory" Component={Transaction} />
                 <Route path="/my-book" Component={MyBook} />
+                <Route path="/book-borrow" Component={BookBorrow} />
                 <Route path="/book-history" Component={BookHistory} />
                 <Route path="/book-wishlist" Component={BookWishList} />
               </>
