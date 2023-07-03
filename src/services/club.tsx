@@ -1,4 +1,5 @@
 import { RcFile } from "antd/es/upload";
+import { create } from "domain";
 import { ApiServiceAuthor, axiosApi } from "../http-common";
 export interface UpdateMemberClubForm {
   membership_id: number;
@@ -13,8 +14,12 @@ export interface ClubMemberOrderCreateForm {
 }
 export interface ClubMemberDepositCreateForm {
   member_book_copy_ids: number[];
-  due_date: string;
-  note: string;
+  description: string;
+  attachment: RcFile;
+}
+export interface ClubMemberWithdrawCreateForm {
+  member_book_copy_ids: number[];
+  description: string;
   attachment: RcFile;
 }
 export interface ClubStaffBookListParams {
@@ -23,6 +28,9 @@ export interface ClubStaffBookListParams {
   pageSize?: number;
   membership_id?: number;
   book_copy__book_status?: string;
+  deposit_book?: boolean;
+  withdraw_book?: boolean;
+  create_order_book?: boolean;
 }
 export interface ClubMemberBookBorrowingExtendForm {
   membership_order_detail_ids: React.Key[];
@@ -52,7 +60,16 @@ const updateMemberClub = (data: UpdateMemberClubForm) => {
   return ApiServiceAuthor.post("/club/member/update", data);
 };
 const getClubStaffBookList = (params: ClubStaffBookListParams = {}) => {
-  const { searchText = "", page = 1, pageSize = 10000, membership_id, book_copy__book_status = "" } = params;
+  const {
+    searchText = "",
+    page = 1,
+    pageSize = 10000,
+    membership_id,
+    book_copy__book_status = "",
+    deposit_book = false,
+    withdraw_book = false,
+    create_order_book = false,
+  } = params;
 
   let query = `?search=${searchText}&page=${page}&page_size=${pageSize}`;
 
@@ -60,8 +77,16 @@ const getClubStaffBookList = (params: ClubStaffBookListParams = {}) => {
     query += `&membership_id=${membership_id}`;
   }
 
-  if (book_copy__book_status !== "") {
-    query += `&book_copy__book_status=${book_copy__book_status}`;
+  // if (book_copy__book_status !== "") {
+  //   query += `&book_copy__book_status=${book_copy__book_status}`;
+  // }
+
+  if (deposit_book) {
+    query += `&deposit_book=${true}`;
+  } else if (withdraw_book) {
+    query += `&withdraw_book=${true}`;
+  } else if (create_order_book) {
+    query += `&create_order_book=${true}`;
   }
 
   return ApiServiceAuthor.get(`/club/staff/book/list${query}`);
@@ -77,16 +102,20 @@ const clubMemberOrderCreate = (data: ClubMemberOrderCreateForm) => {
   return ApiServiceAuthor.post("/club/member/order/create", formData);
 };
 
-const clubMemberDepositCreate = (data: ClubMemberOrderCreateForm) => {
+const clubMemberDepositCreate = (data: ClubMemberDepositCreateForm) => {
   const formData = new FormData();
-  formData.append("membership_id", String(data.membership_id));
   formData.append("member_book_copy_ids", data.member_book_copy_ids.join(","));
-  formData.append("due_date", data.due_date);
-  formData.append("note", data.note);
+  formData.append("description", data.description);
   formData.append("attachment", data.attachment);
-  return ApiServiceAuthor.post("/club/member/order/create", formData);
+  return ApiServiceAuthor.post("/club/member/book/deposit", formData);
 };
-
+const clubMemberWithdrawCreate = (data: ClubMemberWithdrawCreateForm) => {
+  const formData = new FormData();
+  formData.append("member_book_copy_ids", data.member_book_copy_ids.join(","));
+  formData.append("description", data.description);
+  formData.append("attachment", data.attachment);
+  return ApiServiceAuthor.post("/club/member/book/withdraw", formData);
+};
 const getClubMemberBookBorrowing = (data: ClubMemberBookBorrowingForm) => {
   return ApiServiceAuthor.post("/club/member/book/borrowing", data);
 };
@@ -108,4 +137,6 @@ export default {
   clubMemberOrderCreate,
   getClubMemberBookBorrowing,
   clubMemberBookBorrowingExtend,
+  clubMemberDepositCreate,
+  clubMemberWithdrawCreate
 };

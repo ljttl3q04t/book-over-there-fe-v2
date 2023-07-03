@@ -17,6 +17,8 @@ import ClubService, {
   ClubStaffBookListParams,
   ClubMemberBookBorrowingForm,
   ClubMemberBookBorrowingExtendForm,
+  ClubMemberDepositCreateForm,
+  ClubMemberWithdrawCreateForm,
 } from "@/services/club";
 import { debounce } from "@/helpers/fuctionHepler";
 import {
@@ -340,22 +342,27 @@ const ClubStaff = () => {
     setFileList([]);
     setFileListPreview([]);
   };
-  const handleOpenOrderModal = (item: DataType) => {
-    Promise.all([
-      (modalItem.current = item),
-      fetchClubBookList(true, { ...defaultSearchBooklistForm }),
-      setActiveModal(MODAL_CODE.ORDER),
-    ])
-      .then(() => {
-        form.setFieldsValue({
-          full_name: item?.memberName,
-          phone_number: item?.memberPhone,
-        });
-      })
-      .catch((error) => {
-        // Handle any errors that occurred during concurrent execution
-        console.error(error);
+  const handleOpenOrderModal = async (item: DataType) => {
+    try {
+      const searchForm: ClubStaffBookListParams = {
+        ...defaultSearchBooklistForm,
+        create_order_book: true,
+      };
+
+      await fetchClubBookList(true, searchForm);
+
+      modalItem.current = item;
+
+      await setActiveModal(MODAL_CODE.ORDER);
+
+      form.setFieldsValue({
+        full_name: item?.memberName,
+        phone_number: item?.memberPhone,
       });
+    } catch (error) {
+      // Handle any errors that occurred during the steps
+      console.error(error);
+    }
   };
 
   const handleOpenDepositModal = async (item: DataType) => {
@@ -363,7 +370,7 @@ const ClubStaff = () => {
       const searchForm: ClubStaffBookListParams = {
         ...defaultSearchBooklistForm,
         membership_id: item.membershipId,
-        book_copy__book_status: BOOK_COPY_STATUS.sharing_club,
+        deposit_book: true,
       };
 
       await fetchClubBookList(true, searchForm);
@@ -382,22 +389,28 @@ const ClubStaff = () => {
     }
   };
 
-  const handleOpenWithdrawModal = (item: any) => {
-    Promise.all([
-      (modalItem.current = item),
-      fetchClubBookList(true, { ...defaultSearchBooklistForm }),
-      setActiveModal(MODAL_CODE.WITHDRAW),
-    ])
-      .then(() => {
-        form.setFieldsValue({
-          full_name: item?.memberName,
-          phone_number: item?.memberPhone,
-        });
-      })
-      .catch((error) => {
-        // Handle any errors that occurred during concurrent execution
-        console.error(error);
+  const handleOpenWithdrawModal = async (item: any) => {
+    try {
+      const searchForm: ClubStaffBookListParams = {
+        ...defaultSearchBooklistForm,
+        membership_id: item.membershipId,
+        withdraw_book: true,
+      };
+
+      await fetchClubBookList(true, searchForm);
+
+      modalItem.current = item;
+
+      await setActiveModal(MODAL_CODE.WITHDRAW);
+
+      form.setFieldsValue({
+        full_name: item?.memberName,
+        phone_number: item?.memberPhone,
       });
+    } catch (error) {
+      // Handle any errors that occurred during the steps
+      console.error(error);
+    }
   };
   const handleOpenViewAllModal = () => {
     // fetchClubBookList();
@@ -484,6 +497,19 @@ const ClubStaff = () => {
       page: 1,
       pageSize: 10,
     };
+    switch (activeModal) {
+      case MODAL_CODE.ORDER:
+        searchForm.create_order_book = true;
+        break;
+      case MODAL_CODE.DEPOSIT:
+        searchForm.deposit_book = true;
+        break;
+      case MODAL_CODE.WITHDRAW:
+        searchForm.withdraw_book = true;
+        break;
+      default:
+        break;
+    }
     fetchClubBookList(true, searchForm);
   }, 1000);
   const fetchClubBookList = (useForSelect = false, searchForm: ClubStaffBookListParams) => {
@@ -524,11 +550,53 @@ const ClubStaff = () => {
         setLoading(false);
       });
   };
-  const handleDepositBooks = useCallback((item: DataType) => {}, []);
-  const handleWithdrawBooks = useCallback((item: DataType) => {}, []);
+  const handleDepositBooks = (item: DataType) => {
+    const list_books_id = form.getFieldValue("select_books").map((item: any) => Number(item.split("-")[0]));
+    const formData: ClubMemberDepositCreateForm = {
+      member_book_copy_ids: list_books_id && list_books_id,
+      description: form.getFieldValue("description"),
+      attachment: fileList[0] as RcFile,
+    };
+    ClubService.clubMemberDepositCreate(formData)
+      .then((response) => {
+        notification.success({
+          message: "Deposit successfully!",
+          type: "success",
+        });
+        handleCloseModal();
+      })
+      .catch((error) => {
+        notification.error({
+          message: `Deposit failed, please try again!`,
+          type: "error",
+        });
+      })
+      .finally(() => {});
+  };
+  const handleWithdrawBooks = (item: DataType) => {
+    const list_books_id = form.getFieldValue("select_books").map((item: any) => Number(item.split("-")[0]));
+    const formData: ClubMemberWithdrawCreateForm = {
+      member_book_copy_ids: list_books_id && list_books_id,
+      description: form.getFieldValue("description"),
+      attachment: fileList[0] as RcFile,
+    };
+    ClubService.clubMemberWithdrawCreate(formData)
+      .then((response) => {
+        notification.success({
+          message: "Withdraw successfully!",
+          type: "success",
+        });
+        handleCloseModal();
+      })
+      .catch((error) => {
+        notification.error({
+          message: `Withdraw failed, please try again!`,
+          type: "error",
+        });
+      })
+      .finally(() => {});
+  };
   const handleOrderBooks = () => {
-    form.validateFields();
-    if (form.getFieldsError()) return;
     const list_books_id = form.getFieldValue("select_books").map((item: any) => Number(item.split("-")[0]));
     const formData: ClubMemberOrderCreateForm = {
       membership_id: modalItem.current?.membershipId,
@@ -554,40 +622,45 @@ const ClubStaff = () => {
       .finally(() => {});
   };
   const displayAction = (item: DataType, type: string) => {
+    const renderApproveButton = () => (
+      <Button type="primary" icon={<IssuesCloseOutlined />} onClick={() => handleApproveMember(item)}>
+        Approve
+      </Button>
+    );
+
+    const renderOrderActions = () => (
+      <Space size="middle">
+        <Button icon={<PlusCircleFilled />} type="primary" onClick={() => handleOpenOrderModal(item)}>
+          Order
+        </Button>
+        <Button icon={<UnorderedListOutlined />} onClick={() => handleOpenBorrowingModal(item)}>
+          Borrowing
+        </Button>
+      </Space>
+    );
+
+    const renderBookActions = () => (
+      <Space size="middle">
+        <Button type="primary" icon={<DownloadOutlined />} onClick={() => handleOpenDepositModal(item)}>
+          Deposit Books
+        </Button>
+        <Button icon={<UploadOutlined />} onClick={() => handleOpenWithdrawModal(item)}>
+          Withdraw Books
+        </Button>
+      </Space>
+    );
+
     if (item.memberStatus === MEMBER_STATUS.PENDING) {
-      return (
-        <Space size="middle">
-          <Button type="primary" icon={<IssuesCloseOutlined />} onClick={() => handleApproveMember(item)}>
-            Approve
-          </Button>
-        </Space>
-      );
+      return renderApproveButton();
     } else if (item.memberStatus === MEMBER_STATUS.ACTIVE) {
       if (type === actionType.order) {
-        return (
-          <Space size="middle">
-            <Button icon={<PlusCircleFilled />} type="primary" onClick={() => handleOpenOrderModal(item)}>
-              Order
-            </Button>
-            <Button icon={<UnorderedListOutlined />} onClick={() => handleOpenBorrowingModal(item)}>
-              Borrowing
-            </Button>
-          </Space>
-        );
+        return renderOrderActions();
       } else if (type === actionType.book) {
-        return (
-          <Space size="middle">
-            <Button type="primary" icon={<DownloadOutlined />} onClick={() => handleOpenDepositModal(item)}>
-              Deposit Books
-            </Button>
-            <Button icon={<UploadOutlined />} onClick={() => handleOpenWithdrawModal(item)}>
-              Withdraw Books
-            </Button>
-          </Space>
-        );
+        return renderBookActions();
       }
     }
   };
+
   const columnsBookList: ColumnsType<DataTypeBooks> = [
     {
       title: "",
@@ -763,36 +836,36 @@ const ClubStaff = () => {
       title: "Action",
       key: "",
       dataIndex: "",
-      align:"center",
+      align: "center",
       fixed: "right",
       children: [
         {
           title: "Order",
           dataIndex: "",
-          align:"center",
+          align: "center",
           fixed: "right",
           key: "",
           render: (item: DataType) => {
-            return displayAction(item,actionType.order);
+            return displayAction(item, actionType.order);
           },
         },
         {
           title: "Books",
           dataIndex: "",
-          align:"center",
+          align: "center",
           fixed: "right",
           key: "",
           render: (item: DataType) => {
-            return displayAction(item,actionType.book);
+            return displayAction(item, actionType.book);
           },
         },
       ],
     },
   ];
-  const defaultFormContent = (optionalField?: JSX.Element) => {
+  const defaultFormContent = (optionalField?: JSX.Element, onFinish: any) => {
     return (
       <>
-        <Form {...layout} form={form} name="control-ref" style={{ width: 800 }}>
+        <Form onFinish={onFinish} {...layout} form={form} name="control-ref" style={{ width: 800 }}>
           <Form.Item
             name="full_name"
             label="Full Name"
@@ -895,7 +968,44 @@ const ClubStaff = () => {
     return: {
       title: `Return Books`,
       onOk: () => {},
-      content: <></>,
+      content: (
+        <>
+          <Form
+            onFinish={handleExtendBorrowingBooks}
+            layout="vertical"
+            form={form}
+            name="control-ref"
+            style={{ width: "100%" }}
+          >
+            <Form.Item
+              name="full_name"
+              label="Full Name"
+              rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} full name` }]}
+            >
+              <Input disabled />
+            </Form.Item>
+            <Form.Item
+              name="phone_number"
+              label="Phone Number:"
+              rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} phone number` }]}
+            >
+              <Input disabled />
+            </Form.Item>
+            <Form.Item
+              rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} attachment` }]}
+              name="attachment"
+              label="Attachment:"
+            >
+              <Upload multiple={false} accept="image/*" {...props} listType="picture-card">
+                {uploadButton}
+              </Upload>
+            </Form.Item>
+            <Form.Item name="note" label="Note" rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} note` }]}>
+              <TextArea rows={4} placeholder="Note..." />
+            </Form.Item>
+          </Form>
+        </>
+      ),
     },
   };
   const modalContent: ModalContent = {
@@ -915,8 +1025,8 @@ const ClubStaff = () => {
           <Form.Item name="note" label="Note" rules={[{ required: false }]}>
             <TextArea rows={4} placeholder="Note..." />
           </Form.Item>
-          ,
         </>,
+        handleOrderBooks,
       ),
     },
     deposit: {
@@ -927,6 +1037,7 @@ const ClubStaff = () => {
         <Form.Item name="description" label="Description" rules={[{ required: false }]}>
           <TextArea rows={4} placeholder="Description..." />
         </Form.Item>,
+        handleDepositBooks,
       ),
     },
     withdraw: {
@@ -937,6 +1048,7 @@ const ClubStaff = () => {
         <Form.Item name="description" label="Description" rules={[{ required: false }]}>
           <TextArea rows={4} placeholder="Description..." />
         </Form.Item>,
+        handleWithdrawBooks,
       ),
     },
     view_all: {
@@ -1120,7 +1232,7 @@ const ClubStaff = () => {
           title={modalContent[activeModal].title}
           open={activeModal !== ""}
           onCancel={handleCloseModal}
-          onOk={modalContent[activeModal].onOk}
+          onOk={() => form.submit()}
           destroyOnClose={true}
           maskClosable={false}
         >
