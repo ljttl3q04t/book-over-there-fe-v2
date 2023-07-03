@@ -42,6 +42,7 @@ import { getColumnSearchProps } from "@/helpers/CommonTable";
 import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
 import { disabledDateBefore, dateFormatList } from "@/helpers/DateHelper";
 import { RcFile } from "antd/es/upload";
+import { ActionType } from "@ant-design/pro-components";
 
 const StyledModalContent = styled.div`
   padding: 30px;
@@ -163,7 +164,10 @@ interface DataTypeBooksBorrowing {
 }
 type DataIndex = keyof DataType;
 type DataIndexBooks = keyof DataTypeBooks;
-
+const actionType = {
+  book: "book",
+  order: "order",
+};
 const layout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 16 },
@@ -230,7 +234,7 @@ const ClubStaff = () => {
   });
   const [optionTableModal, setOptionTableModal] = useState({
     pageIndex: 1,
-    pageSize: 10,
+    pageSize: 5,
   });
   const handleTableChange = (pagination: any) => {
     setOption({
@@ -423,7 +427,6 @@ const ClubStaff = () => {
 
   const onCloseBorrowingDrawer = () => {
     setOpenBorrowingDrawer(false);
-    setSelectedRowKeys([]);
     form.resetFields();
     setFileList([]);
     setFileListPreview([]);
@@ -457,7 +460,8 @@ const ClubStaff = () => {
           message: "Extend successfully!",
           type: "success",
         });
-        onCloseBorrowingDrawer() ;
+        onCloseBorrowingDrawer();
+        setSelectedRowKeys([]);
         setFileList([]);
         setFileListPreview([]);
         const searchForm: ClubMemberBookBorrowingForm = {
@@ -523,7 +527,7 @@ const ClubStaff = () => {
   const handleDepositBooks = useCallback((item: DataType) => {}, []);
   const handleWithdrawBooks = useCallback((item: DataType) => {}, []);
   const handleOrderBooks = () => {
-    form.validateFields()
+    form.validateFields();
     if (form.getFieldsError()) return;
     const list_books_id = form.getFieldValue("select_books").map((item: any) => Number(item.split("-")[0]));
     const formData: ClubMemberOrderCreateForm = {
@@ -549,7 +553,7 @@ const ClubStaff = () => {
       })
       .finally(() => {});
   };
-  const displayAction = (item: DataType) => {
+  const displayAction = (item: DataType, type: string) => {
     if (item.memberStatus === MEMBER_STATUS.PENDING) {
       return (
         <Space size="middle">
@@ -559,22 +563,29 @@ const ClubStaff = () => {
         </Space>
       );
     } else if (item.memberStatus === MEMBER_STATUS.ACTIVE) {
-      return (
-        <Space size="middle">
-          <Button icon={<PlusCircleFilled />} type="primary" onClick={() => handleOpenOrderModal(item)}>
-            Order
-          </Button>
-          <Button icon={<UnorderedListOutlined />} onClick={() => handleOpenBorrowingModal(item)}>
-            Borrowing
-          </Button>
-          <Button type="primary" icon={<DownloadOutlined />} onClick={() => handleOpenDepositModal(item)}>
-            Deposit Books
-          </Button>
-          <Button icon={<UploadOutlined />} onClick={() => handleOpenWithdrawModal(item)}>
-            Withdraw Books
-          </Button>
-        </Space>
-      );
+      if (type === actionType.order) {
+        return (
+          <Space size="middle">
+            <Button icon={<PlusCircleFilled />} type="primary" onClick={() => handleOpenOrderModal(item)}>
+              Order
+            </Button>
+            <Button icon={<UnorderedListOutlined />} onClick={() => handleOpenBorrowingModal(item)}>
+              Borrowing
+            </Button>
+          </Space>
+        );
+      } else if (type === actionType.book) {
+        return (
+          <Space size="middle">
+            <Button type="primary" icon={<DownloadOutlined />} onClick={() => handleOpenDepositModal(item)}>
+              Deposit Books
+            </Button>
+            <Button icon={<UploadOutlined />} onClick={() => handleOpenWithdrawModal(item)}>
+              Withdraw Books
+            </Button>
+          </Space>
+        );
+      }
     }
   };
   const columnsBookList: ColumnsType<DataTypeBooks> = [
@@ -632,10 +643,10 @@ const ClubStaff = () => {
   const columnsBookBorrowingList: ColumnsType<DataTypeBooksBorrowing> = [
     {
       title: "",
-      width: "8%",
+      width: "80px",
       dataIndex: "book_image",
       key: "book_image",
-      render: (image: string) => <Avatar shape="square" size={98} src={image} />,
+      render: (image: string) => <Avatar shape="square" size={60} src={image} />,
     },
     {
       title: "Name",
@@ -657,6 +668,7 @@ const ClubStaff = () => {
     },
     {
       title: "Overdue Days",
+      width: "100px",
       dataIndex: "overdue_day_count",
       key: "overdue_day_count",
     },
@@ -701,7 +713,7 @@ const ClubStaff = () => {
       title: "Member Name",
       dataIndex: "memberName",
       key: "memberName",
-      width: "25%",
+      width: "20%",
       ...getColumnSearchProps(
         "memberName",
         searchInput,
@@ -751,10 +763,30 @@ const ClubStaff = () => {
       title: "Action",
       key: "",
       dataIndex: "",
+      align:"center",
       fixed: "right",
-      render: (item: DataType) => {
-        return displayAction(item);
-      },
+      children: [
+        {
+          title: "Order",
+          dataIndex: "",
+          align:"center",
+          fixed: "right",
+          key: "",
+          render: (item: DataType) => {
+            return displayAction(item,actionType.order);
+          },
+        },
+        {
+          title: "Books",
+          dataIndex: "",
+          align:"center",
+          fixed: "right",
+          key: "",
+          render: (item: DataType) => {
+            return displayAction(item,actionType.book);
+          },
+        },
+      ],
     },
   ];
   const defaultFormContent = (optionalField?: JSX.Element) => {
@@ -816,7 +848,13 @@ const ClubStaff = () => {
       onOk: handleExtendBorrowingBooks,
       content: (
         <>
-          <Form onFinish={handleExtendBorrowingBooks} layout="vertical" form={form} name="control-ref" style={{ width: "100%" }}>
+          <Form
+            onFinish={handleExtendBorrowingBooks}
+            layout="vertical"
+            form={form}
+            name="control-ref"
+            style={{ width: "100%" }}
+          >
             <Form.Item
               name="full_name"
               label="Full Name"
@@ -908,7 +946,7 @@ const ClubStaff = () => {
       content: (
         <>
           <Table
-            scroll={{ x: 1500, y: 700 }}
+            scroll={{ x: 1500, y: 600 }}
             pagination={{
               total: clubBookList.length,
               pageSize: optionTableModal.pageSize,
@@ -939,6 +977,7 @@ const ClubStaff = () => {
             </Button>
             <div className="table-extra-content-item">
               <Button
+                type="primary"
                 onClick={() => showBorrowingDrawer(DRAWER_CODE.EXTEND)}
                 disabled={selectedRowKeys.length === 0}
                 loading={loading}
@@ -946,17 +985,16 @@ const ClubStaff = () => {
                 Extend
               </Button>
               <Button
-                type="primary"
                 onClick={() => showBorrowingDrawer(DRAWER_CODE.RETURN)}
                 disabled={selectedRowKeys.length === 0}
                 loading={loading}
               >
-                Return
+                Books Return
               </Button>{" "}
             </div>
           </div>
           <Table
-            scroll={{ y: 700 }}
+            scroll={{ y: 600 }}
             pagination={{
               total: memberBookBorrowingList.length,
               pageSize: optionTableModal.pageSize,
@@ -980,7 +1018,7 @@ const ClubStaff = () => {
             extra={
               <Space>
                 <Button onClick={onCloseBorrowingDrawer}>Close</Button>
-                <Button onClick={()=>form.submit()} type="primary">
+                <Button onClick={() => form.submit()} type="primary">
                   Submit
                 </Button>
               </Space>
@@ -1016,6 +1054,7 @@ const ClubStaff = () => {
         loading={loading}
         columns={columns}
         dataSource={clubMemberTableSource}
+        bordered
       />
       {/* {activeModal === MODAL_CODE.ORDER && (
         <Modal title="Book Order" width={800} visible={true} onCancel={handleCloseModal} onOk={handleOkOrder}>

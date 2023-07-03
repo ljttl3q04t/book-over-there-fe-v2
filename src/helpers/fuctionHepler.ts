@@ -37,7 +37,7 @@ export const debounce = (callback: Function, delay: number) => {
       callback.apply(null, args);
     }, delay);
   };
-};}
+};
 
 export const formatDate = (dateString:string, format: string) => {
   const date = new Date(dateString);
