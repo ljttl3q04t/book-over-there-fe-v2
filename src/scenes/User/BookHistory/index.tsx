@@ -136,7 +136,7 @@ const BookHistory = () => {
           Add Book
         </Button> */}
       </div>
-      <Table<BookCopy> columns={columns} dataSource={books} loading={loading} />
+      <Table<any> columns={columns} dataSource={books} loading={loading} />
     </StyledMyBookContainer>
   );
 };

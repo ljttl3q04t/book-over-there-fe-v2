@@ -1,14 +1,11 @@
-import { createFileFromImageLink } from "@/helpers/fuctionHepler";
-import { getBookByLink, getListBookInit } from "@/scenes/User/MyBook/callService";
+import { getBookByLink } from "@/scenes/User/MyBook/callService";
 import bookService from "@/services/book";
 import { PlusOutlined } from "@ant-design/icons";
-import { Button, Drawer, Form, FormInstance, Input, Modal, Select, Space, Upload, notification } from "antd";
+import { Button, Drawer, Form, FormInstance, Input, Modal, Space, Upload, notification } from "antd";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import Tooltip from "antd/lib/tooltip";
 import { useEffect, useRef, useState } from "react";
-import React from "react";
 
-const { Option } = Select;
 const { Search } = Input;
 const getBase64 = (file: RcFile): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -18,7 +15,7 @@ const getBase64 = (file: RcFile): Promise<string> =>
     reader.onerror = (error) => reject(error);
   });
 
-function DawerBook({ open, onSubmit, onClose, fetchBookList, bookEdit, title }: any) {
+function DawerBook({ open, onSubmit, onClose, bookEdit, title }: any) {
 
 
   const [form] = Form.useForm();
@@ -28,13 +25,6 @@ function DawerBook({ open, onSubmit, onClose, fetchBookList, bookEdit, title }: 
   const [previewTitle, setPreviewTitle] = useState("");
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [fileListPreview, setFileListPreview] = useState<UploadFile[]>([]);
-  const [books, setBooks] = useState<any[]>([]);
-  const [booksTemp, setBooksTemp] = useState<any[]>([]);
-  const [option, setOption] = useState({
-    pageIndex: 1,
-    pageSize: 1000,
-    txtSearch: ''
-  });
 
 
   useEffect(() => {
@@ -55,21 +45,6 @@ function DawerBook({ open, onSubmit, onClose, fetchBookList, bookEdit, title }: 
       }])
     }
   }, [bookEdit])
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const bookList: any = await getListBookInit(option);
-        console.log("bookList: ", bookList);
-        setBooks(bookList);
-      } catch (error) {
-        console.error("Error fetching book list:", error);
-
-        // Handle error
-      }
-    };
-    fetchData();
-  }, [])
 
   const onFinish = async (values: any) => {
     console.log("fileList[0]: ", fileList[0]);
@@ -170,9 +145,6 @@ function DawerBook({ open, onSubmit, onClose, fetchBookList, bookEdit, title }: 
   );
   const handleCancel = () => setPreviewOpen(false);
 
-  // const handleChangeNameBook = (value: any) => {
-  //   setBooksTemp([...books]) 
-  // };
 
   const changeLink = async (value: string) => {
     try {
@@ -233,7 +205,6 @@ function DawerBook({ open, onSubmit, onClose, fetchBookList, bookEdit, title }: 
               style={{ width: "100%" }}
               placeholder="Please enter link"
               onSearch={changeLink}
-            // value={bookEdit?.category}
             />
           </Tooltip>
         </Form.Item>

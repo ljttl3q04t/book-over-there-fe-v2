@@ -17,14 +17,20 @@ export const getObjectByIdInArray = (array: any, id: any) => {
   return array.find((obj: any) => obj.id === id);
 }
 
-export const createFileFromImageLink = async (imageLink: string, fileName: string) => {
-  try {
-    const response = await fetch(imageLink);
-    const blob = await response.blob();
-    const file = new File([blob], fileName, { type: blob.type });
-    return file;
-  } catch (error) {
-    console.error("Lỗi khi tạo File từ liên kết hình ảnh:", error);
-    throw error;
-  }
+export const formatDate = (dateString:string, format: string) => {
+  const date = new Date(dateString);
+  const year = date.getFullYear().toString();
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const seconds = date.getSeconds().toString().padStart(2, "0");
+
+  let formattedDate = format.replace("yyyy", year);
+  formattedDate = formattedDate.replace("mm", month);
+  formattedDate = formattedDate.replace("dd", day);
+  formattedDate = formattedDate.replace("hh", hours);
+  formattedDate = formattedDate.replace("ss", seconds);
+
+  return formattedDate;
 }
