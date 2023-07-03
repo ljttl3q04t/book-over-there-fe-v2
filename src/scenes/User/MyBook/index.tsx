@@ -57,6 +57,20 @@ function MyBook() {
   const [clubListJoined, setClubListJoined] = useState<Club[]>([]);
   const [bookEdit, setBookEdit] = useState<EditBook | null>(null);
   const [title, setTitle] = useState<any>("Add Book");
+  const [option, setOption] = useState({
+    pageIndex: 1,
+    pageSize: 10,
+  });
+
+  const handleTableChange = (pagination: any) => {
+    console.log("pagination: ", pagination);
+    
+    setOption({
+      ...option,
+      pageIndex: pagination.current,
+      pageSize: pagination.pageSize,
+    });
+  };
 
   const handleCloseModalShareBook = () => {
     formRef.current?.resetFields();
@@ -174,7 +188,7 @@ function MyBook() {
         handleReset, handleSearch),
     },
     {
-      title: "BookStatus",
+      title: "Book status",
       dataIndex: "bookStatus",
       key: "bookStatus",
       render: (bookStatus: any) => {
@@ -293,7 +307,7 @@ function MyBook() {
           setOpen(true)
           setTitle("Add Book")
         }}>
-          Add Book
+          Add Book{books.length}
         </Button>
         <Button type="primary" onClick={() => handleOpenShareBook(null)}>
           Share my book
@@ -301,10 +315,16 @@ function MyBook() {
       </div>
 
       <Table
+        onChange={handleTableChange}
+        pagination={{
+          total: books.length,
+          pageSize: option.pageSize,
+          current: option.pageIndex,
+        }}
         scroll={{ x: "max-content" }}
+        loading={loading}
         columns={columns}
         dataSource={books}
-        loading={loading}
       />
       <DawerBook open={open} onClose={() => setOpen(false)} fetchBookList={fetchBookList} bookEdit={bookEdit} title={title} />
       <Modal title="Share to club" width={800} open={modalJoin} onCancel={handleCloseModalShareBook} onOk={onFinish}>
