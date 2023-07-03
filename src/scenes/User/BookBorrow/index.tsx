@@ -7,6 +7,7 @@ import bookService from "@/services/book";
 import { getBookBorrow } from "../MyBook/callService";
 import { FilterConfirmProps } from "antd/es/table/interface";
 import { getColumnSearchProps } from "@/helpers/CommonTable";
+import { formatDate } from "@/helpers/fuctionHepler";
 
 const StyledBookBorrowContainer = styled.div`
   border-radius: 12px;
@@ -65,11 +66,13 @@ const BookBorrow = () => {
       title: "Start Date",
       dataIndex: "start_date",
       key: "start_date",
+      
     },
     {
       title: "Due Date",
       dataIndex: ["due_date"],
       key: "due_date",
+      render: (value:any) => <p>{formatDate(value, 'yyyy-mm-dd, hh:ss')}</p>,
     },
     {
       title: "Overdue Day Count",
