@@ -57,11 +57,13 @@ function DawerBook({ open, onSubmit, onClose, bookEdit, title }: any) {
       formData.append('book.publisher.name', values.publisher);
       formData.append('book.image', fileList[0] as RcFile ? fileList[0] as RcFile : '');
     } else {
+      console.log("file preview: ",fileListPreview);
+      
       formData.append('book.name', values.name);
       formData.append('book.category.name', values.category);
       formData.append('book.author.name', values.author);
       formData.append('book.publisher.name', values.publisher);
-      formData.append('book.image_url', 'https://salt.tikicdn.com/cache/400x400/ts/product/e2/32/b3/085ee546b06b792e847edd88b02b8f15.jpg.webp');
+      formData.append('book.image_url', fileListPreview[0]?.url as string);
     }
 
 
@@ -203,7 +205,7 @@ function DawerBook({ open, onSubmit, onClose, bookEdit, title }: any) {
             <Search
               size="large"
               style={{ width: "100%" }}
-              placeholder="Please enter link"
+              placeholder="You can select link book from Tiki or Fahasa"
               onSearch={changeLink}
             />
           </Tooltip>

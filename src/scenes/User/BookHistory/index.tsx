@@ -1,7 +1,7 @@
 import { Avatar, Tag, Col, Row, Select, InputRef } from "antd";
 import Table from "antd/es/table";
 import styled from "styled-components";
-import React, { useCallback, useEffect, useState ,useRef } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import { BookCopy } from "@/services/types";
 import bookService from "@/services/book";
 import { getBookHistory } from "../MyBook/callService";
@@ -32,6 +32,18 @@ const BookHistory = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef<InputRef>(null);
+  const [option, setOption] = useState({
+    pageIndex: 1,
+    pageSize: 10,
+  });
+
+  const handleTableChange = (pagination: any) => {
+    setOption({
+      ...option,
+      pageIndex: pagination.current,
+      pageSize: pagination.pageSize,
+    });
+  };
 
   type DataIndex = keyof BookCopy;
   const handleSearch = (
@@ -61,6 +73,14 @@ const BookHistory = () => {
       dataIndex: ["bookName"],
       key: "bookName",
       ...getColumnSearchProps("bookName", searchInput,
+        searchText, setSearchText, searchedColumn, setSearchedColumn,
+        handleReset, handleSearch),
+    },
+    {
+      title: "Action",
+      dataIndex: ["action"],
+      key: "action",
+      ...getColumnSearchProps("action", searchInput,
         searchText, setSearchText, searchedColumn, setSearchedColumn,
         handleReset, handleSearch),
     },
@@ -136,7 +156,16 @@ const BookHistory = () => {
           Add Book
         </Button> */}
       </div>
-      <Table<any> columns={columns} dataSource={books} loading={loading} />
+      <Table<any>
+        onChange={handleTableChange}
+        pagination={{
+          total: books.length,
+          pageSize: option.pageSize,
+          current: option.pageIndex,
+        }}
+        columns={columns}
+        dataSource={books}
+        loading={loading} />
     </StyledMyBookContainer>
   );
 };
