@@ -327,7 +327,14 @@ function MyBook() {
         dataSource={books}
       />
       <DawerBook open={open} onClose={() => setOpen(false)} fetchBookList={fetchBookList} bookEdit={bookEdit} title={title} />
-      <Modal title="Share to club" width={800} open={modalJoin} onCancel={handleCloseModalShareBook} onOk={onFinish}>
+      <Modal 
+      title="Share to club" 
+      width={800} 
+      open={modalJoin} 
+      onCancel={handleCloseModalShareBook} 
+      onOk={onFinish}
+      okButtonProps={{disabled: loading}}
+      >
         <Form {...layout} ref={formRef} name="control-ref" style={{ width: 800 }}>
           <Form.Item name="book_copy_ids" label="My books" rules={[{ required: true }]}>
             <Select

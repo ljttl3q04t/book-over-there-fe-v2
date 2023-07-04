@@ -25,6 +25,7 @@ function DawerBook({ open, onSubmit, onClose, bookEdit, title }: any) {
   const [previewTitle, setPreviewTitle] = useState("");
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [fileListPreview, setFileListPreview] = useState<UploadFile[]>([]);
+  const [isLoading, setIsLoading] = useState(false)
 
 
   useEffect(() => {
@@ -49,6 +50,7 @@ function DawerBook({ open, onSubmit, onClose, bookEdit, title }: any) {
   const onFinish = async (values: any) => {
     console.log("fileList[0]: ", fileList[0]);
     let formData = new FormData();
+    setIsLoading(true)
     if (fileList[0]) {
 
       formData.append('book.name', values.name);
@@ -57,8 +59,8 @@ function DawerBook({ open, onSubmit, onClose, bookEdit, title }: any) {
       formData.append('book.publisher.name', values.publisher);
       formData.append('book.image', fileList[0] as RcFile ? fileList[0] as RcFile : '');
     } else {
-      console.log("file preview: ",fileListPreview);
-      
+      console.log("file preview: ", fileListPreview);
+
       formData.append('book.name', values.name);
       formData.append('book.category.name', values.category);
       formData.append('book.author.name', values.author);
@@ -80,6 +82,7 @@ function DawerBook({ open, onSubmit, onClose, bookEdit, title }: any) {
       // fetchBookList()
       onClose();
       setFileListPreview([])
+      setIsLoading(false)
     } catch (err: any) {
       console.log("err create: ", err.response);
       if (!fileList[0]) {
@@ -150,6 +153,7 @@ function DawerBook({ open, onSubmit, onClose, bookEdit, title }: any) {
 
   const changeLink = async (value: string) => {
     try {
+      setIsLoading(true)
       const book: any = await getBookByLink({ remote_url: value });
       console.log("book: ", book);
 
@@ -168,7 +172,7 @@ function DawerBook({ open, onSubmit, onClose, bookEdit, title }: any) {
           url: book?.book_image,
         }])
       }
-
+      setIsLoading(false)
 
     } catch (error) {
       console.error("Error fetching book list:", error);
@@ -193,7 +197,7 @@ function DawerBook({ open, onSubmit, onClose, bookEdit, title }: any) {
           <Button onClick={() => {
             onClose()
           }}>Cancel</Button>
-          <Button onClick={() => form.submit()} type="primary">
+          <Button onClick={() => form.submit()} type="primary" disabled={isLoading}>
             Save
           </Button>
         </Space>
@@ -203,6 +207,7 @@ function DawerBook({ open, onSubmit, onClose, bookEdit, title }: any) {
         <Form.Item name="link" label="Link">
           <Tooltip title="You can select link book from Tiki or Fahasa " color={'#108ee9'}>
             <Search
+              disabled={isLoading}
               size="large"
               style={{ width: "100%" }}
               placeholder="You can select link book from Tiki or Fahasa"
