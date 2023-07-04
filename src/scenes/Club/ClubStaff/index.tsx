@@ -948,11 +948,11 @@ const ClubStaff = () => {
   const drawerContent: DrawerContent = {
     extend: {
       title: `Extend Books`,
-      onOk: handleReturnBorrowingBooks,
+      onOk: handleExtendBorrowingBooks,
       content: (
         <>
           <Form
-            onFinish={handleReturnBorrowingBooks}
+            onFinish={handleExtendBorrowingBooks}
             layout="vertical"
             form={form}
             name="control-ref"
@@ -973,6 +973,13 @@ const ClubStaff = () => {
               <Input disabled />
             </Form.Item>
             <Form.Item
+              name="new_due_date"
+              label="New Due Date"
+              rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} new due date` }]}
+            >
+              <DatePicker disabledDate={disabledDateBefore} style={{ width: "100%" }} format={dateFormatList} />
+            </Form.Item>
+            <Form.Item
               rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} attachment` }]}
               name="attachment"
               label="Attachment:"
@@ -990,11 +997,11 @@ const ClubStaff = () => {
     },
     return: {
       title: `Return Books`,
-      onOk: () => {},
+      onOk: handleReturnBorrowingBooks,
       content: (
         <>
           <Form
-            onFinish={handleExtendBorrowingBooks}
+            onFinish={handleReturnBorrowingBooks}
             layout="vertical"
             form={form}
             name="control-ref"

@@ -137,7 +137,7 @@ const clubMemberBookBorrowingReturn = (data: ClubMemberBookBorrowingReturnForm) 
   formData.append("membership_order_detail_ids", data.membership_order_detail_ids.join(","));
   formData.append("note", data.note);
   formData.append("attachment", data.attachment);
-  return ApiServiceAuthor.post("/club/member/order/extend", formData);
+  return ApiServiceAuthor.post("/club/member/book/return", formData);
 };
 export default {
   getListClub,
