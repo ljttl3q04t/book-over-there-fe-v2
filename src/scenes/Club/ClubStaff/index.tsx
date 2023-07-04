@@ -19,6 +19,7 @@ import ClubService, {
   ClubMemberBookBorrowingExtendForm,
   ClubMemberDepositCreateForm,
   ClubMemberWithdrawCreateForm,
+  ClubMemberBookBorrowingReturnForm,
 } from "@/services/club";
 import { debounce } from "@/helpers/fuctionHepler";
 import {
@@ -490,6 +491,35 @@ const ClubStaff = () => {
       })
       .finally(() => {});
   };
+  const handleReturnBorrowingBooks = () => {
+    const formData: ClubMemberBookBorrowingReturnForm = {
+      membership_order_detail_ids: selectedRowKeys,
+      note: form.getFieldValue("note"),
+      attachment: fileList[0] as RcFile,
+    };
+    ClubService.clubMemberBookBorrowingReturn(formData)
+      .then((response) => {
+        notification.success({
+          message: "Extend successfully!",
+          type: "success",
+        });
+        onCloseBorrowingDrawer();
+        setSelectedRowKeys([]);
+        setFileList([]);
+        setFileListPreview([]);
+        const searchForm: ClubMemberBookBorrowingForm = {
+          membership_id: modalItem?.current.membershipId,
+        };
+        fetchMemberBookBorrowing(searchForm);
+      })
+      .catch((error) => {
+        notification.error({
+          message: `Extend failed, please try again!`,
+          type: "error",
+        });
+      })
+      .finally(() => {});
+  };
   const handleSelectBooksChange = debounce((value: string) => {
     const searchForm: ClubStaffBookListParams = {
       ...defaultSearchBooklistForm,
@@ -918,11 +948,11 @@ const ClubStaff = () => {
   const drawerContent: DrawerContent = {
     extend: {
       title: `Extend Books`,
-      onOk: handleExtendBorrowingBooks,
+      onOk: handleReturnBorrowingBooks,
       content: (
         <>
           <Form
-            onFinish={handleExtendBorrowingBooks}
+            onFinish={handleReturnBorrowingBooks}
             layout="vertical"
             form={form}
             name="control-ref"
@@ -941,13 +971,6 @@ const ClubStaff = () => {
               rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} phone number` }]}
             >
               <Input disabled />
-            </Form.Item>
-            <Form.Item
-              name="new_due_date"
-              label="New Due Date"
-              rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} new due date` }]}
-            >
-              <DatePicker disabledDate={disabledDateBefore} style={{ width: "100%" }} format={dateFormatList} />
             </Form.Item>
             <Form.Item
               rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} attachment` }]}

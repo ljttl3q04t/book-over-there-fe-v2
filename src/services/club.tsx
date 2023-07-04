@@ -38,6 +38,11 @@ export interface ClubMemberBookBorrowingExtendForm {
   note: string;
   attachment: RcFile;
 }
+export interface ClubMemberBookBorrowingReturnForm {
+  membership_order_detail_ids: React.Key[];
+  note: string;
+  attachment: RcFile;
+}
 export interface ClubMemberBookBorrowingForm {
   membership_id: number;
 }
@@ -127,6 +132,13 @@ const clubMemberBookBorrowingExtend = (data: ClubMemberBookBorrowingExtendForm) 
   formData.append("attachment", data.attachment);
   return ApiServiceAuthor.post("/club/member/order/extend", formData);
 };
+const clubMemberBookBorrowingReturn = (data: ClubMemberBookBorrowingReturnForm) => {
+  const formData = new FormData();
+  formData.append("membership_order_detail_ids", data.membership_order_detail_ids.join(","));
+  formData.append("note", data.note);
+  formData.append("attachment", data.attachment);
+  return ApiServiceAuthor.post("/club/member/order/extend", formData);
+};
 export default {
   getListClub,
   joinCLub,
@@ -138,5 +150,6 @@ export default {
   getClubMemberBookBorrowing,
   clubMemberBookBorrowingExtend,
   clubMemberDepositCreate,
-  clubMemberWithdrawCreate
+  clubMemberWithdrawCreate,
+  clubMemberBookBorrowingReturn,
 };
