@@ -1,4 +1,4 @@
-import { LockOutlined, MailOutlined, PhoneOutlined, UserOutlined } from "@ant-design/icons";
+import { LockOutlined, MailOutlined, PhoneOutlined, UserOutlined, UserAddOutlined } from "@ant-design/icons";
 import { Button, Form, Input, notification } from "antd";
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -74,6 +74,7 @@ const Register = () => {
       password: values.password,
       phone_number: values.phone,
       email: values.email,
+      full_name: values.full_name,
     };
 
     UserService.registerUser(user).then((res: any) => {
@@ -119,6 +120,18 @@ const Register = () => {
             ]}
           >
             <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
+          </Form.Item>
+          <Form.Item
+            name="full_name"
+            label="Full Name"
+            rules={[
+              {
+                required: true,
+                message: "Please input your Full Name!",
+              },
+            ]}
+          >
+            <Input prefix={<UserAddOutlined className="site-form-item-icon" />} placeholder="Full Name" />
           </Form.Item>
           <Form.Item
             name="email"
