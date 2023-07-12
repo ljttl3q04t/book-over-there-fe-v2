@@ -1,14 +1,22 @@
 /* eslint-disable react/react-in-jsx-scope */
 import { ProFormText, QueryFilter } from "@ant-design/pro-form";
 import { ThunkDispatch } from "@reduxjs/toolkit";
-import { Button, Col, Row, Typography, MenuProps, Dropdown, Space } from "antd";
+import { Button, Col, Row, Typography, MenuProps, Dropdown, Space, Affix } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Layout } from "antd";
-import { HeartTwoTone, EyeTwoTone, PlusCircleTwoTone, MoreOutlined } from "@ant-design/icons";
+import {
+  HeartTwoTone,
+  EyeTwoTone,
+  PlusCircleTwoTone,
+  MoreOutlined,
+  RightOutlined,
+  PlusCircleOutlined,
+} from "@ant-design/icons";
 import CardBook from "../../component/CardBook";
 import { getListBook } from "../../store/bookStore";
+import { useNavigate } from "react-router-dom";
 
 import "semantic-ui-css/semantic.min.css";
 import "react-multi-carousel/lib/styles.css";
@@ -18,7 +26,7 @@ import Section from "@/component/carousel/Section";
 import "./style.scss";
 import bookService from "@/services/book";
 import styled from "styled-components";
-
+import ClubService from "@/services/club";
 const { Title } = Typography;
 
 const StyledHomeContainer = styled.div`
@@ -34,7 +42,16 @@ const StyledHomeContainer = styled.div`
     padding-bottom: 20px;
   }
 `;
-
+interface DataTypeClubBook {
+  no: number;
+  bookName: string;
+  categoryName: string;
+  authorName: string;
+  publisherName: string;
+  image: string;
+  club: string;
+  totalCopyCount: number;
+}
 const calculateChunksSize = () => {
   const screenWidth = window.innerWidth - 322; // Get the width of the screen
   const itemWidth = 280; // Width of each carousel item
@@ -52,8 +69,54 @@ const Homepage = () => {
     pageIndex: 1,
     pageSize: 10,
   });
-  const [chunksSize, setChunksSize] = useState(calculateChunksSize());
+  const [clubList, setClubList] = useState([]);
+  const [clubBookList, setClubBookList] = useState([]);
 
+  const [chunksSize, setChunksSize] = useState(calculateChunksSize());
+  const navigate = useNavigate();
+  const tableBookRef = useRef(null);
+  const executeScroll = () => tableBookRef.current.scrollIntoView({ behavior: "smooth", block: "start" }); // run this function from an event handler or pass it to useEffect to execute scroll
+
+  const fetchCLubList = useCallback(async () => {
+    setLoading(true);
+    ClubService.getListClub()
+      .then((response) => {
+        if (response.data) {
+          const data = response.data.map((item: any, index: any) => {
+            return { no: index + 1, ...item };
+          });
+          setClubList(data);
+          fetchClubBookList();
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+  const fetchClubBookList = () => {
+    ClubService.getClubBookList()
+      .then((response) => {
+        if (response.data) {
+          const data = response.data
+            .map((item: any, index: any) => {
+              const book: DataTypeClubBook = {
+                no: index + 1,
+                authorName: item.author?.name,
+                bookName: item.book?.name,
+                categoryName: item.book?.category?.name,
+                publisherName: item.book?.publisher?.name,
+                image: item.book?.image,
+                club: item.club,
+                totalCopyCount: item.total_copy_count,
+              };
+              return book;
+            })
+            .slice(0, 6);
+          setClubBookList(data);
+        }
+      })
+      .finally(() => {});
+  };
   const getListBookInit = useCallback(async () => {
     try {
       setLoading(true);
@@ -70,6 +133,10 @@ const Homepage = () => {
   useEffect(() => {
     getListBookInit();
   }, [option]);
+
+  useEffect(() => {
+    fetchCLubList();
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -258,86 +325,58 @@ const Homepage = () => {
 
   return (
     <>
-    <StyledHomeContainer>
-      <div className="carousel-title">
-        <Title level={2} style={{ margin: 0 }}>
-          Popular Books
-        </Title>
-      </div>
-      <Section>
-        <Carousel
-          swipeable={true}
-          draggable={true}
-          showDots={false}
-          responsive={responsive}
-          ssr={true} // means to render carousel on server-side.
-          infinite={true}
-          autoPlay={deviceType !== "mobile" ? true : false}
-          // autoPlay={false}
-          autoPlaySpeed={3000}
-          keyBoardControl={true}
-          // customTransition="linear 1"
-          transitionDuration={300}
-          containerClass="carousel-container"
-          removeArrowOnDeviceType={["tablet", "mobile"]}
-          deviceType={deviceType}
-          dotListClass="custom-dot-list-style"
-          itemClass="image-item"
-        >
-          {books.map((book, index) => (
-            <CardBook
-              key={index}
-              height="400px"
-              content={{
-                title: deviceType,
-                description: book.description,
-              }}
-              router={`/book-detail/:id}`}
-            />
-          ))}
-        </Carousel>
-      </Section>
-
-      <div className="carousel-title">
-        <Title level={2} style={{ margin: 0 }}>
-          Popular Club
-        </Title>
-      </div>
-      <Section>
-        <Carousel
-          swipeable={true}
-          draggable={true}
-          showDots={false}
-          responsive={responsive}
-          ssr={true} // means to render carousel on server-side.
-          infinite={true}
-          autoPlay={deviceType !== "mobile" ? true : false}
-          // autoPlay={false}
-          autoPlaySpeed={3000}
-          keyBoardControl={true}
-          // customTransition="linear 1"
-          transitionDuration={300}
-          containerClass="carousel-container"
-          removeArrowOnDeviceType={["tablet", "mobile"]}
-          deviceType={deviceType}
-          dotListClass="custom-dot-list-style"
-          itemClass="image-item"
-        >
-          {books.map((book, index) => (
-            <CardBook
-              key={index}
-              height="400px"
-              content={{
-                title: deviceType,
-                description: book.description,
-              }}
-              router={`/book-detail/:id}`}
-            />
-          ))}
-        </Carousel>
-      </Section>
-      </StyledHomeContainer>
       <StyledHomeContainer>
+        {clubList &&
+          clubList.map((item: any) => (
+            <div className="club">
+              <div className="carousel-title">
+                <Title level={2} style={{ margin: 0 }}>
+                  <a style={{ textDecoration: "none" }} onClick={() => executeScroll()} rel="noopener noreferrer">
+                    {item.name}
+                  </a>
+                  <span onClick={() => executeScroll()} className="extra-title">
+                    See all <RightOutlined style={{ fontSize: "18px" }} />
+                  </span>
+                </Title>
+              </div>
+              <Section>
+                <Carousel
+                  swipeable={true}
+                  draggable={true}
+                  showDots={false}
+                  responsive={responsive}
+                  ssr={true} // means to render carousel on server-side.
+                  infinite={true}
+                  autoPlay={deviceType !== "mobile" ? true : false}
+                  // autoPlay={false}
+                  autoPlaySpeed={3000}
+                  keyBoardControl={true}
+                  // customTransition="linear 1"
+                  transitionDuration={300}
+                  containerClass="carousel-container"
+                  removeArrowOnDeviceType={["tablet", "mobile"]}
+                  deviceType={deviceType}
+                  dotListClass="custom-dot-list-style"
+                  itemClass="image-item"
+                >
+                  {clubBookList.map((book: DataTypeClubBook, index) => (
+                    <CardBook
+                      srcImg={book.image}
+                      key={index}
+                      height="400px"
+                      content={{
+                        title: book.bookName,
+                        description: book.publisherName,
+                      }}
+                      router={`/book-detail/:id}`}
+                    />
+                  ))}
+                </Carousel>
+              </Section>
+            </div>
+          ))}
+      </StyledHomeContainer>
+      <StyledHomeContainer ref={tableBookRef}>
         <QueryFilter
           style={{ padding: 10 }}
           layout="vertical"
@@ -382,6 +421,11 @@ const Homepage = () => {
           }}
         />
       </StyledHomeContainer>
+      <Affix style={{ position: "absolute", bottom: 30, right: 40, zIndex: 999 }}>
+        <Button icon={<PlusCircleOutlined />} type="primary" onClick={() => executeScroll()}>
+          Go to order
+        </Button>
+      </Affix>
     </>
   );
 };

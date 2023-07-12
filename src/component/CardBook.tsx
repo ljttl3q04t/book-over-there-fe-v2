@@ -47,9 +47,13 @@ function CardBook({
             alt="example"
             src={srcImg}
             style={{
-              width: width,
-              height: 260,
+              width: width - 4,
+              height: 256,
               objectFit: "cover",
+              marginTop: "1px",
+              marginInlineStart: "2px",
+              marginInlineEnd: "2px",
+              paddingTop:"20px"
             }}
           />
         }

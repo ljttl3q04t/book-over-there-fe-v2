@@ -1,8 +1,25 @@
 #__next {
-    padding: 20px;
+  padding: 20px;
+}
+.image-item {
+  padding: 20px 0 20px 20px;
+  width: 298px;
+}
+.carousel-title {
+  a {
+    text-decoration: none;
+    color: #69b1ff;
   }
-  .image-item {
-    padding: 20px 0 20px 20px;
-    width: 298px;
+  .extra-title {
+    visibility: hidden;
+    margin-left: 10px;
+    font-size: 16px;
   }
-  
+  &:hover {
+    .extra-title {
+      visibility: visible;
+      color: #69b1ff;
+      cursor: pointer;
+    }
+  }
+}
