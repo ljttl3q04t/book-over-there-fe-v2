@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import defaultImage from "./../../public/book-default.png";
+import defaultImage from "@/image/book-default.png";
 interface DefaultImageProps {
   src: string;
   alt: string;
