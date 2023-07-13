@@ -56,7 +56,7 @@ const joinCLub = (data: any) => {
 };
 
 const getClubBookList = () => {
-  return ApiServiceAuthor.get("/club/book/list");
+  return axiosApi.get("/club/book/list");
 };
 const getClubMemberList = () => {
   return ApiServiceAuthor.get("/club/member/list");

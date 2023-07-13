@@ -1,9 +1,38 @@
-import { ApiServiceAuthor } from "../http-common";
-import { BookCopy, ListView } from "./types";
+import { ApiServiceAuthor, axiosApi, dfbApi } from "../http-common";
+import { BookCopy, ClubBookInfos } from "./types";
+
+type GetClubBookIdsParams = {
+  clubId: number;
+}
+
+async function getClubBookIds(data: any): Promise<number[]> {
+  try {
+    const response = await dfbApi.post(`/club_book/get_ids`, data);
+    const {club_book_ids} = response.data;
+    return club_book_ids;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error;
+  }
+}
+
+async function getClubBookInfos(clubBookIds: number[]): Promise<ClubBookInfos[]> {
+  const data = {
+    "club_book_ids": clubBookIds.join(','),
+  };
+  try {
+    const response = await dfbApi.post(`/club_book/get_infos`, data);
+    const { club_book_infos } = response.data;
+    return club_book_infos;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error;
+  }
+}
 
 const getListBook = (page: any, page_Size: any, filter?: any) => {
   const params = { page, page_Size, filter };
-  return ApiServiceAuthor.get(`/book/list`, { params });
+  return axiosApi.get(`/book/list`, { params });
 };
 
 async function getMyBookList(): Promise<BookCopy[]> {
@@ -62,6 +91,8 @@ const bookService = {
   createBook,
   getHistoryBook,
   getBookByLink,
-  getBookborrow
+  getBookborrow,
+  getClubBookIds,
+  getClubBookInfos,
 };
 export default bookService;

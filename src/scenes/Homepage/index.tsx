@@ -27,6 +27,8 @@ import "./style.scss";
 import bookService from "@/services/book";
 import styled from "styled-components";
 import ClubService from "@/services/club";
+import BookService from "@/services/book";
+
 const { Title } = Typography;
 
 const StyledHomeContainer = styled.div`
@@ -70,7 +72,7 @@ const Homepage = () => {
     pageSize: 10,
   });
   const [clubList, setClubList] = useState([]);
-  const [clubBookList, setClubBookList] = useState([]);
+  const [clubBookList, setClubBookList] = useState<DataTypeClubBook[]>([]);
 
   const [chunksSize, setChunksSize] = useState(calculateChunksSize());
   const navigate = useNavigate();
@@ -79,44 +81,36 @@ const Homepage = () => {
 
   const fetchCLubList = useCallback(async () => {
     setLoading(true);
-    ClubService.getListClub()
-      .then((response) => {
-        if (response.data) {
-          const data = response.data.map((item: any, index: any) => {
-            return { no: index + 1, ...item };
-          });
-          setClubList(data);
-          fetchClubBookList();
-        }
+    const response = await ClubService.getListClub();
+    const data = response.data
+      .map((item: any, index: any) => {
+        return { no: index + 1, ...item };
       })
-      .finally(() => {
-        setLoading(false);
-      });
+      .filter((item: any) => item.code && item.code.startsWith("dfb_caugiay"));
+    setClubList(data);
+    const clubBookIds = await BookService.getClubBookIds({ club_id: data[0].id });
+    const clubBookInfos = await BookService.getClubBookInfos(clubBookIds.slice(0, 10));
+    console.log("zlo", clubBookInfos);
+    const books = Object.values(clubBookInfos)
+      .map((item, index) => {
+        const book: DataTypeClubBook = {
+          no: index + 1,
+          authorName: item.book.author?.name ?? "",
+          bookName: item.book?.name,
+          categoryName: item.book.category?.name ?? "",
+          publisherName: "",
+          image: item.book?.image ?? "",
+          club: item.club_id.toString(),
+          totalCopyCount: item.current_count,
+        };
+        return book;
+      })
+      .slice(0, 6);
+    setClubBookList(books);
+
+    setLoading(false);
   }, []);
-  const fetchClubBookList = () => {
-    ClubService.getClubBookList()
-      .then((response) => {
-        if (response.data) {
-          const data = response.data
-            .map((item: any, index: any) => {
-              const book: DataTypeClubBook = {
-                no: index + 1,
-                authorName: item.author?.name,
-                bookName: item.book?.name,
-                categoryName: item.book?.category?.name,
-                publisherName: item.book?.publisher?.name,
-                image: item.book?.image,
-                club: item.club,
-                totalCopyCount: item.total_copy_count,
-              };
-              return book;
-            })
-            .slice(0, 6);
-          setClubBookList(data);
-        }
-      })
-      .finally(() => {});
-  };
+
   const getListBookInit = useCallback(async () => {
     try {
       setLoading(true);
@@ -265,24 +259,6 @@ const Homepage = () => {
     items,
     onClick: handleMenuClick,
   };
-
-  const books = [
-    { title: "Book 1", description: "Description 1" },
-    { title: "Book 2", description: "Description 2" },
-    { title: "Book 3", description: "Description 3" },
-    { title: "Book 4", description: "Description 4" },
-    { title: "Book 5", description: "Description 5" },
-    { title: "Book 6", description: "Description 6" },
-    { title: "Book 7", description: "Description 7" },
-    { title: "Book 8", description: "Description 8" },
-    { title: "Book 9", description: "Description 9" },
-    { title: "Book 10", description: "Description 10" },
-    { title: "Book 11", description: "Description 11" },
-    { title: "Book 12", description: "Description 12" },
-    { title: "Book 13", description: "Description 13" },
-    { title: "Book 14", description: "Description 14" },
-    { title: "Book 15", description: "Description 15" },
-  ];
 
   const [deviceType, setDeviceType] = useState("");
 

@@ -44,3 +44,31 @@ export type Club = {
   member_status: string;
   updated_at: string;
 };
+
+// D Free Book
+export type CategoryInfos = {
+  id: number;
+  name: string;
+}
+
+export type AuthorInfos = {
+  id: number;
+  name: string;
+}
+
+export type BookInfos = {
+  name: string;
+  category: CategoryInfos | null;
+  author: AuthorInfos | null;
+  publisher: null;
+  description: string | null;
+  image: string | null;
+}
+
+export type ClubBookInfos = {
+  book: BookInfos;
+  code: string;
+  club_id: number;
+  init_count: number;
+  current_count: number;
+}
