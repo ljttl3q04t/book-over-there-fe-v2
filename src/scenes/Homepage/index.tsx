@@ -29,7 +29,7 @@ import styled from "styled-components";
 import ClubService from "@/services/club";
 import BookService from "@/services/book";
 import { ProFormSelect } from "@ant-design/pro-components";
-import Image from "@/component/image";
+import Image from "@/component/Image";
 const { Title } = Typography;
 
 const StyledHomeContainer = styled.div`
