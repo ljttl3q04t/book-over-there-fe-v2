@@ -19,7 +19,8 @@ export const fetchBookList = async () => {
                 bookStatus: item?.book_status,
                 bookDepositPrice: item?.book_deposit_price,
                 bookDepositStatus: item?.book_deposit_status,
-                user: item?.user
+                user: item?.user,
+
             }
         })
         return data
