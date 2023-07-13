@@ -29,7 +29,7 @@ import styled from "styled-components";
 import ClubService from "@/services/club";
 import BookService from "@/services/book";
 import { ProFormSelect } from "@ant-design/pro-components";
-
+import Image from "@/component/image";
 const { Title } = Typography;
 
 const StyledHomeContainer = styled.div`
@@ -55,6 +55,13 @@ interface DataTypeClubBook {
   club: string;
   totalCopyCount: number;
 }
+interface DataTypeClubSlide {
+  clubName: string;
+  clubId: number;
+  clubBookIds: number[];
+  clubBookInfor: DataTypeClubBook[];
+  clubCode: string;
+}
 const calculateChunksSize = () => {
   const screenWidth = window.innerWidth - 322; // Get the width of the screen
   const itemWidth = 280; // Width of each carousel item
@@ -65,6 +72,7 @@ const calculateChunksSize = () => {
 
   return chunksSize;
 };
+
 const Homepage = () => {
   const [loading, setLoading] = useState(false);
   const [bookList, setBookList] = useState<any>([]);
@@ -72,7 +80,7 @@ const Homepage = () => {
     pageIndex: 1,
     pageSize: 10,
   });
-  const [clubList, setClubList] = useState([]);
+  const [clubList, setClubList] = useState<DataTypeClubSlide[]>([]);
   const [clubBookIds, setClubBookIds] = useState<number[]>([]);
   const [clubBookList, setClubBookList] = useState<DataTypeClubBook[]>([]);
   const [clubId, setClubId] = useState();
@@ -82,37 +90,86 @@ const Homepage = () => {
   const tableBookRef = useRef(null);
   const executeScroll = () => tableBookRef.current.scrollIntoView({ behavior: "smooth", block: "start" }); // run this function from an event handler or pass it to useEffect to execute scroll
 
-  const fetchCLubList = useCallback(async () => {
-    setLoading(true);
-    const response = await ClubService.getListClub();
-    const data = response.data
-      .map((item: any, index: any) => {
-        return { no: index + 1, ...item };
-      })
-      .filter((item: any) => item.code && item.code.startsWith("dfb_caugiay"));
-    setClubList(data);
-    setClubId(data[0].id);
-    const _clubBookIds = await BookService.getClubBookIds({ club_id: data[0].id });
-    setClubBookIds(_clubBookIds);
-    const clubBookInfos = await BookService.getClubBookInfos(_clubBookIds.slice(0, 10));
-    const books = Object.values(clubBookInfos)
-      .map((item, index) => {
-        const book: DataTypeClubBook = {
-          no: index + 1,
-          authorName: item.book.author?.name ?? "",
-          bookName: item.book?.name,
-          categoryName: item.book.category?.name ?? "",
-          publisherName: "",
-          image: item.book?.image ?? "",
-          club: item.club_id.toString(),
-          totalCopyCount: item.current_count,
-        };
-        return book;
-      })
-      .slice(0, 6);
+  // const fetchCLubList = useCallback(async () => {
+  //   setLoading(true);
+  //   const response = await ClubService.getListClub();
+  //   const data = response.data
+  //     .map((item: any, index: any) => {
+  //       return { no: index + 1, ...item };
+  //     })
+  //     .filter((item: any) => item.code && item.code.startsWith("dfb"));
+  //   setClubList(data);
+  //   setClubId(data[0].id);
+  //   const _clubBookIds = await BookService.getClubBookIds({ club_id: data[0].id });
+  //   setClubBookIds(_clubBookIds);
+  //   const clubBookInfos = await BookService.getClubBookInfos(_clubBookIds.slice(0, 10));
+  //   const books = Object.values(clubBookInfos)
+  //     .map((item, index) => {
+  //       const book: DataTypeClubBook = {
+  //         no: index + 1,
+  //         authorName: item.book.author?.name ?? "",
+  //         bookName: item.book?.name,
+  //         categoryName: item.book.category?.name ?? "",
+  //         publisherName: "",
+  //         image: item.book?.image ?? "",
+  //         club: item.club_id.toString(),
+  //         totalCopyCount: item.current_count,
+  //       };
+  //       return book;
+  //     })
+  //     .slice(0, 6);
 
-    setClubBookList(books);
-    setLoading(false);
+  //   setClubBookList(books);
+  //   setLoading(false);
+  // }, []);
+  const fetchClubList = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await ClubService.getListClub();
+      const clubs = response.data;
+      const clubList = await Promise.all(
+        clubs.map(async (item: any) => {
+          try {
+            const clubBookIds = await BookService.getClubBookIds({ club_id: item.id });
+            const clubBookInfos = await BookService.getClubBookInfos(clubBookIds.slice(0, 10));
+            const clubBookInfor = Object.values(clubBookInfos)
+              .map((item, index) => {
+                const book: DataTypeClubBook = {
+                  no: index + 1,
+                  authorName: item.book.author?.name ?? "",
+                  bookName: item.book?.name,
+                  categoryName: item.book.category?.name ?? "",
+                  publisherName: "",
+                  image: item.book?.image ?? "",
+                  club: item.club_id.toString(),
+                  totalCopyCount: item.current_count,
+                };
+                return book;
+              })
+              .slice(0, 6);
+
+            const clubSlide: DataTypeClubSlide = {
+              clubName: item.name,
+              clubId: item.id,
+              clubBookIds,
+              clubBookInfor,
+              clubCode: item.code,
+            };
+
+            return clubSlide;
+          } catch (error) {
+            return null;
+          }
+        }),
+      );
+        
+      const filteredClubList = clubList.filter((item) =>item && item.clubCode && item.clubCode.startsWith("dfb"));
+      setClubList(filteredClubList);
+    } catch (error) {
+      // Handle error here
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const getListBookInit = useCallback(async () => {
@@ -137,7 +194,7 @@ const Homepage = () => {
   }, [clubBookIds]);
 
   useEffect(() => {
-    fetchCLubList();
+    fetchClubList();
   }, []);
 
   useEffect(() => {
@@ -174,7 +231,7 @@ const Homepage = () => {
       render: (_values: any) => {
         return (
           <>
-            <img alt="pic" style={{ width: 50, height: 50 }} src={_values} />
+            <Image alt="pic" style={{ width: 50, height: 50 }} src={_values} />
           </>
         );
       },
@@ -312,12 +369,12 @@ const Homepage = () => {
     <>
       <StyledHomeContainer>
         {clubList &&
-          clubList.map((item: any) => (
+          clubList.map((item: DataTypeClubSlide) => (
             <div className="club">
               <div className="carousel-title">
                 <Title level={2} style={{ margin: 0 }}>
                   <a style={{ textDecoration: "none" }} onClick={() => executeScroll()} rel="noopener noreferrer">
-                    {item.name}
+                    {item.clubName}
                   </a>
                   <span onClick={() => executeScroll()} className="extra-title">
                     See all <RightOutlined style={{ fontSize: "18px" }} />
@@ -332,7 +389,7 @@ const Homepage = () => {
                   responsive={responsive}
                   ssr={true} // means to render carousel on server-side.
                   infinite={true}
-                  autoPlay={deviceType !== "mobile" ? true : false}
+                  // autoPlay={deviceType !== "mobile" ? true : false}
                   // autoPlay={false}
                   autoPlaySpeed={3000}
                   keyBoardControl={true}
@@ -344,7 +401,7 @@ const Homepage = () => {
                   dotListClass="custom-dot-list-style"
                   itemClass="image-item"
                 >
-                  {clubBookList.map((book: DataTypeClubBook, index) => (
+                  {item.clubBookInfor.map((book: DataTypeClubBook, index) => (
                     <CardBook
                       srcImg={book.image}
                       key={index}
