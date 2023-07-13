@@ -162,19 +162,22 @@ const Homepage = () => {
           }
         }),
       );
-        
-      const filteredClubList = clubList.filter((item) =>item && item.clubCode && item.clubCode.startsWith("dfb"));
+
+      const filteredClubList: DataTypeClubSlide[] = clubList.filter(
+        (item) => item && item.clubCode && item.clubCode.startsWith("dfb"),
+      );
       setClubList(filteredClubList);
+      await handleViewAllClubBooks(filteredClubList[0].clubBookIds);
     } catch (error) {
       // Handle error here
     } finally {
       setLoading(false);
     }
   }, []);
-
-  const getListBookInit = useCallback(async () => {
+  const handleViewAllClubBooks = async (clubBookIds: number[], clubId?: any) => {
     try {
       setLoading(true);
+      if (clubId) setClubId(clubId);
       if (!clubBookIds.length) {
         setBookList([]);
       } else {
@@ -187,12 +190,17 @@ const Homepage = () => {
       console.error("error", error);
       // Handle error
     }
-  }, [clubBookIds]);
-
-  useEffect(() => {
-    getListBookInit();
-  }, [clubBookIds]);
-
+  };
+  const handleSearchTable = async (data: any) => {
+    const { book_name, book_category } = data;
+    const _clubBookIds = await bookService.getClubBookIds({ club_id: clubId, book_name, book_category });
+    handleViewAllClubBooks(_clubBookIds);
+    setOption({
+      pageIndex: 1,
+      pageSize: 10,
+      ...data,
+    });
+  };
   useEffect(() => {
     fetchClubList();
   }, []);
@@ -371,7 +379,7 @@ const Homepage = () => {
         {clubList &&
           clubList.map((item: DataTypeClubSlide) => (
             <div className="club">
-              <div className="carousel-title">
+              <div onClick={() => handleViewAllClubBooks(item.clubBookIds,item.clubId)} className="carousel-title">
                 <Title level={2} style={{ margin: 0 }}>
                   <a style={{ textDecoration: "none" }} onClick={() => executeScroll()} rel="noopener noreferrer">
                     {item.clubName}
@@ -425,23 +433,9 @@ const Homepage = () => {
           resetText={"Reset"}
           searchText={"Search"}
           className="home-page-search_book"
-          onFinish={async (data) => {
-            console.log("data", data);
-            const { book_name, book_category } = data;
-            const _clubBookIds = await bookService.getClubBookIds({ book_name, book_category });
-            setClubBookIds(_clubBookIds);
-            setOption({
-              pageIndex: 1,
-              pageSize: 10,
-              ...data,
-            });
-            // return Promise.resolve(true);
-          }}
+          onFinish={async (data) => handleSearchTable(data)}
           onReset={() => {
-            setOption({
-              pageIndex: 1,
-              pageSize: 10,
-            });
+            handleSearchTable({})
           }}
         >
           <ProFormText
