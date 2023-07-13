@@ -88,7 +88,7 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
       <div style={{ float: "right", display: "flex", alignItems: "center" }}>
         {access !== null ? (
           <>
-            {iconNotifi()}
+            {/* {iconNotifi()} */}
             <Image
               style={{
                 float: "left",

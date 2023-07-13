@@ -4,6 +4,7 @@ import React, { useRef, useState } from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import { FilterConfirmProps } from "antd/es/table/interface";
 import Highlighter from "react-highlight-words";
+import unorm from "unorm";
 
 interface DataType {
   no: number;
@@ -69,10 +70,17 @@ export const getColumnSearchProps = (
         >
           Search
         </Button>
-        <Button onClick={() => clearFilters && handleReset(clearFilters)} size="small" style={{ width: 90 }}>
+        <Button
+          onClick={() => {
+            clearFilters && handleReset(clearFilters);
+            handleSearch(selectedKeys as string[], confirm, dataIndex);
+          }}
+          size="small"
+          style={{ width: 90 }}
+        >
           Reset
         </Button>
-        <Button
+        {/* <Button
           type="link"
           size="small"
           onClick={() => {
@@ -82,7 +90,7 @@ export const getColumnSearchProps = (
           }}
         >
           Filter
-        </Button>
+        </Button> */}
         <Button
           type="link"
           size="small"
@@ -96,11 +104,11 @@ export const getColumnSearchProps = (
     </div>
   ),
   filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? "#1677ff" : undefined }} />,
-  onFilter: (value, record:any) =>
-    record[dataIndex]
-      .toString()
-      .toLowerCase()
-      .includes((value as string).toLowerCase()),
+  onFilter: (value, record: any) => {
+    const normalizedValue = unorm.nfd(value).toLowerCase();
+    const normalizedRecord = unorm.nfd(record[dataIndex].toString()).toLowerCase();
+    return normalizedRecord.includes(normalizedValue);
+  },
   onFilterDropdownOpenChange: (visible) => {
     if (visible) {
       setTimeout(() => searchInput.current?.select(), 100);

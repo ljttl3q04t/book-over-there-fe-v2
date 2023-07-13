@@ -1,15 +1,17 @@
 /* eslint-disable no-extra-boolean-cast */
-import { Button, DatePicker, Form, Input, Modal, notification } from "antd";
+import { Button, DatePicker, Form, Input, InputRef, Modal, notification } from "antd";
 import { ExportOutlined } from "@ant-design/icons";
 import type { RangePickerProps } from "antd/es/date-picker";
 import Table, { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { getAccessToken } from "../../../http-common";
 import { UserContext } from "@/context/UserContext";
 import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
 import ClubService from "@/services/club";
+import { getColumnSearchProps } from "@/helpers/CommonTable";
+import { FilterConfirmProps } from "antd/es/table/interface";
 const { TextArea } = Input;
 
 const layout = {
@@ -27,7 +29,19 @@ const StyledBookList = styled.div`
 const StyledModalContent = styled.div`
   padding: 30px;
 `;
-
+interface DataType {
+  no: number;
+  address: string;
+  created_at: string;
+  description: string;
+  id: number;
+  is_member: boolean;
+  name: string;
+  total_book_count: number;
+  total_member_count: number;
+  updated_at: string;
+}
+type DataIndex = keyof DataType;
 const ClubList = () => {
   const [loading, setLoading] = useState(false);
   const [clubList, setClubList] = useState([]);
@@ -36,6 +50,23 @@ const ClubList = () => {
   const dateFormatList = ["DD/MM/YYYY"];
   const disabledDate: RangePickerProps["disabledDate"] = (current) => {
     return current && current > dayjs().endOf("day");
+  };
+  const [searchText, setSearchText] = useState("");
+  const [searchedColumn, setSearchedColumn] = useState("");
+  const searchInput = useRef<InputRef>(null);
+  const handleSearch = (
+    selectedKeys: string[],
+    confirm: (param?: FilterConfirmProps) => void,
+    dataIndex: DataIndex,
+  ) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+
+  const handleReset = (clearFilters: () => void) => {
+    clearFilters();
+    setSearchText("");
   };
   const { user } = useContext(UserContext);
 
@@ -133,6 +164,16 @@ const ClubList = () => {
       title: "Name",
       dataIndex: "name",
       key: "name",
+      ...getColumnSearchProps(
+        "name",
+        searchInput,
+        searchText,
+        setSearchText,
+        searchedColumn,
+        setSearchedColumn,
+        handleReset,
+        handleSearch,
+      ),
     },
     {
       title: "Description",
@@ -149,13 +190,15 @@ const ClubList = () => {
     },
     {
       title: "Total member",
-      key: "total_member_count",
       dataIndex: "total_member_count",
+      defaultSortOrder: 'descend',
+      sorter: (a, b) => a.total_member_count - b.total_member_count,
     },
     {
       title: "Total book count",
-      key: "total_book_count",
       dataIndex: "total_book_count",
+      defaultSortOrder: 'descend',
+      sorter: (a, b) => a.total_book_count - b.total_book_count,
     },
     {
       title: "Action",
