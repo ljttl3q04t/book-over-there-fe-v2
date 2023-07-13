@@ -1,9 +1,9 @@
 /* eslint-disable react/react-in-jsx-scope */
 import { ProFormText, QueryFilter } from "@ant-design/pro-form";
 import { ThunkDispatch } from "@reduxjs/toolkit";
-import { Button, Col, Row, Typography, MenuProps, Dropdown, Space, Affix } from "antd";
+import { Button, Col, Row, Typography, MenuProps, Dropdown, Space, Affix, Modal, Form, DatePicker, Input, List, Avatar } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Layout } from "antd";
 import {
@@ -15,8 +15,7 @@ import {
   PlusCircleOutlined,
 } from "@ant-design/icons";
 import CardBook from "../../component/CardBook";
-import { getListBook } from "../../store/bookStore";
-import { useNavigate } from "react-router-dom";
+import { UserContext } from "@/context/UserContext";
 
 import "semantic-ui-css/semantic.min.css";
 import "react-multi-carousel/lib/styles.css";
@@ -30,6 +29,8 @@ import ClubService from "@/services/club";
 import BookService from "@/services/book";
 import { ProFormSelect } from "@ant-design/pro-components";
 import Image from "@/component/Image";
+import defaultImage from "@/image/book-default.png";
+import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
 const { Title } = Typography;
 
 const StyledHomeContainer = styled.div`
@@ -40,11 +41,39 @@ const StyledHomeContainer = styled.div`
   margin-top: 30px;
   box-shadow: 0 20px 27px rgb(0 0 0/5%);
   > .table-header {
-    display: flex;
-    justify-content: space-between;
+    align-items: end;
+    grid-template-columns: 1fr 100px;
+    grid-column: 50% 200px;
+    display: grid;
+    /* -webkit-box-pack: justify; */
+    /* justify-content: space-between; */
     padding-bottom: 20px;
   }
 `;
+const StyledModalContent = styled.div`
+  padding: 30px;
+  > .table-extra-content {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 15px;
+    .table-extra-content-item {
+      display: flex;
+      gap: 10px;
+    }
+  }
+`;
+const layout = {
+  labelCol: { span: 4 },
+  wrapperCol: { span: 16 },
+};
+interface ModalContent {
+  [key: string]: {
+    title: any;
+    onOk: () => void;
+    content: JSX.Element;
+    width: string | number;
+  };
+}
 interface DataTypeClubBook {
   no: number;
   bookName: string;
@@ -62,6 +91,7 @@ interface DataTypeClubSlide {
   clubBookInfor: DataTypeClubBook[];
   clubCode: string;
 }
+const { TextArea } = Input;
 const calculateChunksSize = () => {
   const screenWidth = window.innerWidth - 322; // Get the width of the screen
   const itemWidth = 280; // Width of each carousel item
@@ -72,7 +102,9 @@ const calculateChunksSize = () => {
 
   return chunksSize;
 };
-
+const MODAL_CODE = {
+  ORDER: "order",
+};
 const Homepage = () => {
   const [loading, setLoading] = useState(false);
   const [bookList, setBookList] = useState<any>([]);
@@ -81,47 +113,45 @@ const Homepage = () => {
     pageSize: 10,
   });
   const [clubList, setClubList] = useState<DataTypeClubSlide[]>([]);
-  const [clubBookIds, setClubBookIds] = useState<number[]>([]);
-  const [clubBookList, setClubBookList] = useState<DataTypeClubBook[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [selectedRows, setSelectedRows] = useState<[]>([]);
+
   const [clubId, setClubId] = useState();
+  const [activeModal, setActiveModal] = useState("");
+  const [form] = Form.useForm();
 
   const [chunksSize, setChunksSize] = useState(calculateChunksSize());
-  const navigate = useNavigate();
   const tableBookRef = useRef(null);
   const executeScroll = () => tableBookRef.current.scrollIntoView({ behavior: "smooth", block: "start" }); // run this function from an event handler or pass it to useEffect to execute scroll
-
-  // const fetchCLubList = useCallback(async () => {
-  //   setLoading(true);
-  //   const response = await ClubService.getListClub();
-  //   const data = response.data
-  //     .map((item: any, index: any) => {
-  //       return { no: index + 1, ...item };
-  //     })
-  //     .filter((item: any) => item.code && item.code.startsWith("dfb"));
-  //   setClubList(data);
-  //   setClubId(data[0].id);
-  //   const _clubBookIds = await BookService.getClubBookIds({ club_id: data[0].id });
-  //   setClubBookIds(_clubBookIds);
-  //   const clubBookInfos = await BookService.getClubBookInfos(_clubBookIds.slice(0, 10));
-  //   const books = Object.values(clubBookInfos)
-  //     .map((item, index) => {
-  //       const book: DataTypeClubBook = {
-  //         no: index + 1,
-  //         authorName: item.book.author?.name ?? "",
-  //         bookName: item.book?.name,
-  //         categoryName: item.book.category?.name ?? "",
-  //         publisherName: "",
-  //         image: item.book?.image ?? "",
-  //         club: item.club_id.toString(),
-  //         totalCopyCount: item.current_count,
-  //       };
-  //       return book;
-  //     })
-  //     .slice(0, 6);
-
-  //   setClubBookList(books);
-  //   setLoading(false);
-  // }, []);
+  const { user } = useContext(UserContext);
+  const onSelectChange = (newSelectedRowKeys: React.Key[], selectedRows: any) => {
+    console.log("selectedRowKeys changed: ", selectedRows);
+    setSelectedRowKeys(newSelectedRowKeys);
+    setSelectedRows(selectedRows);
+  };
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
+  const onResetRowSelection = () => {
+    setSelectedRowKeys([]);
+  };
+  const handleOpenOrderModal = async () => {
+    await setActiveModal(MODAL_CODE.ORDER);
+    form.setFieldsValue({
+      full_name : user?.full_name,
+      phone_number : user?.phone_number
+    })
+  };
+  const handleCloseModal = async () => {
+    await setActiveModal("");
+  };
+  const disableOrder = ()=>{
+    if(selectedRows.length ===0 || !user){
+      return true;
+    }
+    return false;
+  }
   const fetchClubList = useCallback(async () => {
     try {
       setLoading(true);
@@ -372,14 +402,65 @@ const Homepage = () => {
       paritialVisibilityGutter: 30,
     },
   };
-
+  const defaultFormContent = (onFinish: any, optionalField?: JSX.Element) => {
+    return (
+      <>
+        <Form onFinish={onFinish} {...layout} form={form} name="control-ref" style={{ width: 800 }}>
+          <Form.Item
+            name="full_name"
+            label="Full Name"
+            rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} full name` }]}
+          >
+            <Input disabled />
+          </Form.Item>
+          <Form.Item
+            name="phone_number"
+            label="Phone Number"
+            rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} phone number` }]}
+          >
+            <Input disabled />
+          </Form.Item>
+          {optionalField}
+        </Form>
+      </>
+    );
+  };
+  const modalContent: ModalContent = {
+    order: {
+      title: "Book Order",
+      width: 800,
+      onOk: () => {},
+      content: defaultFormContent(
+        () => {},
+        <>
+           <Form.Item name="selected_book" label="Selected Books:" rules={[{ required: false }]}>
+           <List
+            itemLayout="horizontal"
+            dataSource={selectedRows}
+            renderItem={(item, index) => (
+              <List.Item>
+                <List.Item.Meta
+                  avatar={<Avatar src={item.image ? item.image : defaultImage} />}
+                  title={<p>{item.name}</p>}
+                />
+              </List.Item>
+            )}
+          />          </Form.Item>
+       
+          <Form.Item name="note" label="Note" rules={[{ required: false }]}>
+            <TextArea rows={4} placeholder="Note..." />
+          </Form.Item>
+        </>,
+      ),
+    },
+  };
   return (
     <>
       <StyledHomeContainer>
         {clubList &&
           clubList.map((item: DataTypeClubSlide) => (
             <div className="club">
-              <div onClick={() => handleViewAllClubBooks(item.clubBookIds,item.clubId)} className="carousel-title">
+              <div onClick={() => handleViewAllClubBooks(item.clubBookIds, item.clubId)} className="carousel-title">
                 <Title level={2} style={{ margin: 0 }}>
                   <a style={{ textDecoration: "none" }} onClick={() => executeScroll()} rel="noopener noreferrer">
                     {item.clubName}
@@ -427,55 +508,61 @@ const Homepage = () => {
           ))}
       </StyledHomeContainer>
       <StyledHomeContainer ref={tableBookRef}>
-        <QueryFilter
-          style={{ padding: 10 }}
-          layout="vertical"
-          resetText={"Reset"}
-          searchText={"Search"}
-          className="home-page-search_book"
-          onFinish={async (data) => handleSearchTable(data)}
-          onReset={() => {
-            handleSearchTable({})
-          }}
-        >
-          <ProFormText
-            labelAlign="right"
-            style={{ display: "flex" }}
-            name="book_name"
-            label={"Search"}
-            placeholder={"Input book name to search"}
-          />
-          <ProFormSelect
-            name="book_category"
-            label="Book Category"
-            placeholder={"Filter Category"}
-            showSearch
-            valueEnum={{
-              ["Lịch sử Việt Nam"]: "Lịch sử Việt Nam",
-              ["Tôn giáo-tâm linh"]: "Tôn giáo-tâm linh",
-              ["Văn học Việt Nam"]: "Văn học Việt Nam",
-              ["Khoa học"]: "Khoa học",
-              ["Ngôn tình"]: "Ngôn tình",
-              ["Nguyễn Nhật Ánh"]: "Nguyễn Nhật Ánh",
-              ["Khám phá"]: "Khám phá",
-              ["Văn học phương Tây"]: "Văn học phương Tây",
-              ["Tâm lí học"]: "Tâm lí học",
-              ["Tư duy"]: "Tư duy",
-              ["Sức khỏe-ẩm thực"]: "Sức khỏe-ẩm thực",
-              ["Nguyên Phong"]: "Nguyên Phong",
-              ["Oopsy"]: "Oopsy",
-              ["Văn học phương Đông"]: "Văn học phương Đông",
-              ["Truyền cảm hứng"]: "Truyền cảm hứng",
-              ["Dạy con làm giàu"]: "Dạy con làm giàu",
-              ["Kinh doanh- kinh tế"]: "Kinh doanh- kinh tế",
-              ["Kỹ năng"]: "Kỹ năng",
-              ["Chú Lửng Mật"]: "Chú Lửng Mật",
-              ["Kỹ năng sống"]: "Kỹ năng sống",
-              ["Tản văn"]: "Tản văn",
-              ["Sách học NN-Ngoại văn"]: "Sách học NN-Ngoại văn",
+        <div className="table-header">
+          {" "}
+          <QueryFilter
+            style={{ padding: 0 }}
+            layout="vertical"
+            resetText={"Reset"}
+            searchText={"Search"}
+            className="home-page-search_book"
+            onFinish={async (data) => handleSearchTable(data)}
+            onReset={() => {
+              handleSearchTable({});
             }}
-          />
-        </QueryFilter>
+          >
+            <ProFormText
+              labelAlign="right"
+              style={{ display: "flex" }}
+              name="book_name"
+              label={"Search"}
+              placeholder={"Input book name to search"}
+            />
+            <ProFormSelect
+              name="book_category"
+              label="Book Category"
+              placeholder={"Filter Category"}
+              showSearch
+              valueEnum={{
+                ["Lịch sử Việt Nam"]: "Lịch sử Việt Nam",
+                ["Tôn giáo-tâm linh"]: "Tôn giáo-tâm linh",
+                ["Văn học Việt Nam"]: "Văn học Việt Nam",
+                ["Khoa học"]: "Khoa học",
+                ["Ngôn tình"]: "Ngôn tình",
+                ["Nguyễn Nhật Ánh"]: "Nguyễn Nhật Ánh",
+                ["Khám phá"]: "Khám phá",
+                ["Văn học phương Tây"]: "Văn học phương Tây",
+                ["Tâm lí học"]: "Tâm lí học",
+                ["Tư duy"]: "Tư duy",
+                ["Sức khỏe-ẩm thực"]: "Sức khỏe-ẩm thực",
+                ["Nguyên Phong"]: "Nguyên Phong",
+                ["Oopsy"]: "Oopsy",
+                ["Văn học phương Đông"]: "Văn học phương Đông",
+                ["Truyền cảm hứng"]: "Truyền cảm hứng",
+                ["Dạy con làm giàu"]: "Dạy con làm giàu",
+                ["Kinh doanh- kinh tế"]: "Kinh doanh- kinh tế",
+                ["Kỹ năng"]: "Kỹ năng",
+                ["Chú Lửng Mật"]: "Chú Lửng Mật",
+                ["Kỹ năng sống"]: "Kỹ năng sống",
+                ["Tản văn"]: "Tản văn",
+                ["Sách học NN-Ngoại văn"]: "Sách học NN-Ngoại văn",
+              }}
+            />
+          </QueryFilter>
+          <Button disabled={disableOrder()} icon={<PlusCircleOutlined />} onClick={() => handleOpenOrderModal()} type="primary">
+            Order
+          </Button>
+        </div>
 
         <Table
           loading={loading}
@@ -483,6 +570,8 @@ const Homepage = () => {
           columns={columns}
           dataSource={bookList}
           onChange={handleTableChange}
+          rowSelection={rowSelection}
+          rowKey="id"
           pagination={{
             total: bookList.length,
             pageSize: option.pageSize,
@@ -495,6 +584,29 @@ const Homepage = () => {
           Go to order
         </Button>
       </Affix>
+      {activeModal && (
+        <Modal
+          // closable={false}
+          width={modalContent[activeModal].width}
+          {...layout}
+          title={modalContent[activeModal].title}
+          open={activeModal !== ""}
+          onCancel={handleCloseModal}
+          onOk={() => form.submit()}
+          destroyOnClose={true}
+          maskClosable={false}
+          footer={[
+            <Button key="back" onClick={handleCloseModal}>
+              Return
+            </Button>,
+            <Button key="submit" type="primary" loading={loading} onClick={() => form.submit()}>
+              Submit
+            </Button>,
+          ]}
+        >
+          <StyledModalContent>{modalContent[activeModal].content}</StyledModalContent>
+        </Modal>
+      )}
     </>
   );
 };
