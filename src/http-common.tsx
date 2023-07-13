@@ -3,9 +3,19 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 export const axiosApi = axios.create({
-  baseURL: import.meta.env.VITE_REACT_APP_API_URL,
+  baseURL: `${import.meta.env.VITE_REACT_APP_API_URL}/services`,
   headers: {
     "Content-type": "Application/json",
+    "Access-Control-Allow-Origin": "*",
+  },
+});
+
+// API for D Free Book
+export const dfbApi = axios.create({
+  baseURL: `${import.meta.env.VITE_REACT_APP_API_URL}/dfree`,
+  headers: {
+    "Content-type": "Application/json",
+    "Access-Control-Allow-Origin": "*",
   },
 });
 
@@ -26,6 +36,20 @@ axiosApi.interceptors.response.use(
       localStorage.clear();
       navigate("/login");
       return;
+    }
+    return Promise.reject(error);
+  },
+);
+
+dfbApi.interceptors.response.use(
+  (response: any) => {
+    return response;
+  },
+  async (error: any) => {
+    if (!error.response) {
+      notification.error({
+        message: error.message,
+      });
     }
     return Promise.reject(error);
   },
