@@ -28,6 +28,7 @@ import bookService from "@/services/book";
 import styled from "styled-components";
 import ClubService from "@/services/club";
 import BookService from "@/services/book";
+import { ProFormSelect } from "@ant-design/pro-components";
 
 const { Title } = Typography;
 
@@ -66,13 +67,15 @@ const calculateChunksSize = () => {
 };
 const Homepage = () => {
   const [loading, setLoading] = useState(false);
-  const [bookList, setBookList] = useState<any>({});
+  const [bookList, setBookList] = useState<any>([]);
   const [option, setOption] = useState({
     pageIndex: 1,
     pageSize: 10,
   });
   const [clubList, setClubList] = useState([]);
+  const [clubBookIds, setClubBookIds] = useState<number[]>([]);
   const [clubBookList, setClubBookList] = useState<DataTypeClubBook[]>([]);
+  const [clubId, setClubId] = useState();
 
   const [chunksSize, setChunksSize] = useState(calculateChunksSize());
   const navigate = useNavigate();
@@ -88,9 +91,10 @@ const Homepage = () => {
       })
       .filter((item: any) => item.code && item.code.startsWith("dfb_caugiay"));
     setClubList(data);
-    const clubBookIds = await BookService.getClubBookIds({ club_id: data[0].id });
-    const clubBookInfos = await BookService.getClubBookInfos(clubBookIds.slice(0, 10));
-    console.log("zlo", clubBookInfos);
+    setClubId(data[0].id);
+    const _clubBookIds = await BookService.getClubBookIds({ club_id: data[0].id });
+    setClubBookIds(_clubBookIds);
+    const clubBookInfos = await BookService.getClubBookInfos(_clubBookIds.slice(0, 10));
     const books = Object.values(clubBookInfos)
       .map((item, index) => {
         const book: DataTypeClubBook = {
@@ -106,27 +110,31 @@ const Homepage = () => {
         return book;
       })
       .slice(0, 6);
-    setClubBookList(books);
 
+    setClubBookList(books);
     setLoading(false);
   }, []);
 
   const getListBookInit = useCallback(async () => {
     try {
       setLoading(true);
-      const response: any = await bookService.getListBook(option.pageIndex, option.pageSize, "");
-      console.log("getListBookInit: ", response);
-      setBookList(response.data);
+      if (!clubBookIds.length) {
+        setBookList([]);
+      } else {
+        const clubBookInfos = await BookService.getClubBookInfos(clubBookIds.slice(0, 200));
+        const books = Object.values(clubBookInfos).map((b) => b.book);
+        setBookList(books);
+      }
       setLoading(false);
     } catch (error) {
       console.error("error", error);
       // Handle error
     }
-  }, []);
+  }, [clubBookIds]);
 
   useEffect(() => {
     getListBookInit();
-  }, [option]);
+  }, [clubBookIds]);
 
   useEffect(() => {
     fetchCLubList();
@@ -162,6 +170,7 @@ const Homepage = () => {
     {
       title: "",
       dataIndex: "image",
+      key: "",
       render: (_values: any) => {
         return (
           <>
@@ -359,14 +368,17 @@ const Homepage = () => {
           resetText={"Reset"}
           searchText={"Search"}
           className="home-page-search_book"
-          onFinish={(data) => {
+          onFinish={async (data) => {
+            console.log("data", data);
+            const { book_name, book_category } = data;
+            const _clubBookIds = await bookService.getClubBookIds({ book_name, book_category });
+            setClubBookIds(_clubBookIds);
             setOption({
               pageIndex: 1,
               pageSize: 10,
               ...data,
             });
-
-            return Promise.resolve(true);
+            // return Promise.resolve(true);
           }}
           onReset={() => {
             setOption({
@@ -378,9 +390,39 @@ const Homepage = () => {
           <ProFormText
             labelAlign="right"
             style={{ display: "flex" }}
-            name="filter"
+            name="book_name"
             label={"Search"}
-            placeholder={"Input name to search"}
+            placeholder={"Input book name to search"}
+          />
+          <ProFormSelect
+            name="book_category"
+            label="Book Category"
+            placeholder={"Filter Category"}
+            showSearch
+            valueEnum={{
+              ["Lịch sử Việt Nam"]: "Lịch sử Việt Nam",
+              ["Tôn giáo-tâm linh"]: "Tôn giáo-tâm linh",
+              ["Văn học Việt Nam"]: "Văn học Việt Nam",
+              ["Khoa học"]: "Khoa học",
+              ["Ngôn tình"]: "Ngôn tình",
+              ["Nguyễn Nhật Ánh"]: "Nguyễn Nhật Ánh",
+              ["Khám phá"]: "Khám phá",
+              ["Văn học phương Tây"]: "Văn học phương Tây",
+              ["Tâm lí học"]: "Tâm lí học",
+              ["Tư duy"]: "Tư duy",
+              ["Sức khỏe-ẩm thực"]: "Sức khỏe-ẩm thực",
+              ["Nguyên Phong"]: "Nguyên Phong",
+              ["Oopsy"]: "Oopsy",
+              ["Văn học phương Đông"]: "Văn học phương Đông",
+              ["Truyền cảm hứng"]: "Truyền cảm hứng",
+              ["Dạy con làm giàu"]: "Dạy con làm giàu",
+              ["Kinh doanh- kinh tế"]: "Kinh doanh- kinh tế",
+              ["Kỹ năng"]: "Kỹ năng",
+              ["Chú Lửng Mật"]: "Chú Lửng Mật",
+              ["Kỹ năng sống"]: "Kỹ năng sống",
+              ["Tản văn"]: "Tản văn",
+              ["Sách học NN-Ngoại văn"]: "Sách học NN-Ngoại văn",
+            }}
           />
         </QueryFilter>
 
@@ -388,10 +430,10 @@ const Homepage = () => {
           loading={loading}
           scroll={{ x: "max-content" }}
           columns={columns}
-          dataSource={bookList?.results}
+          dataSource={bookList}
           onChange={handleTableChange}
           pagination={{
-            total: bookList.count,
+            total: bookList.length,
             pageSize: option.pageSize,
             current: option.pageIndex,
           }}
