@@ -24,7 +24,6 @@ axiosApi.interceptors.response.use(
     return response;
   },
   async (error: any) => {
-    const navigate = useNavigate();
     if (!error.response) {
       notification.error({
         message: error.message,
@@ -34,7 +33,6 @@ axiosApi.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       removeAccessToken();
       localStorage.clear();
-      navigate("/login");
       return;
     }
     return Promise.reject(error);

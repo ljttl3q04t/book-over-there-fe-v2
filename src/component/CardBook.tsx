@@ -9,6 +9,7 @@ import {
 import { Button, Card, Modal, Row } from "antd";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import Image from "@/component/Image";
 const { Meta } = Card;
 const { confirm } = Modal;
 
@@ -43,13 +44,13 @@ function CardBook({
         hoverable
         style={{ width: width, height: height }}
         cover={
-          <img
+          <Image
             alt="example"
             src={srcImg}
             style={{
               width: width - 4,
               height: 256,
-              objectFit: "cover",
+              objectFit: "scale-down",
               marginTop: "1px",
               marginInlineStart: "2px",
               marginInlineEnd: "2px",
