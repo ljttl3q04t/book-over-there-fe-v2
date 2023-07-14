@@ -27,6 +27,7 @@ const Payment = loadable(() => import("@/scenes/User/Payment"));
 const Personal = loadable(() => import("@/scenes/User/Personal Profile"));
 const Support = loadable(() => import("@/scenes/User/Support"));
 const Transaction = loadable(() => import("@/scenes/User/Transaction History"));
+const ForgotPassword = loadable(() => import("@/scenes/ForgotPassword"));
 
 const App = () => {
   const token = localStorage.getItem("access_token");
@@ -48,6 +49,7 @@ const App = () => {
         <Routes>
           <Route path="/login" Component={Login} />
           <Route path="/register" Component={Register} />
+          <Route path="/forgot-password" Component={ForgotPassword} />
           <Route element={<LayoutCustom />}>
             <Route path="/" Component={Homepage} />
             <Route path="/checkout" Component={Checkout} />
