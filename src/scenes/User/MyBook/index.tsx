@@ -287,9 +287,6 @@ function MyBook() {
       console.log("11111111");
       setOpen(true)
 
-      let xxx = getObjectByIdInArray(books, idBook)
-      console.log("xxx", xxx);
-
       const bookEdit: EditBook = getObjectByIdInArray(books, idBook)
       setBookEdit(bookEdit)
       setTitle("Edit Book")
