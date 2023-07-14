@@ -1,17 +1,20 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import Table, { ColumnsType } from "antd/es/table";
-import { IssuesCloseOutlined, PlusCircleFilled, UploadOutlined, DownloadOutlined } from "@ant-design/icons";
+import { MoreOutlined, IssuesCloseOutlined, PlusCircleFilled, UploadOutlined, DownloadOutlined } from "@ant-design/icons";
 
 import styled from "styled-components";
 import ClubService, { ClubStaffBookListParams} from "@/services/club";
 
-import { Button, Form, Input, InputRef, Modal, Space, Tag, notification, DatePicker, Select, Avatar } from "antd";
+import { Button, Form, Input, InputRef, Modal, Space, Tag, notification, DatePicker, Select, Avatar, Dropdown, MenuProps } from "antd";
 import dayjs from "dayjs";
 import { FilterConfirmProps } from "antd/es/table/interface";
 import { getColumnSearchProps } from "@/helpers/CommonTable";
 import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
 import { disabledDateBefore, dateFormatList } from "@/helpers/DateHelper";
 import { ProFormText, QueryFilter } from "@ant-design/pro-components";
+import { EditBook } from "@/scenes/User/MyBook/type";
+import DawerBook from "@/component/DrawerBook";
+import { getObjectByIdInArray } from "@/helpers/fuctionHepler";
 const { Option } = Select;
 
 const StyledModalContent = styled.div`
@@ -24,9 +27,8 @@ const StyledClubStaffList = styled.div`
   width: 100%;
   margin-top: 30px;
   > .table-extra-content {
-    padding: 20px 10px 30px 10px;
     display: flex;
-    align-items: center;
+    justify-content: space-between;
     gap: 10px;
     h1 {
       font-size: 24px;
@@ -97,6 +99,12 @@ const ClubStaff = () => {
     pageIndex: 1,
     pageSize: 10,
   });
+
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState<any>("Add Book");
+  const [bookEdit, setBookEdit] = useState<any>(null);
+  const [idBook, setIdBook] = useState<any>(null);
+
   const handleTableChange = (pagination: any) => {
     console.log(pagination,"pagination");
     
@@ -215,6 +223,30 @@ const ClubStaff = () => {
       dataIndex: "totalCopyCount",
       key: "totalCopyCount",
     },
+    {
+      title: "Action",
+      key: "id",
+      dataIndex: ["id"],
+      width: "5%",
+      render: (_values: any) => {
+
+        return (
+          <Dropdown menu={menuProps} trigger={['click']}>
+            <a onClick={(e) => {
+              e.preventDefault()
+              setIdBook(_values)
+              console.log("_values", _values)
+            }
+            }>
+              <Space>
+                <MoreOutlined />
+              </Space>
+            </a>
+          </Dropdown>
+        );
+      },
+      fixed: 'right',
+    },
     // {
     //   title: "Action",
     //   key: "action",
@@ -225,6 +257,70 @@ const ClubStaff = () => {
     //   ),
     // },
   ];
+
+  const items: MenuProps['items'] = [
+    {
+      label: "Asign to club",
+      key: '0',
+      // icon: <UserOutlined />,
+    },
+    {
+      label: "Edit",
+      key: '1',
+    },
+    {
+      type: 'divider',
+    },
+    {
+      label: 'Delete',
+      key: '2',
+    },
+  ];
+
+  const handleMenuClick: MenuProps['onClick'] = (e) => {
+    console.log('click', e);
+    if (e.key === '0') {
+      console.log("000000");
+      // handleOpenShareBook(null)
+
+    } else if (e.key === '1') {
+      console.log("11111111");
+      setOpen(true)
+
+      const tempBookEdit = getObjectByIdInArray(clubBookTableSource?.data, idBook)
+
+      // const bookEdit: EditBook = {
+      //   id: tempBookEdit.id,
+      //   bookName: tempBookEdit.bookName,
+      //   bookCategory: tempBookEdit.bookCategory,
+      //   bookAuthor:
+      //   bookPublisher: 
+      //   bookImage: 
+      //   createdAt: 
+      //   updatedAt: 
+      //   bookStatus: 
+      //   bookDepositPrice: 
+      //   bookDepositStatus: 
+      //   user: 
+      // }
+      
+      setBookEdit(bookEdit)
+      setTitle("Edit Book")
+
+    } else if (e.key === '2') {
+      console.log("click Delete");
+
+    }
+  };
+
+  const menuProps = {
+    items,
+    onClick: handleMenuClick,
+  };
+
+  
+
+
   // const modalContent: ModalContent = {
   //   order: {
   //     title: "Book Order",
@@ -320,6 +416,12 @@ const ClubStaff = () => {
         {/* <Button type="primary" loading={loading}>
           Club Books
         </Button> */}
+        <Button type="primary" onClick={() => {
+          setOpen(true)
+          setTitle("Add Book")
+        }}>
+          Add Book
+        </Button>
       </div>
       <QueryFilter
         style={{ padding: 10 }}
@@ -363,6 +465,7 @@ const ClubStaff = () => {
         columns={columnsBookList}
         dataSource={clubBookTableSource?.data}
       />
+      <DawerBook open={open} onClose={() => setOpen(false)} fetchBookList={fetchClubBookList} bookEdit={bookEdit} title={title} />
       {/* {activeModal && (
         <Modal
           width={modalContent[activeModal].width}

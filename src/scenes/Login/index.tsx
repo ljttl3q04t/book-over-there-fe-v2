@@ -1,13 +1,14 @@
 import "../../index.css";
 
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input, notification, Typography } from "antd";
-import React, { useContext, useEffect } from "react";
+import { Button, Checkbox, Form, Input, Modal, notification, Typography } from "antd";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { AuthService } from "../../services/auth";
 import { UserContext } from "@/context/UserContext";
 import styled from "styled-components";
+import ResetPasswordModal from "@/component/ResetPasswordModal";
 // import { useCookies } from "react-cookie";
 // import { getTokenExpiration } from "@/helpers/TokenHelper";
 const { Title } = Typography;
@@ -108,6 +109,7 @@ const Login = () => {
 
   const { setLoggedInUser } = useContext(UserContext);
   const navigate = useNavigate();
+  const [openResetPassword, setOpenResetPassword] = useState(false);
 
   // localStorage.setItem("access_token", 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjg2OTA5MDkzLCJpYXQiOjE2ODY5MDU0OTMsImp0aSI6IjJlYjdjNTQxZDc0NTRkM2M5ZDYwNDQ5MGVhNWUwNmEwIiwidXNlcl9pZCI6MX0.Tn052OpOkGVXaS2S6BejuSW47zqSe0mAk9_euJOmykI');
   const onFinish = (values: any) => {
@@ -145,6 +147,16 @@ const Login = () => {
               Read, Lead, Succeed
             </h1>
           </StyledLoginAccessibility>
+
+          <ResetPasswordModal
+            {...{
+              open: openResetPassword,
+              onCancel: () => {
+                setOpenResetPassword(false);
+              },
+            }}
+          />
+
           <Form
             layout="vertical"
             name="normal_login"
@@ -197,7 +209,7 @@ const Login = () => {
                 <Checkbox>Remember me</Checkbox>
               </Form.Item>
 
-              <a className="login-form-forgot" href="/">
+              <a className="login-form-forgot" onClick={() => setOpenResetPassword(true)}>
                 Forgot password
               </a>
             </Form.Item>

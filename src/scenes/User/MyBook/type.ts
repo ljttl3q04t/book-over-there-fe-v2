@@ -6,7 +6,7 @@ export interface EditBook {
     bookPublisher: string,
     bookImage: string,
     createdAt: string,
-    iupdatedAt: string,
+    updatedAt: string,
     bookStatus: string,
     bookDepositPrice: number,
     bookDepositStatus: string,

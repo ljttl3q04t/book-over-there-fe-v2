@@ -10,7 +10,7 @@ import { BookCopy, Club, ListView } from "@/services/types";
 import userService from "@/services/user";
 import { FilterConfirmProps } from "antd/lib/table/interface";
 import { getColumnSearchProps } from "@/helpers/CommonTable";
-import { getObjectByIdInArray } from "@/helpers/fuctionHepler";
+import { formatDate, getObjectByIdInArray } from "@/helpers/fuctionHepler";
 import { EditBook } from "./type";
 import { fetchBookList } from "./callService";
 
@@ -64,7 +64,7 @@ function MyBook() {
 
   const handleTableChange = (pagination: any) => {
     console.log("pagination: ", pagination);
-    
+
     setOption({
       ...option,
       pageIndex: pagination.current,
@@ -225,6 +225,15 @@ function MyBook() {
         handleReset, handleSearch),
     },
     {
+      title: "Created at",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      ...getColumnSearchProps("createdAt", searchInput,
+        searchText, setSearchText, searchedColumn, setSearchedColumn,
+        handleReset, handleSearch),
+      render: (value: any) => <p>{formatDate(value, 'yyyy-mm-dd, hh:ss')}</p>
+    },
+    {
       title: "Action",
       key: "id",
       dataIndex: ["id"],
@@ -278,9 +287,6 @@ function MyBook() {
       console.log("11111111");
       setOpen(true)
 
-      let xxx = getObjectByIdInArray(books, idBook)
-      console.log("xxx", xxx);
-
       const bookEdit: EditBook = getObjectByIdInArray(books, idBook)
       setBookEdit(bookEdit)
       setTitle("Edit Book")
@@ -327,7 +333,14 @@ function MyBook() {
         dataSource={books}
       />
       <DawerBook open={open} onClose={() => setOpen(false)} fetchBookList={fetchBookList} bookEdit={bookEdit} title={title} />
-      <Modal title="Share to club" width={800} open={modalJoin} onCancel={handleCloseModalShareBook} onOk={onFinish}>
+      <Modal
+        title="Share to club"
+        width={800}
+        open={modalJoin}
+        onCancel={handleCloseModalShareBook}
+        onOk={onFinish}
+        okButtonProps={{ disabled: loading }}
+      >
         <Form {...layout} ref={formRef} name="control-ref" style={{ width: 800 }}>
           <Form.Item name="book_copy_ids" label="My books" rules={[{ required: true }]}>
             <Select
