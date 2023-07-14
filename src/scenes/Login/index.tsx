@@ -2,13 +2,13 @@ import "../../index.css";
 
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, Input, Modal, notification, Typography } from "antd";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { AuthService } from "../../services/auth";
 import { UserContext } from "@/context/UserContext";
 import styled from "styled-components";
-import { FormInstance } from "antd/lib/form/Form";
+import ResetPasswordModal from "@/component/ResetPasswordModal";
 // import { useCookies } from "react-cookie";
 // import { getTokenExpiration } from "@/helpers/TokenHelper";
 const { Title } = Typography;
@@ -109,8 +109,7 @@ const Login = () => {
 
   const { setLoggedInUser } = useContext(UserContext);
   const navigate = useNavigate();
-  const [modalJoin, setModalJoin] = useState(false);
-  const formRef = React.useRef<FormInstance>(null);
+  const [openResetPassword, setOpenResetPassword] = useState(false);
 
   // localStorage.setItem("access_token", 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjg2OTA5MDkzLCJpYXQiOjE2ODY5MDU0OTMsImp0aSI6IjJlYjdjNTQxZDc0NTRkM2M5ZDYwNDQ5MGVhNWUwNmEwIiwidXNlcl9pZCI6MX0.Tn052OpOkGVXaS2S6BejuSW47zqSe0mAk9_euJOmykI');
   const onFinish = (values: any) => {
@@ -139,16 +138,6 @@ const Login = () => {
     );
   };
 
-  const handleCloseModal = () => {
-    formRef.current?.resetFields();
-    setModalJoin(false);
-  };
-
-  const layout = {
-    labelCol: { span: 4 },
-    wrapperCol: { span: 16 },
-  };
-
   return (
     <StyledLoginPage>
       <div className="login-page-container">
@@ -159,22 +148,14 @@ const Login = () => {
             </h1>
           </StyledLoginAccessibility>
 
-          <Modal
-            style={{}}
-            title="Forgot Password"
-            width={800}
-            open={modalJoin}
-            onCancel={handleCloseModal}
-            onOk={onFinish}
-          // okButtonProps={{ disabled: loading }}
-          >
-            <Form {...layout} ref={formRef} name="control-ref" style={{ width: 800 }}>
-              <Form.Item name="book_copy_ids" label="Usernam or mail" rules={[{ required: true }]}>
-                <Input size="large" prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username or mail" />
-              </Form.Item>
-            </Form>
-
-          </Modal>
+          <ResetPasswordModal
+            {...{
+              open: openResetPassword,
+              onCancel: () => {
+                setOpenResetPassword(false);
+              },
+            }}
+          />
 
           <Form
             layout="vertical"
@@ -228,7 +209,7 @@ const Login = () => {
                 <Checkbox>Remember me</Checkbox>
               </Form.Item>
 
-              <a className="login-form-forgot" onClick={() => setModalJoin(true)}>
+              <a className="login-form-forgot" onClick={() => setOpenResetPassword(true)}>
                 Forgot password
               </a>
             </Form.Item>
