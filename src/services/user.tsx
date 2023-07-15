@@ -27,11 +27,16 @@ const updateUser = (data: any) => {
   return ApiServiceAuthor.put("/user/info/update", formData);
 };
 
+const passwordReset = (data: any) => {
+  return axiosApi.post("/user/password-reset", data);
+};
+
 const userService = {
   registerUser,
   getUser,
   updateUser,
   getUserMembership,
   getUserShareClub,
+  passwordReset
 };
 export default userService;

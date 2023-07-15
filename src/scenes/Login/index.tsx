@@ -9,6 +9,8 @@ import { AuthService } from "../../services/auth";
 import { UserContext } from "@/context/UserContext";
 import styled from "styled-components";
 import { FormInstance } from "antd/lib/form/Form";
+import userService from "@/services/user";
+import { log } from "console";
 // import { useCookies } from "react-cookie";
 // import { getTokenExpiration } from "@/helpers/TokenHelper";
 const { Title } = Typography;
@@ -149,6 +151,25 @@ const Login = () => {
     wrapperCol: { span: 16 },
   };
 
+  const onFinishSentMail = (_values: any) => {
+    formRef.current
+      ?.validateFields()
+      .then(async (formValues) => {
+        const data = {
+          username_or_email: formValues.userNameOrEmail
+        };
+        try {
+          const response: any = await userService.passwordReset(data)
+          notification.info({ message: response.data.message });
+        } catch (error) {
+          notification.error({ message: "System error" });
+        }
+      })
+      .catch((_errors) => {
+        notification.info({ message: "Please make sure that you enter all field" });
+      });
+  };
+
   return (
     <StyledLoginPage>
       <div className="login-page-container">
@@ -165,11 +186,11 @@ const Login = () => {
             width={800}
             open={modalJoin}
             onCancel={handleCloseModal}
-            onOk={onFinish}
+            onOk={onFinishSentMail}
           // okButtonProps={{ disabled: loading }}
           >
             <Form {...layout} ref={formRef} name="control-ref" style={{ width: 800 }}>
-              <Form.Item name="book_copy_ids" label="Usernam or mail" rules={[{ required: true }]}>
+              <Form.Item name="userNameOrEmail" label="Usernam or mail" rules={[{ required: true }]}>
                 <Input size="large" prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username or mail" />
               </Form.Item>
             </Form>
