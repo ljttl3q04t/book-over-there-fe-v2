@@ -1,9 +1,9 @@
-import { LockOutlined, MailOutlined, PhoneOutlined, UserOutlined, UserAddOutlined } from "@ant-design/icons";
+import { LockOutlined } from "@ant-design/icons";
 import { Button, Form, Input, notification } from "antd";
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import UserService from "@/services/user";
+import React, { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
+import userService from "@/services/user";
 const StyledForgotPasswordForm = styled.div`
   min-width: 600px;
   color: rgba(0, 0, 0, 0.87);
@@ -65,32 +65,27 @@ const StyledForgotPasswordAccessibility = styled.div`
   }
 `;
 const ForgotPassword = () => {
+  const { uid, token } = useParams();
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onFinish = (values: any) => {
-    const user = {
-      username: values.username,
-      password: values.password,
-      phone_number: values.phone,
-      email: values.email,
-      full_name: values.full_name,
-    };
-
-    UserService.registerUser(user).then((res: any) => {
-      if (res?.error?.message) {
-        notification.info({
-          message: "Info",
-          description: res.payload.error || res.payload,
-        });
-        return;
-      }
-      notification.success({
-        message: "Register successfully, please login to continue!",
-        type: "success",
-      });
+  const onFinish = async (values: any) => {
+    try {
+      setIsSubmitting(true);
+      const data = {
+        uid: uid ?? "",
+        token: token ?? "",
+        newPassword: values.password,
+      };
+      const message = await userService.updatePassword(data);
+      notification.success({ message: message, type: "success" });
       navigate("/login");
-    });
+    } catch (err:any) {
+      notification.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -155,10 +150,9 @@ const ForgotPassword = () => {
           <Form.Item>
             <StyledActionGroup>
               {" "}
-              <Button type="primary" htmlType="submit" className="login-form-button">
+              <Button type="primary" htmlType="submit" className="login-form-button" loading={isSubmitting}>
                 Submit
               </Button>
-              
             </StyledActionGroup>
           </Form.Item>
         </Form>

@@ -1,5 +1,15 @@
 import { ApiServiceAuthor, axiosApi } from "../http-common";
 
+type ResetPasswordParams = {
+  username_or_email: string;
+};
+
+type UpdatePasswordParams = {
+  uid: string;
+  token: string;
+  newPassword: string;
+};
+
 const registerUser = (data: any) => {
   return axiosApi.post("/user/register", data);
 };
@@ -27,9 +37,28 @@ const updateUser = (data: any) => {
   return ApiServiceAuthor.put("/user/info/update", formData);
 };
 
-const passwordReset = (data: any) => {
-  return axiosApi.post("/user/password-reset", data);
-};
+async function resetPassword(data: ResetPasswordParams): Promise<string> {
+  try {
+    const response = await axiosApi.post("user/password-reset", data);
+    const { message } = response.data;
+    return message;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error;
+  }
+}
+
+async function updatePassword(data: UpdatePasswordParams): Promise<string> {
+  try {
+    const { uid, token, newPassword } = data;
+    const response = await axiosApi.post(`password-reset/confirm/${uid}/${token}`, { new_password: newPassword });
+    const { message } = response.data;
+    return message;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error;
+  }
+}
 
 const userService = {
   registerUser,
@@ -37,6 +66,7 @@ const userService = {
   updateUser,
   getUserMembership,
   getUserShareClub,
-  passwordReset
+  resetPassword,
+  updatePassword,
 };
 export default userService;
