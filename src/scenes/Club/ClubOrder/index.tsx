@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { OrderTable } from "./OrderTable";
+import { Button } from "antd";
+import { CreateOrderModal } from "./CreateOrderModal";
 
 const StyledClubOrder = styled.div`
   border-radius: 12px;
@@ -23,12 +25,29 @@ const StyledClubOrder = styled.div`
 `;
 
 const ClubOrder = () => {
+  const [openCreateOrderModal, setOpenCreateOrderModal] = useState(false);
+
   return (
     <StyledClubOrder>
-      <OrderTable/>
+      <Button
+        type="primary"
+        onClick={() => {
+          setOpenCreateOrderModal(true);
+        }}
+      >
+        Create New Order
+      </Button>
+      <CreateOrderModal
+        {...{
+          open: openCreateOrderModal,
+          onCancel: () => {
+            setOpenCreateOrderModal(false);
+          },
+        }}
+      />
+      <OrderTable />
     </StyledClubOrder>
   );
 };
 
 export default ClubOrder;
- 
