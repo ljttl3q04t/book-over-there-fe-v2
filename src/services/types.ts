@@ -72,3 +72,27 @@ export type ClubBookInfos = {
   init_count: number;
   current_count: number;
 }
+
+export type MemberInfos = {
+  phone_number: string;
+  full_name: string;
+  code: string
+}
+
+export type OrderDetails = {
+  id: number;
+  book_code: string;
+  book_name: string;
+  order_id: number;
+  return_date: string;
+}
+
+export type OrderInfos = {
+  id: number;
+  member: MemberInfos,
+  club_id: number;
+  order_date: string;
+  due_date: string;
+  order_status: string;
+  order_details: OrderDetails[];
+}

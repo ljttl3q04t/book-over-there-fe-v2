@@ -88,3 +88,21 @@ export class ApiServiceAuthor {
     return axiosApi.delete(path, buildHeaders());
   }
 }
+
+export class ApiDfbAuthor {
+  static async post(path: string, data?: any) {
+    return dfbApi.post(path, data, buildHeaders());
+  }
+
+  static async get(path: string, params?: any) {
+    return dfbApi.get(path, buildHeaders(params));
+  }
+
+  static async put(path: string, data: any) {
+    return dfbApi.put(path, data, buildHeaders());
+  }
+
+  static async delete(path: string) {
+    return dfbApi.delete(path, buildHeaders());
+  }
+}

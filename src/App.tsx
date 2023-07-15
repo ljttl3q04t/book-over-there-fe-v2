@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import loadable from "@loadable/component";
 import { UserContext } from "@/context/UserContext";
 import { useBeforeRender } from "./component/Error";
+import ClubOrder from "./scenes/Club/ClubOrder";
 const Error404 = loadable(() => import("@/component/Error404"));
 const Error403 = loadable(() => import("@/component/Error403"));
 
@@ -60,6 +61,7 @@ const App = () => {
               <>
                 {user?.is_staff && <Route path="/clubstaff/member-order" Component={ClubStaff} />}
                 {user?.is_staff && <Route path="/clubstaff/books-management" Component={ClubBookManagement} />}
+                {user?.is_staff && <Route path="/clubstaff/orders" Component={ClubOrder} />}
                 <Route path="/clubbook" Component={ClubBook} />
                 <Route path="/bookclub" Component={ClubBook} />
                 <Route path="/my-profile" Component={Personal} />

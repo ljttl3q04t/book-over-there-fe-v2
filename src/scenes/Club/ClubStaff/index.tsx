@@ -1198,62 +1198,6 @@ const ClubStaff = () => {
         dataSource={clubMemberTableSource}
         bordered
       />
-      {/* {activeModal === MODAL_CODE.ORDER && (
-        <Modal title="Book Order" width={800} visible={true} onCancel={handleCloseModal} onOk={handleOkOrder}>
-          <StyledModalContent>
-            <Form {...layout} form={form} name="control-ref" style={{ width: 800 }}>
-              <Form.Item
-                name="full_name"
-                label="Full Name"
-                rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} full name` }]}
-              >
-                <Input disabled />
-              </Form.Item>
-              <Form.Item
-                name="phone_number"
-                label="Phone Number"
-                rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} phone number` }]}
-              >
-                <Input disabled />
-              </Form.Item>
-              <Form.Item
-                label="Select Books"
-                name="select_books"
-                rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} select at least one book` }]}
-              >
-                <Select
-                  placeholder="Find books..."
-                  mode="multiple"
-                  showArrow
-                  defaultValue={["gold", "cyan"]}
-                  style={{ width: "100%" }}
-                  options={options}
-                />
-              </Form.Item>
-              <Form.Item
-                name="due_date"
-                label="Due Date"
-                rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} due date` }]}
-              >
-                <DatePicker disabledDate={disabledDate} style={{ width: "100%" }} format={dateFormatList} />
-              </Form.Item>
-              <Form.Item name="note" label="Note" rules={[{ required: false }]}>
-                <TextArea rows={4} placeholder="Note..." />
-              </Form.Item>
-            </Form>
-          </StyledModalContent>
-        </Modal>
-      )} */}
-
-      {/* {activeModal === MODAL_CODE.DEPOSIT && (
-        <Modal title="Deposit Books" visible={true} onCancel={handleCloseModal}>
-        </Modal>
-      )}
-
-      {activeModal === MODAL_CODE.WITHDRAW && (
-        <Modal title="Withdraw Books" visible={true} onCancel={handleCloseModal}>
-        </Modal>
-      )} */}
       {activeModal && (
         <Modal
           closable={false}
