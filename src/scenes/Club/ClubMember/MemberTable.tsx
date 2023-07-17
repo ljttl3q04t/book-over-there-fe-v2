@@ -1,18 +1,23 @@
-import React, { useEffect, useState } from "react";
+import * as React from "react";
 import Table, { ColumnsType } from "antd/es/table";
 import dfbServices from "@/services/dfb";
 import { MemberInfos } from "@/services/types";
+import { Button, Space } from "antd";
+import { UpdateMemberModal } from "./UpdateMemberModal";
 
 type DataType = {
+  id: number;
   fullName: string;
   code: string;
   phoneNumber: string;
 };
 
 export function MemberTable() {
-  const [loading, setLoading] = useState(false);
-  const [memberIds, setMemberIds] = useState<number[]>([]);
-  const [tableData, setTableData] = useState<DataType[]>([]);
+  const [loading, setLoading] = React.useState(false);
+  const [memberIds, setMemberIds] = React.useState<number[]>([]);
+  const [tableData, setTableData] = React.useState<DataType[]>([]);
+  const [openUpdateModal, setOpenUpdateModal] = React.useState(false);
+  const [currentMember, setCurrentMember] = React.useState<DataType | undefined>();
 
   const fetchMemberIds = async () => {
     try {
@@ -32,6 +37,7 @@ export function MemberTable() {
       const data: DataType[] = [];
       for (const member of memberInfos) {
         data.push({
+          id: member.id,
           fullName: member.full_name,
           code: member.code,
           phoneNumber: member.phone_number,
@@ -45,15 +51,25 @@ export function MemberTable() {
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     fetchMemberIds();
   }, []);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (memberIds.length > 0) {
       fetchMemberInfos();
     }
   }, [memberIds]);
+
+  const showUpdateModal = (member: DataType) => {
+    setCurrentMember(member);
+    setOpenUpdateModal(true);
+  };
+
+  const hideUpdateModal = () => {
+    setCurrentMember(undefined);
+    setOpenUpdateModal(false);
+  };
 
   const columns: ColumnsType<DataType> = [
     {
@@ -71,6 +87,33 @@ export function MemberTable() {
       dataIndex: "phoneNumber",
       key: "phoneNumber",
     },
+    {
+      title: "Action",
+      key: "action",
+      render: (v: DataType) => (
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => {
+              showUpdateModal(v);
+            }}
+          >
+            Update
+          </Button>
+        </Space>
+      ),
+    },
   ];
-  return <Table loading={loading} columns={columns} dataSource={tableData}></Table>;
+  return (
+    <>
+      <Table columns={columns} loading={loading} dataSource={tableData} />
+      <UpdateMemberModal
+        {...{
+          currentMember,
+          open: openUpdateModal,
+          onCancel: hideUpdateModal,
+        }}
+      />
+    </>
+  );
 }
