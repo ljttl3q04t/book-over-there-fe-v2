@@ -1,11 +1,8 @@
-/* eslint-disable react/react-in-jsx-scope */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ProFormText, QueryFilter } from "@ant-design/pro-form";
-import { ThunkDispatch } from "@reduxjs/toolkit";
-import { Button, Col, Row, Typography, MenuProps, Dropdown, Space, Affix, Modal, Form, DatePicker, Input, List, Avatar } from "antd";
+import { Button, Typography, MenuProps, Dropdown, Space, Affix, Modal, Form, Input, List, Avatar } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
-import { Layout } from "antd";
 import {
   HeartTwoTone,
   EyeTwoTone,
@@ -133,25 +130,22 @@ const Homepage = () => {
     selectedRowKeys,
     onChange: onSelectChange,
   };
-  const onResetRowSelection = () => {
-    setSelectedRowKeys([]);
-  };
   const handleOpenOrderModal = async () => {
     await setActiveModal(MODAL_CODE.ORDER);
     form.setFieldsValue({
-      full_name : user?.full_name,
-      phone_number : user?.phone_number
-    })
+      full_name: user?.full_name,
+      phone_number: user?.phone_number,
+    });
   };
   const handleCloseModal = async () => {
     await setActiveModal("");
   };
-  const disableOrder = ()=>{
-    if(selectedRows.length ===0 || !user){
+  const disableOrder = () => {
+    if (selectedRows.length === 0 || !user) {
       return true;
     }
     return false;
-  }
+  };
   const fetchClubList = useCallback(async () => {
     try {
       setLoading(true);
@@ -433,20 +427,21 @@ const Homepage = () => {
       content: defaultFormContent(
         () => {},
         <>
-           <Form.Item name="selected_book" label="Selected Books:" rules={[{ required: false }]}>
-           <List
-            itemLayout="horizontal"
-            dataSource={selectedRows}
-            renderItem={(item, index) => (
-              <List.Item>
-                <List.Item.Meta
-                  avatar={<Avatar src={item.image ? item.image : defaultImage} />}
-                  title={<p>{item.name}</p>}
-                />
-              </List.Item>
-            )}
-          />          </Form.Item>
-       
+          <Form.Item name="selected_book" label="Selected Books:" rules={[{ required: false }]}>
+            <List
+              itemLayout="horizontal"
+              dataSource={selectedRows}
+              renderItem={(item, index) => (
+                <List.Item>
+                  <List.Item.Meta
+                    avatar={<Avatar src={item.image ? item.image : defaultImage} />}
+                    title={<p>{item.name}</p>}
+                  />
+                </List.Item>
+              )}
+            />{" "}
+          </Form.Item>
+
           <Form.Item name="note" label="Note" rules={[{ required: false }]}>
             <TextArea rows={4} placeholder="Note..." />
           </Form.Item>
@@ -559,7 +554,12 @@ const Homepage = () => {
               }}
             />
           </QueryFilter>
-          <Button disabled={disableOrder()} icon={<PlusCircleOutlined />} onClick={() => handleOpenOrderModal()} type="primary">
+          <Button
+            disabled={disableOrder()}
+            icon={<PlusCircleOutlined />}
+            onClick={() => handleOpenOrderModal()}
+            type="primary"
+          >
             Order
           </Button>
         </div>

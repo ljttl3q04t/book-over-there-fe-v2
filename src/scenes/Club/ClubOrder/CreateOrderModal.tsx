@@ -20,6 +20,7 @@ const layout = {
 
 export function CreateOrderModal(props: CreateOrderModalProps) {
   const { open, onCancel } = props;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form] = Form.useForm();
   const defaultDueDate = moment().add(35, "days");

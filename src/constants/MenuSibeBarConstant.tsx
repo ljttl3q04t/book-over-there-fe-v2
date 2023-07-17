@@ -3,8 +3,6 @@ import {
   CheckCircleOutlined,
   HistoryOutlined,
   HomeOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
   MessageOutlined,
   TeamOutlined,
   UnorderedListOutlined,
@@ -13,6 +11,7 @@ import {
 import { MenuProps } from "antd";
 import { getAccessToken } from "../http-common";
 import MenuItem from "antd/es/menu/MenuItem";
+import React from "react";
 
 const menuStructure = {
   commonItems: [
@@ -127,7 +126,7 @@ const menuStructure = {
 export const createMenuItems = (isStaff: any): MenuProps["items"] => {
   const { commonItems, userItems, guestItems } = menuStructure;
 
-  let userMenuItems: MenuItem[] = userItems;
+  const userMenuItems: MenuItem[] = userItems;
   if (getAccessToken()) {
     if (isStaff) {
       const clubStaffMenuItem: MenuItem = {

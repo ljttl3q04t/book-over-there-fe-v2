@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import Table, { ColumnsType } from "antd/es/table";
-import { MoreOutlined, IssuesCloseOutlined, PlusCircleFilled, UploadOutlined, DownloadOutlined } from "@ant-design/icons";
+import { MoreOutlined } from "@ant-design/icons";
 
 import styled from "styled-components";
-import ClubService, { ClubStaffBookListParams} from "@/services/club";
+import ClubService, { ClubStaffBookListParams } from "@/services/club";
 
-import { Button, Form, Input, InputRef, Modal, Space, Tag, notification, DatePicker, Select, Avatar, Dropdown, MenuProps } from "antd";
+import { Button, Form, Input, InputRef, Space, Select, Avatar, Dropdown, MenuProps } from "antd";
 import dayjs from "dayjs";
 import { FilterConfirmProps } from "antd/es/table/interface";
 import { getColumnSearchProps } from "@/helpers/CommonTable";
@@ -77,8 +78,8 @@ interface DataTypeBooks {
 type DataIndexBooks = keyof DataTypeBooks;
 type ClubBookTableSource = {
   data: Array<DataTypeBooks>;
-  total:number;
-}
+  total: number;
+};
 const layout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 16 },
@@ -106,8 +107,8 @@ const ClubStaff = () => {
   const [idBook, setIdBook] = useState<any>(null);
 
   const handleTableChange = (pagination: any) => {
-    console.log(pagination,"pagination");
-    
+    console.log(pagination, "pagination");
+
     setOption({
       ...option,
       pageIndex: pagination.current,
@@ -147,44 +148,45 @@ const ClubStaff = () => {
       page: option.pageIndex,
       pageSize: option.pageSize,
       searchText: option.filter,
-    }
+    };
     fetchClubBookList(searchForm);
   }, [option]);
-  const fetchClubBookList = useCallback((searchForm: ClubStaffBookListParams) => {
-    setLoading(true);
-    ClubService.getClubStaffBookList(searchForm)
-      .then((response) => {
-        if (response.data) {
-          const data = response.data.results.map((item: any, index: any) => {
-            const book: DataTypeBooks = {
-              id: item.id,
-              no: index + 1,
-              authorName: item.book_copy?.book?.author?.name,
-              bookName: item.book_copy?.book?.name,
-              categoryName: item.book_copy?.book?.category?.name,
-              publisherName: item.book_copy?.book?.publisher?.name,
-              image: item.book_copy?.book?.image,
-              memberName: item.membership.member.full_name,
-              clubName: item.membership.book_club.name,
-              totalCopyCount: 0,
-            };
-            return book;
-          });
-          setClubBookTableSource({
-            data,
-            total: response.data.count,
-          });
-          bookClubName.current = data[0].clubName;
-        }
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [option]);
+  const fetchClubBookList = useCallback(
+    (searchForm: ClubStaffBookListParams) => {
+      setLoading(true);
+      ClubService.getClubStaffBookList(searchForm)
+        .then((response) => {
+          if (response.data) {
+            const data = response.data.results.map((item: any, index: any) => {
+              const book: DataTypeBooks = {
+                id: item.id,
+                no: index + 1,
+                authorName: item.book_copy?.book?.author?.name,
+                bookName: item.book_copy?.book?.name,
+                categoryName: item.book_copy?.book?.category?.name,
+                publisherName: item.book_copy?.book?.publisher?.name,
+                image: item.book_copy?.book?.image,
+                memberName: item.membership.member.full_name,
+                clubName: item.membership.book_club.name,
+                totalCopyCount: 0,
+              };
+              return book;
+            });
+            setClubBookTableSource({
+              data,
+              total: response.data.count,
+            });
+            bookClubName.current = data[0].clubName;
+          }
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    },
+    [option],
+  );
 
   const columnsBookList: ColumnsType<DataTypeBooks> = [
-
-   
     {
       title: "",
       width: "8%",
@@ -229,15 +231,15 @@ const ClubStaff = () => {
       dataIndex: ["id"],
       width: "5%",
       render: (_values: any) => {
-
         return (
-          <Dropdown menu={menuProps} trigger={['click']}>
-            <a onClick={(e) => {
-              e.preventDefault()
-              setIdBook(_values)
-              console.log("_values", _values)
-            }
-            }>
+          <Dropdown menu={menuProps} trigger={["click"]}>
+            <a
+              onClick={(e) => {
+                e.preventDefault();
+                setIdBook(_values);
+                console.log("_values", _values);
+              }}
+            >
               <Space>
                 <MoreOutlined />
               </Space>
@@ -245,7 +247,7 @@ const ClubStaff = () => {
           </Dropdown>
         );
       },
-      fixed: 'right',
+      fixed: "right",
     },
     // {
     //   title: "Action",
@@ -258,58 +260,55 @@ const ClubStaff = () => {
     // },
   ];
 
-  const items: MenuProps['items'] = [
+  const items: MenuProps["items"] = [
     {
       label: "Asign to club",
-      key: '0',
+      key: "0",
       // icon: <UserOutlined />,
     },
     {
       label: "Edit",
-      key: '1',
+      key: "1",
     },
     {
-      type: 'divider',
+      type: "divider",
     },
     {
-      label: 'Delete',
-      key: '2',
+      label: "Delete",
+      key: "2",
     },
   ];
 
-  const handleMenuClick: MenuProps['onClick'] = (e) => {
-    console.log('click', e);
-    if (e.key === '0') {
+  const handleMenuClick: MenuProps["onClick"] = (e) => {
+    console.log("click", e);
+    if (e.key === "0") {
       console.log("000000");
       // handleOpenShareBook(null)
-
-    } else if (e.key === '1') {
+    } else if (e.key === "1") {
       console.log("11111111");
-      setOpen(true)
+      setOpen(true);
 
-      const tempBookEdit = getObjectByIdInArray(clubBookTableSource?.data, idBook)
+      const tempBookEdit = getObjectByIdInArray(clubBookTableSource?.data, idBook);
 
       // const bookEdit: EditBook = {
       //   id: tempBookEdit.id,
       //   bookName: tempBookEdit.bookName,
       //   bookCategory: tempBookEdit.bookCategory,
       //   bookAuthor:
-      //   bookPublisher: 
-      //   bookImage: 
-      //   createdAt: 
-      //   updatedAt: 
-      //   bookStatus: 
-      //   bookDepositPrice: 
-      //   bookDepositStatus: 
-      //   user: 
+      //   bookPublisher:
+      //   bookImage:
+      //   createdAt:
+      //   updatedAt:
+      //   bookStatus:
+      //   bookDepositPrice:
+      //   bookDepositStatus:
+      //   user:
       // }
-      
-      setBookEdit(bookEdit)
-      setTitle("Edit Book")
 
-    } else if (e.key === '2') {
+      setBookEdit(bookEdit);
+      setTitle("Edit Book");
+    } else if (e.key === "2") {
       console.log("click Delete");
-
     }
   };
 
@@ -317,9 +316,6 @@ const ClubStaff = () => {
     items,
     onClick: handleMenuClick,
   };
-
-  
-
 
   // const modalContent: ModalContent = {
   //   order: {
@@ -416,10 +412,13 @@ const ClubStaff = () => {
         {/* <Button type="primary" loading={loading}>
           Club Books
         </Button> */}
-        <Button type="primary" onClick={() => {
-          setOpen(true)
-          setTitle("Add Book")
-        }}>
+        <Button
+          type="primary"
+          onClick={() => {
+            setOpen(true);
+            setTitle("Add Book");
+          }}
+        >
           Add Book
         </Button>
       </div>
@@ -465,7 +464,13 @@ const ClubStaff = () => {
         columns={columnsBookList}
         dataSource={clubBookTableSource?.data}
       />
-      <DawerBook open={open} onClose={() => setOpen(false)} fetchBookList={fetchClubBookList} bookEdit={bookEdit} title={title} />
+      <DawerBook
+        open={open}
+        onClose={() => setOpen(false)}
+        fetchBookList={fetchClubBookList}
+        bookEdit={bookEdit}
+        title={title}
+      />
       {/* {activeModal && (
         <Modal
           width={modalContent[activeModal].width}

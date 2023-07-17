@@ -5,6 +5,7 @@ import { Button, Drawer, Form, FormInstance, Input, Modal, Space, Upload, notifi
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import Tooltip from "antd/lib/tooltip";
 import { useEffect, useRef, useState } from "react";
+import React from "react";
 
 const { Search } = Input;
 const getBase64 = (file: RcFile): Promise<string> =>
@@ -15,9 +16,7 @@ const getBase64 = (file: RcFile): Promise<string> =>
     reader.onerror = (error) => reject(error);
   });
 
-function DawerBook({ open, onSubmit, onClose, bookEdit, title }: any) {
-
-
+function DawerBook({ open, onClose, bookEdit, title }: any) {
   const [form] = Form.useForm();
   const formRef = useRef<FormInstance>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -25,8 +24,7 @@ function DawerBook({ open, onSubmit, onClose, bookEdit, title }: any) {
   const [previewTitle, setPreviewTitle] = useState("");
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [fileListPreview, setFileListPreview] = useState<UploadFile[]>([]);
-  const [isLoading, setIsLoading] = useState(false)
-
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (bookEdit) {
@@ -36,40 +34,40 @@ function DawerBook({ open, onSubmit, onClose, bookEdit, title }: any) {
         image: bookEdit?.bookImage,
         bookStatus: bookEdit?.bookStatus,
         author: bookEdit?.bookAuthor,
-        publisher: bookEdit?.bookPublisher
+        publisher: bookEdit?.bookPublisher,
       });
-      setFileListPreview([{
-        uid: '-1',
-        name: 'image.png',
-        status: 'done',
-        url: bookEdit?.bookImage,
-      }])
+      setFileListPreview([
+        {
+          uid: "-1",
+          name: "image.png",
+          status: "done",
+          url: bookEdit?.bookImage,
+        },
+      ]);
     }
-  }, [bookEdit])
+  }, [bookEdit]);
 
   const onFinish = async (values: any) => {
     console.log("fileList[0]: ", fileList[0]);
-    let formData = new FormData();
-    setIsLoading(true)
+    const formData = new FormData();
+    setIsLoading(true);
     if (fileList[0]) {
-
-      formData.append('book.name', values.name);
-      formData.append('book.category.name', values.category);
-      formData.append('book.author.name', values.author);
-      formData.append('book.publisher.name', values.publisher);
-      formData.append('book.image', fileList[0] as RcFile ? fileList[0] as RcFile : '');
+      formData.append("book.name", values.name);
+      formData.append("book.category.name", values.category);
+      formData.append("book.author.name", values.author);
+      formData.append("book.publisher.name", values.publisher);
+      formData.append("book.image", (fileList[0] as RcFile) ? (fileList[0] as RcFile) : "");
     } else {
       console.log("file preview: ", fileListPreview);
 
-      formData.append('book.name', values.name);
-      formData.append('book.category.name', values.category);
-      formData.append('book.author.name', values.author);
-      formData.append('book.publisher.name', values.publisher);
-      formData.append('book.image_url', fileListPreview[0]?.url as string);
+      formData.append("book.name", values.name);
+      formData.append("book.category.name", values.category);
+      formData.append("book.author.name", values.author);
+      formData.append("book.publisher.name", values.publisher);
+      formData.append("book.image_url", fileListPreview[0]?.url as string);
     }
 
-
-    console.log('formData; ', formData);
+    console.log("formData; ", formData);
 
     try {
       const res = await bookService.createBook(formData);
@@ -81,8 +79,8 @@ function DawerBook({ open, onSubmit, onClose, bookEdit, title }: any) {
       });
       // fetchBookList()
       onClose();
-      setFileListPreview([])
-      setIsLoading(false)
+      setFileListPreview([]);
+      setIsLoading(false);
     } catch (err: any) {
       console.log("err create: ", err.response);
       if (!fileList[0]) {
@@ -109,16 +107,18 @@ function DawerBook({ open, onSubmit, onClose, bookEdit, title }: any) {
       const newFileList = fileList.slice();
       newFileList.splice(index, 1);
       setFileList(newFileList);
-      setFileListPreview([])
+      setFileListPreview([]);
     },
     beforeUpload: (file) => {
-      setFileListPreview([{
-        uid: '-xxx',
-        percent: 50,
-        name: 'image.png',
-        status: 'done',
-        url: URL.createObjectURL(file),
-      }])
+      setFileListPreview([
+        {
+          uid: "-xxx",
+          percent: 50,
+          name: "image.png",
+          status: "done",
+          url: URL.createObjectURL(file),
+        },
+      ]);
 
       setFileList([file]);
       return false;
@@ -139,7 +139,7 @@ function DawerBook({ open, onSubmit, onClose, bookEdit, title }: any) {
     }
     setPreviewImage(file.url || (file.preview as string));
     setPreviewOpen(true);
-    setPreviewTitle(file.name || file.url!.substring(file.url!.lastIndexOf("/") + 1));
+    setPreviewTitle(file.name || (file.url && file.url.substring(file.url.lastIndexOf("/") + 1)) || "");
   };
 
   const uploadButton = (
@@ -150,10 +150,9 @@ function DawerBook({ open, onSubmit, onClose, bookEdit, title }: any) {
   );
   const handleCancel = () => setPreviewOpen(false);
 
-
   const changeLink = async (value: string) => {
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       const book: any = await getBookByLink({ remote_url: value });
       console.log("book: ", book);
 
@@ -163,40 +162,44 @@ function DawerBook({ open, onSubmit, onClose, bookEdit, title }: any) {
           category: book?.book_category_name,
           image: book?.book_image,
           author: book?.book_author_name,
-          publisher: book?.book_publisher_name
+          publisher: book?.book_publisher_name,
         });
-        setFileListPreview([{
-          uid: '-1',
-          name: 'image.png',
-          status: 'done',
-          url: book?.book_image,
-        }])
+        setFileListPreview([
+          {
+            uid: "-1",
+            name: "image.png",
+            status: "done",
+            url: book?.book_image,
+          },
+        ]);
       }
-      setIsLoading(false)
-
+      setIsLoading(false);
     } catch (error) {
       console.error("Error fetching book list:", error);
 
       // Handle error
     }
-
-  }
+  };
 
   return (
     <Drawer
-      size={'large'}
+      size={"large"}
       title={title}
       onClose={() => {
         onClose();
-        setFileListPreview([])
+        setFileListPreview([]);
       }}
       open={open}
       bodyStyle={{ paddingBottom: 80 }}
       extra={
         <Space>
-          <Button onClick={() => {
-            onClose()
-          }}>Cancel</Button>
+          <Button
+            onClick={() => {
+              onClose();
+            }}
+          >
+            Cancel
+          </Button>
           <Button onClick={() => form.submit()} type="primary" disabled={isLoading}>
             Save
           </Button>
@@ -205,7 +208,7 @@ function DawerBook({ open, onSubmit, onClose, bookEdit, title }: any) {
     >
       <Form layout="vertical" form={form} onFinish={onFinish} ref={formRef}>
         <Form.Item name="link" label="Link">
-          <Tooltip title="You can select link book from Tiki or Fahasa " color={'#108ee9'}>
+          <Tooltip title="You can select link book from Tiki or Fahasa " color={"#108ee9"}>
             <Search
               disabled={isLoading}
               size="large"
@@ -215,14 +218,8 @@ function DawerBook({ open, onSubmit, onClose, bookEdit, title }: any) {
             />
           </Tooltip>
         </Form.Item>
-        <Form.Item name="image" label="Cover" >
-          <Upload
-            accept="image/*"
-            multiple={false}
-            listType="picture-card"
-            onPreview={handlePreview}
-            {...props}
-          >
+        <Form.Item name="image" label="Cover">
+          <Upload accept="image/*" multiple={false} listType="picture-card" onPreview={handlePreview} {...props}>
             {/* {fileList.length >= 1 ? null : uploadButton} */}
             {uploadButton}
           </Upload>
@@ -232,20 +229,14 @@ function DawerBook({ open, onSubmit, onClose, bookEdit, title }: any) {
         </Form.Item>
 
         <Form.Item name="name" label="Name" rules={[{ required: true, message: "Please enter name" }]}>
-          <Input
-            style={{ width: "100%" }}
-            placeholder="Please enter name"
-            min={1}
-          />
-
+          <Input style={{ width: "100%" }} placeholder="Please enter name" min={1} />
         </Form.Item>
-
 
         <Form.Item name="category" label="Category" rules={[{ required: true, message: "Please enter category" }]}>
           <Input
             style={{ width: "100%" }}
             placeholder="Please enter category"
-          // value={bookEdit?.category}
+            // value={bookEdit?.category}
           />
         </Form.Item>
         <Form.Item name="author" label="Author" rules={[{ required: true, message: "Please enter author" }]}>

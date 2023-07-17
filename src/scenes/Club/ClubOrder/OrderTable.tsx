@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Table, { ColumnsType } from "antd/es/table";
 import orderServices from "@/services/order";
 import { OrderInfos } from "@/services/types";
@@ -12,15 +12,13 @@ type DataType = {
   memberCode: string;
   orderStatus: string;
   orderDate: string;
-}
-
-
+};
 
 function OrderStatus(orderStatus: string) {
-  const STATUS_COLORS: Record<string, string>= {
+  const STATUS_COLORS: Record<string, string> = {
     Confirmed: "green",
   };
-  const color = STATUS_COLORS[orderStatus] ??  "geekblue";
+  const color = STATUS_COLORS[orderStatus] ?? "geekblue";
   return (
     <Tag color={color} key={orderStatus}>
       {orderStatus.toUpperCase()}
@@ -43,8 +41,8 @@ export function OrderTable() {
     } finally {
       setLoading(false);
     }
-  }
-  const fetchOrderInfos =async () => {
+  };
+  const fetchOrderInfos = async () => {
     try {
       setLoading(true);
       const orderInfos: OrderInfos[] = await orderServices.getOrderInfos(orderIds);
@@ -68,7 +66,7 @@ export function OrderTable() {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     fetchOrderIds();
@@ -118,12 +116,5 @@ export function OrderTable() {
       key: "orderDate",
     },
   ];
-  return (
-    <Table
-      loading={loading}
-      columns={columns}
-      dataSource={tableData}
-    >
-    </Table>
-  )
+  return <Table loading={loading} columns={columns} dataSource={tableData}></Table>;
 }

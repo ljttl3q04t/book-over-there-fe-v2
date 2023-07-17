@@ -55,7 +55,7 @@ const PasswordResetModal = (props: PasswordResetModalProps) => {
     >
       <Form {...layout} form={form} name="control-ref" width={800}>
         <p>
-          Forgotten your password? Enter your username or e-mail address below, and we'll send you an e-mail allowing
+          Forgotten your password? Enter your username or e-mail address below, and we will send you an e-mail allowing
           you to reset it.
         </p>
         <Form.Item

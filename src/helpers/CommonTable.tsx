@@ -1,8 +1,7 @@
 import { ColumnType } from "antd/es/table";
-import { Button, Input, InputRef, Space, Tag, notification } from "antd";
-import React, { useRef, useState } from "react";
+import { Button, Input, Space } from "antd";
+import React from "react";
 import { SearchOutlined } from "@ant-design/icons";
-import { FilterConfirmProps } from "antd/es/table/interface";
 import Highlighter from "react-highlight-words";
 import unorm from "unorm";
 
@@ -20,25 +19,6 @@ interface DataType {
   isStaff: boolean;
   memberId: number;
 }
-type DataIndex = keyof DataType;
-// const searchInput = useRef<InputRef>(null);
-// const [searchText, setSearchText] = useState("");
-// const [searchedColumn, setSearchedColumn] = useState("");
-
-// const handleReset = (clearFilters: () => void) => {
-//   clearFilters();
-//   setSearchText("");
-// };
-
-// const handleSearch = (
-//   selectedKeys: string[],
-//   confirm: (param?: FilterConfirmProps) => void,
-//   dataIndex: DataIndex,
-// ) => {
-//   confirm();
-//   setSearchText(selectedKeys[0]);
-//   setSearchedColumn(dataIndex);
-// };
 
 export const getColumnSearchProps = (
   dataIndex: any,
@@ -47,7 +27,9 @@ export const getColumnSearchProps = (
   setSearchText: any,
   searchedColumn: any,
   setSearchedColumn: any,
+  // eslint-disable-next-line @typescript-eslint/ban-types
   handleReset: Function,
+  // eslint-disable-next-line @typescript-eslint/ban-types
   handleSearch: Function,
 ): ColumnType<DataType> => ({
   filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
@@ -80,17 +62,6 @@ export const getColumnSearchProps = (
         >
           Reset
         </Button>
-        {/* <Button
-          type="link"
-          size="small"
-          onClick={() => {
-            confirm({ closeDropdown: false });
-            setSearchText((selectedKeys as string[])[0]);
-            setSearchedColumn(dataIndex);
-          }}
-        >
-          Filter
-        </Button> */}
         <Button
           type="link"
           size="small"

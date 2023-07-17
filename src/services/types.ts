@@ -49,12 +49,12 @@ export type Club = {
 export type CategoryInfos = {
   id: number;
   name: string;
-}
+};
 
 export type AuthorInfos = {
   id: number;
   name: string;
-}
+};
 
 export type BookInfos = {
   name: string;
@@ -63,7 +63,7 @@ export type BookInfos = {
   publisher: null;
   description: string | null;
   image: string | null;
-}
+};
 
 export type ClubBookInfos = {
   book: BookInfos;
@@ -71,13 +71,13 @@ export type ClubBookInfos = {
   club_id: number;
   init_count: number;
   current_count: number;
-}
+};
 
 export type MemberInfos = {
   phone_number: string;
   full_name: string;
-  code: string
-}
+  code: string;
+};
 
 export type OrderDetails = {
   id: number;
@@ -85,14 +85,14 @@ export type OrderDetails = {
   book_name: string;
   order_id: number;
   return_date: string;
-}
+};
 
 export type OrderInfos = {
   id: number;
-  member: MemberInfos,
+  member: MemberInfos;
   club_id: number;
   order_date: string;
   due_date: string;
   order_status: string;
   order_details: OrderDetails[];
-}
+};

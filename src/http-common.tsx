@@ -1,6 +1,5 @@
 import { notification } from "antd";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 export const axiosApi = axios.create({
   baseURL: `${import.meta.env.VITE_REACT_APP_API_URL}/services`,

@@ -111,7 +111,7 @@ const ClubList = () => {
     setModalJoin(true);
   };
 
-  const onFinish = (_values: any) => {
+  const onFinish = () => {
     form
       .validateFields()
       .then((formValues) => {
@@ -144,7 +144,7 @@ const ClubList = () => {
             form.resetFields();
           });
       })
-      .catch((_errors) => {
+      .catch(() => {
         notification.info({ message: "Please make sure that you enter all field" });
       });
   };
@@ -191,13 +191,13 @@ const ClubList = () => {
     {
       title: "Total member",
       dataIndex: "total_member_count",
-      defaultSortOrder: 'descend',
+      defaultSortOrder: "descend",
       sorter: (a, b) => a.total_member_count - b.total_member_count,
     },
     {
       title: "Total book count",
       dataIndex: "total_book_count",
-      defaultSortOrder: 'descend',
+      defaultSortOrder: "descend",
       sorter: (a, b) => a.total_book_count - b.total_book_count,
     },
     {

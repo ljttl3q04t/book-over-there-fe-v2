@@ -1,6 +1,5 @@
 import {
   BookOutlined,
-  CheckCircleOutlined,
   HistoryOutlined,
   HomeOutlined,
   MenuFoldOutlined,
@@ -100,7 +99,8 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSide
 
         getItem("Book Status", "sub2", <BookOutlined />, [
           getItem("My book", "my-book"),
-          getItem("Book Borrow", "book-borrow")]),
+          getItem("Book Borrow", "book-borrow"),
+        ]),
         getItem("Book History", "book-history", <HistoryOutlined />),
         getItem("Wishlist", "book-wishlist", <UnorderedListOutlined />),
       ]),

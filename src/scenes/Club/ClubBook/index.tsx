@@ -2,8 +2,7 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 import Table, { ColumnsType } from "antd/es/table";
 import styled from "styled-components";
 import ClubService from "@/services/club";
-import { Avatar, Button, DatePicker, Form, Input, InputRef, Modal } from "antd";
-import { PlusCircleFilled } from "@ant-design/icons";
+import { Avatar, DatePicker, Form, Input, InputRef, Modal } from "antd";
 import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
 
 import { getColumnSearchProps } from "@/helpers/CommonTable";
@@ -109,9 +108,6 @@ const ClubBook = () => {
   };
   const handleOkOrder = () => {
     form.validateFields();
-  };
-  const handleOpenOrder = (item: any) => {
-    setModalOrder(true);
   };
   const columns: ColumnsType<DataType> = [
     {

@@ -26,8 +26,8 @@ export async function getOrderDetailIds(): Promise<number[]> {
 export async function getOrderInfos(orderIds: number[]): Promise<OrderInfos[]> {
   try {
     const data = {
-      "order_ids": orderIds.join(','),
-    }
+      order_ids: orderIds.join(","),
+    };
     const response = await ApiDfbAuthor.post(`/order/get_infos`, data);
     const { order_infos } = response.data;
     return order_infos;
@@ -40,8 +40,8 @@ export async function getOrderInfos(orderIds: number[]): Promise<OrderInfos[]> {
 export async function getOrderDetailInfos(orderDetailIds: number[]): Promise<number[]> {
   try {
     const data = {
-      "order_detail_ids": orderDetailIds,
-    }
+      order_detail_ids: orderDetailIds,
+    };
     const response = await dfbApi.post(`/order_detail/get_infos`, data);
     const { order_detail_infos } = response.data;
     return order_detail_infos;

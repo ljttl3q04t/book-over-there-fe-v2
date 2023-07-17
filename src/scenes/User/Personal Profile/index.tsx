@@ -47,17 +47,19 @@ const Personal = () => {
       const newFileList = fileList.slice();
       newFileList.splice(index, 1);
       setFileList(newFileList);
-      setFileListPreview([])
+      setFileListPreview([]);
     },
     beforeUpload: (file) => {
       setFileList([...fileList, file]);
-      setFileListPreview([{
-        uid: '-xxx',
-        percent: 50,
-        name: 'image.png',
-        status: 'done',
-        url: URL.createObjectURL(file),
-      }])
+      setFileListPreview([
+        {
+          uid: "-xxx",
+          percent: 50,
+          name: "image.png",
+          status: "done",
+          url: URL.createObjectURL(file),
+        },
+      ]);
       return false;
     },
     fileList: fileListPreview,
@@ -77,12 +79,14 @@ const Personal = () => {
       avatar: user?.avatar,
     });
 
-    setFileListPreview([{
-      uid: '-1',
-      name: 'image.png',
-      status: 'done',
-      url: user?.avatar,
-    }])
+    setFileListPreview([
+      {
+        uid: "-1",
+        name: "image.png",
+        status: "done",
+        url: user?.avatar,
+      },
+    ]);
 
     setLoading(false);
   }, [user]);
@@ -102,7 +106,7 @@ const Personal = () => {
       birth_date: dayjs(values.birth_date).format("YYYY-MM-DD"),
       avatar: fileList[0] as RcFile,
     };
-    
+
     UserService.updateUser(data)
       .then((res: any) => {
         if (res?.error?.message) {
@@ -144,9 +148,7 @@ const Personal = () => {
         </div>
         <Form {...layout} ref={formRef} name="control-ref" onFinish={onFinish} style={{ width: 600 }}>
           <Form.Item name="username" label="Username" rules={[{ required: true }]}>
-            <Input
-            disabled
-            />
+            <Input disabled />
           </Form.Item>
           <Form.Item name="full_name" label="Full Name" rules={[{ required: true }]}>
             <Input />
