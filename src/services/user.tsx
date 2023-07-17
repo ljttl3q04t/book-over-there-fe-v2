@@ -26,11 +26,15 @@ const getUserMembership = () => {
 async function getStaffClubs(): Promise<BookClubInfo[]> {
   try {
     const response = await ApiServiceAuthor.get("/user/membership");
-    const data = response.data;
-    return data.filter((d: any) => d["is_staff"]).map((d: any) => d["book_club"]);
+    if (response.data) {
+      const data = response.data;
+      return data.filter((d: any) => d["is_staff"]).map((d: any) => d["book_club"]);
+    } else {
+      throw new Error(response.data.error);
+    }
   } catch (error) {
-    console.error("Error fetching data:", error);
-    throw error;
+    const errorMessage = error.response?.data?.error || "An error occurred";
+    throw new Error(errorMessage);
   }
 }
 

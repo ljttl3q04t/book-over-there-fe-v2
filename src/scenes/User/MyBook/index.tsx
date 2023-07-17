@@ -18,7 +18,7 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 import type { FormInstance } from "antd/es/form";
 import styled from "styled-components";
 
-import DawerBook from "@/component/DrawerBook";
+import DrawerBook from "@/component/DrawerBook";
 import { BookCopy, Club } from "@/services/types";
 import userService from "@/services/user";
 import { FilterConfirmProps } from "antd/lib/table/interface";
@@ -377,7 +377,7 @@ function MyBook() {
         columns={columns}
         dataSource={books}
       />
-      <DawerBook
+      <DrawerBook
         open={open}
         onClose={() => setOpen(false)}
         fetchBookList={fetchBookList}

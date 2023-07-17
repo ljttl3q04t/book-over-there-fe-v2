@@ -1,5 +1,13 @@
-import { ApiDfbAuthor, dfbApi } from "@/http-common";
-import { CreateMemberRequest, MemberInfos, OrderInfos, UpdateMemberRequest } from "./types";
+import { ApiDfbAuthor, dfbApi, axiosApi } from "@/http-common";
+import {
+  CategoryInfos,
+  ClubBookInfos,
+  CreateMemberRequest,
+  GetClubBookIdsOptions,
+  MemberInfos,
+  OrderInfos,
+  UpdateMemberRequest,
+} from "./types";
 
 export async function getOrderIds(): Promise<number[]> {
   try {
@@ -84,7 +92,7 @@ export async function createMember(member: CreateMemberRequest): Promise<string>
     } else {
       throw new Error(response.data.error);
     }
-  } catch (error) {
+  } catch (error: any) {
     const errorMessage = error.response?.data?.error || "An error occurred while creating the member.";
     throw new Error(errorMessage);
   }
@@ -98,8 +106,73 @@ export async function updateMember(member: UpdateMemberRequest): Promise<string>
     } else {
       throw new Error(response.data.error);
     }
-  } catch (error) {
-    const errorMessage = error.response?.data?.error || "An error occurred while creating the member.";
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "An error occurred while update the member.";
+    throw new Error(errorMessage);
+  }
+}
+
+async function getClubBookIds(options: GetClubBookIdsOptions): Promise<number[]> {
+  try {
+    const { clubs } = options;
+    const data: any = {};
+    if (clubs) {
+      data["club_ids"] = clubs.map((c) => c.id).join(",");
+    }
+    const response = await dfbApi.post(`/club_book/get_ids`, data);
+    if (response.data.club_book_ids !== undefined) {
+      return response.data.club_book_ids;
+    } else {
+      throw new Error(response.data.error);
+    }
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "An error occurred";
+    throw new Error(errorMessage);
+  }
+}
+
+async function getClubBookInfos(clubBookIds: number[]): Promise<ClubBookInfos[]> {
+  const data = {
+    club_book_ids: clubBookIds.join(","),
+  };
+  try {
+    const response = await dfbApi.post(`/club_book/get_infos`, data);
+    if (response.data.club_book_infos !== undefined) {
+      return response.data.club_book_infos;
+    } else {
+      throw new Error(response.data.error);
+    }
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "An error occurred while get books";
+    throw new Error(errorMessage);
+  }
+}
+
+async function createBook(data: any): Promise<string> {
+  console.log(data);
+  try {
+    const response = await ApiDfbAuthor.post(`/club_book/add`, data);
+    if (response.data.result) {
+      return response.data.result;
+    } else {
+      throw new Error(response.data.error);
+    }
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "An error occurred while add books";
+    throw new Error(errorMessage);
+  }
+}
+
+async function getCategoryList(): Promise<CategoryInfos[]> {
+  try {
+    const response = await axiosApi.get(`/category/list/dfb`);
+    if (response.data.result) {
+      return response.data.result;
+    } else {
+      throw new Error(response.data.error);
+    }
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "An error occurred";
     throw new Error(errorMessage);
   }
 }
@@ -113,6 +186,10 @@ const dfbServices = {
   getMemberInfos,
   createMember,
   updateMember,
+  getClubBookInfos,
+  getClubBookIds,
+  createBook,
+  getCategoryList,
 };
 
 export default dfbServices;

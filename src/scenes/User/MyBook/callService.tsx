@@ -62,11 +62,8 @@ export const getListBookInit = async (option: any) => {
 export const getBookByLink = async (link: any) => {
   try {
     const response = await bookService.getBookByLink(link);
-    console.log("getBookByLink: ", response);
     return response;
   } catch (error) {
-    console.error("error", error);
-    // Handle error
     notification.error({
       message: `Validation Error: `,
       description: "Link book incorrect",

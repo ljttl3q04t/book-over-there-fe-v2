@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useCallback, useEffect, useState, useRef } from "react";
+import * as React from "react";
 import Table, { ColumnsType } from "antd/es/table";
 import { MoreOutlined } from "@ant-design/icons";
 
 import styled from "styled-components";
 import ClubService, { ClubStaffBookListParams } from "@/services/club";
 
-import { Button, Form, Input, InputRef, Space, Select, Avatar, Dropdown, MenuProps } from "antd";
+import { Button, Form, Input, InputRef, Space, Select, Avatar, Dropdown, MenuProps, notification } from "antd";
 import dayjs from "dayjs";
 import { FilterConfirmProps } from "antd/es/table/interface";
 import { getColumnSearchProps } from "@/helpers/CommonTable";
@@ -14,8 +14,13 @@ import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
 import { disabledDateBefore, dateFormatList } from "@/helpers/DateHelper";
 import { ProFormText, QueryFilter } from "@ant-design/pro-components";
 import { EditBook } from "@/scenes/User/MyBook/type";
-import DawerBook from "@/component/DrawerBook";
+import DrawerBook from "@/component/DrawerBook";
 import { getObjectByIdInArray } from "@/helpers/fuctionHepler";
+import TableBook from "@/component/TableBook";
+import { BookClubInfo, CategoryInfos } from "@/services/types";
+import userService from "@/services/user";
+import dfbServices from "@/services/dfb";
+import DrawerAddBook from "./DrawerAddBook";
 const { Option } = Select;
 
 const StyledModalContent = styled.div`
@@ -40,7 +45,6 @@ const StyledClubStaffList = styled.div`
     }
   }
 `;
-type MemberStatus = "active" | "pending";
 const statusColors = {
   active: "green",
   pending: "geekblue",
@@ -55,14 +59,7 @@ const MODAL_CODE = {
   WITHDRAW: "withdraw",
   VIEW_ALL: "view_all",
 };
-interface ModalContent {
-  [key: string]: {
-    title: any;
-    onOk: (item: any) => void;
-    content: JSX.Element;
-    width: string | number;
-  };
-}
+
 interface DataTypeBooks {
   id: number;
   no: number;
@@ -87,24 +84,48 @@ const layout = {
 const { TextArea } = Input;
 
 const ClubStaff = () => {
-  const [loading, setLoading] = useState(false);
-  const [searchText, setSearchText] = useState("");
-  const [searchedColumn, setSearchedColumn] = useState("");
-  const searchInput = useRef<InputRef>(null);
-  const bookClubName = useRef<string>("");
-  const [activeModal, setActiveModal] = useState("");
-  const [clubBookTableSource, setClubBookTableSource] = useState<ClubBookTableSource>();
+  const [loading, setLoading] = React.useState(false);
+  const [clubBookIds, setClubBookIds] = React.useState<number[]>([]);
+  const [staffClubs, setStaffClubs] = React.useState<BookClubInfo[]>([]);
+  const [categories, setCategories] = React.useState<CategoryInfos[]>([]);
+  const [searchText, setSearchText] = React.useState("");
+  const [searchedColumn, setSearchedColumn] = React.useState("");
+  const searchInput = React.useRef<InputRef>(null);
+  const bookClubName = React.useRef<string>("");
+  const [activeModal, setActiveModal] = React.useState("");
+  const [clubBookTableSource, setClubBookTableSource] = React.useState<ClubBookTableSource>();
 
   const [form] = Form.useForm();
-  const [option, setOption] = useState({
+  const [option, setOption] = React.useState({
     pageIndex: 1,
     pageSize: 10,
   });
 
-  const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState<any>("Add Book");
-  const [bookEdit, setBookEdit] = useState<any>(null);
-  const [idBook, setIdBook] = useState<any>(null);
+  const [open, setOpen] = React.useState(false);
+  const [title, setTitle] = React.useState<any>("Add Book");
+  const [bookEdit, setBookEdit] = React.useState<any>(null);
+  const [idBook, setIdBook] = React.useState<any>(null);
+
+  const fetchInit = async () => {
+    try {
+      setLoading(true);
+      const clubs: BookClubInfo[] = await userService.getStaffClubs();
+      const _categories = await dfbServices.getCategoryList();
+      setCategories(_categories);
+      setStaffClubs(clubs);
+      const _clubBookIds = await dfbServices.getClubBookIds({ clubs });
+      setClubBookIds(_clubBookIds);
+      setLoading(false);
+    } catch (error: any) {
+      notification.error({ message: error.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchInit();
+  }, []);
 
   const handleTableChange = (pagination: any) => {
     console.log(pagination, "pagination");
@@ -143,7 +164,8 @@ const ClubStaff = () => {
     // fetchClubBookList();
     setActiveModal(MODAL_CODE.VIEW_ALL);
   };
-  useEffect(() => {
+
+  React.useEffect(() => {
     const searchForm: ClubStaffBookListParams = {
       page: option.pageIndex,
       pageSize: option.pageSize,
@@ -151,7 +173,8 @@ const ClubStaff = () => {
     };
     fetchClubBookList(searchForm);
   }, [option]);
-  const fetchClubBookList = useCallback(
+
+  const fetchClubBookList = React.useCallback(
     (searchForm: ClubStaffBookListParams) => {
       setLoading(true);
       ClubService.getClubStaffBookList(searchForm)
@@ -285,26 +308,7 @@ const ClubStaff = () => {
       console.log("000000");
       // handleOpenShareBook(null)
     } else if (e.key === "1") {
-      console.log("11111111");
       setOpen(true);
-
-      const tempBookEdit = getObjectByIdInArray(clubBookTableSource?.data, idBook);
-
-      // const bookEdit: EditBook = {
-      //   id: tempBookEdit.id,
-      //   bookName: tempBookEdit.bookName,
-      //   bookCategory: tempBookEdit.bookCategory,
-      //   bookAuthor:
-      //   bookPublisher:
-      //   bookImage:
-      //   createdAt:
-      //   updatedAt:
-      //   bookStatus:
-      //   bookDepositPrice:
-      //   bookDepositStatus:
-      //   user:
-      // }
-
       setBookEdit(bookEdit);
       setTitle("Edit Book");
     } else if (e.key === "2") {
@@ -316,94 +320,6 @@ const ClubStaff = () => {
     items,
     onClick: handleMenuClick,
   };
-
-  // const modalContent: ModalContent = {
-  //   order: {
-  //     title: "Book Order",
-  //     width: 800,
-  //     onOk: handleOrderBooks,
-  //     content: (
-  //       <>
-  //         {
-  //           <Form {...layout} form={form} name="control-ref" style={{ width: 800 }}>
-  //             <Form.Item
-  //               name="full_name"
-  //               label="Full Name"
-  //               rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} full name` }]}
-  //             >
-  //               <Input disabled />
-  //             </Form.Item>
-  //             <Form.Item
-  //               name="phone_number"
-  //               label="Phone Number"
-  //               rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} phone number` }]}
-  //             >
-  //               <Input disabled />
-  //             </Form.Item>
-  //             <Form.Item
-  //               label="Select Books"
-  //               name="select_books"
-  //               rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} select at least one book` }]}
-  //             >
-  //               <Select placeholder="Find books..." mode="multiple" showArrow style={{ width: "100%" }}>
-  //                 {clubBookList.map((item: DataTypeBooks) => {
-  //                   return (
-  //                     <Select.Option value={item.id + "-" + item.bookName}>{`${
-  //                       item.memberName + " - " + item.bookName
-  //                     }`}</Select.Option>
-  //                   );
-  //                 })}
-  //               </Select>
-  //             </Form.Item>
-  //             <Form.Item
-  //               name="due_date"
-  //               label="Due Date"
-  //               rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} due date` }]}
-  //             >
-  //               <DatePicker disabledDate={disabledDateBefore} style={{ width: "100%" }} format={dateFormatList} />
-  //             </Form.Item>
-  //             <Form.Item name="note" label="Note" rules={[{ required: false }]}>
-  //               <TextArea rows={4} placeholder="Note..." />
-  //             </Form.Item>
-  //           </Form>
-  //         }
-  //       </>
-  //     ),
-  //   },
-  //   deposit: {
-  //     title: "Deposit Books",
-  //     width: 800,
-  //     onOk: handleDepositBooks,
-  //     content: <>{/* Content for deposit modal */}</>,
-  //   },
-  //   withdraw: {
-  //     title: "Withdraw Books",
-  //     width: 800,
-  //     onOk: handleWithdrawBooks,
-  //     content: <>{/* Content for withdraw modal */}</>,
-  //   },
-  //   view_all: {
-  //     title: `${bookClubName.current}`,
-  //     width: "60%",
-  //     onOk: handleWithdrawBooks,
-  //     content: (
-  //       <>
-  //         <Table
-  //           scroll={{ x: 1500, y: 700 }}
-  //           pagination={{
-  //             total: clubBookList.length,
-  //             pageSize: option.pageSize,
-  //             current: option.pageIndex,
-  //           }}
-  //           onChange={handleTableChange}
-  //           loading={loading}
-  //           columns={columnsBookList}
-  //           dataSource={clubBookList}
-  //         />
-  //       </>
-  //     ),
-  //   },
-  // };
 
   return (
     <StyledClubStaffList>
@@ -452,38 +368,29 @@ const ClubStaff = () => {
           placeholder={"Input name to search"}
         />
       </QueryFilter>
-      <Table
+      {/* <Table
         scroll={{ x: 1500, y: 700 }}
-        pagination={{
-          total: clubBookTableSource?.total,
-          pageSize: option.pageSize,
-          current: option.pageIndex,
-        }}
         onChange={handleTableChange}
         loading={loading}
         columns={columnsBookList}
         dataSource={clubBookTableSource?.data}
-      />
-      <DawerBook
+      /> */}
+      <TableBook loading={loading} setLoading={setLoading} clubBookIds={clubBookIds} />
+      <DrawerAddBook
         open={open}
         onClose={() => setOpen(false)}
         fetchBookList={fetchClubBookList}
         bookEdit={bookEdit}
         title={title}
+        categories={categories}
       />
-      {/* {activeModal && (
-        <Modal
-          width={modalContent[activeModal].width}
-          {...layout}
-          title={modalContent[activeModal].title}
-          open={activeModal !== ""}
-          onCancel={handleCloseModal}
-          onOk={modalContent[activeModal].onOk}
-          destroyOnClose={true}
-        >
-          <StyledModalContent>{modalContent[activeModal].content}</StyledModalContent>
-        </Modal>
-      )} */}
+      {/* <DrawerBook
+        open={open}
+        onClose={() => setOpen(false)}
+        fetchBookList={fetchClubBookList}
+        bookEdit={bookEdit}
+        title={title}
+      /> */}
     </StyledClubStaffList>
   );
 };

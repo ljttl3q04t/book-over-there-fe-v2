@@ -39,7 +39,7 @@ export function UpdateMemberModal(props: UpdateOrderModalProps) {
       const message = await dfbServices.updateMember(data);
       notification.success({ message: message, type: "success" });
       onCancel();
-    } catch (error) {
+    } catch (error: any) {
       const errorMessage = error.message || "An error occurred while updating the member.";
       notification.error({ message: errorMessage });
     } finally {

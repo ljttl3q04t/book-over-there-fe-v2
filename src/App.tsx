@@ -60,7 +60,7 @@ const App = () => {
             {token ? (
               <>
                 {user?.is_staff && <Route path="/clubstaff/member-order" Component={ClubStaff} />}
-                {user?.is_staff && <Route path="/clubstaff/books-management" Component={ClubBookManagement} />}
+                {user?.is_staff && <Route path="/clubstaff/books" Component={ClubBookManagement} />}
                 {user?.is_staff && <Route path="/clubstaff/orders" Component={ClubOrder} />}
                 {user?.is_staff && <Route path="/clubstaff/members" Component={ClubMember} />}
                 <Route path="/clubbook" Component={ClubBook} />

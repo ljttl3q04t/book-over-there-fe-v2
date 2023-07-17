@@ -1,7 +1,7 @@
 import * as React from "react";
 import styled from "styled-components";
 import { MemberTable } from "./MemberTable";
-import { Button } from "antd";
+import { Button, notification } from "antd";
 import { CreateMemberModal } from "./CreateMemberModal";
 import userService from "@/services/user";
 import { BookClubInfo } from "@/services/types";
@@ -37,8 +37,8 @@ const ClubMember = () => {
       setLoading(true);
       const clubs: BookClubInfo[] = await userService.getStaffClubs();
       setStaffClubs(clubs);
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      notification.error({ message: error.message });
     } finally {
       setLoading(false);
     }

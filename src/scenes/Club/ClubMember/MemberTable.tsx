@@ -106,7 +106,7 @@ export function MemberTable() {
   ];
   return (
     <>
-      <Table columns={columns} loading={loading} dataSource={tableData} />
+      <Table columns={columns} loading={loading} dataSource={tableData} scroll={{ x: 1000, y: 700 }} />
       <UpdateMemberModal
         {...{
           currentMember,

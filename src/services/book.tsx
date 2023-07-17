@@ -65,9 +65,9 @@ const getBookByLink = async (data: any) => {
   try {
     const response = await ApiServiceAuthor.post(`/book/check`, data);
     return response.data;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    throw error;
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "An error occurred";
+    throw new Error(errorMessage);
   }
 };
 

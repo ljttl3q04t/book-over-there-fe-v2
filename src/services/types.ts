@@ -118,3 +118,7 @@ export type UpdateMemberRequest = {
   phone_number?: string;
   full_name?: string;
 };
+
+export type GetClubBookIdsOptions = {
+  clubs?: BookClubInfo[];
+};
