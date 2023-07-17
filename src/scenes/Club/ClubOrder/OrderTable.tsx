@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Table, { ColumnsType } from "antd/es/table";
-import orderServices from "@/services/order";
+import dfbServices from "@/services/dfb";
 import { OrderInfos } from "@/services/types";
 import { Tag } from "antd";
 
@@ -34,7 +34,7 @@ export function OrderTable() {
   const fetchOrderIds = async () => {
     try {
       setLoading(true);
-      const _orderIds = await orderServices.getOrderIds();
+      const _orderIds = await dfbServices.getOrderIds();
       setOrderIds(_orderIds);
     } catch (error) {
       console.error(error);
@@ -45,7 +45,7 @@ export function OrderTable() {
   const fetchOrderInfos = async () => {
     try {
       setLoading(true);
-      const orderInfos: OrderInfos[] = await orderServices.getOrderInfos(orderIds);
+      const orderInfos: OrderInfos[] = await dfbServices.getOrderInfos(orderIds);
       const data: DataType[] = [];
       for (const order of orderInfos) {
         for (const orderDetail of order.order_details) {

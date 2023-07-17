@@ -77,6 +77,7 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSide
         getItem("Club Member Order", "clubstaff/member-order"),
         getItem("Club Book Management", "clubstaff/books-management"),
         getItem("Order", "clubstaff/orders"),
+        getItem("Member", "clubstaff/members"),
       ]);
     } else {
       return null; // Return null if the user is not a staff member

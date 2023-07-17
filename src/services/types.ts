@@ -24,7 +24,13 @@ export type ListView<T> = {
   results: T[];
 };
 
-export type book_club = {
+export type BookClubInfo = {
+  id: number;
+  name: string;
+  code: string;
+};
+
+export type BookClub = {
   id: number;
   is_member: boolean;
   updated_at: string;
@@ -35,7 +41,7 @@ export type book_club = {
 };
 
 export type Club = {
-  book_club: book_club;
+  book_club: BookClub;
   created_at: string;
   id: number;
   is_staff: boolean;
@@ -74,6 +80,8 @@ export type ClubBookInfos = {
 };
 
 export type MemberInfos = {
+  id: number;
+  club_id: number;
   phone_number: string;
   full_name: string;
   code: string;
@@ -95,4 +103,18 @@ export type OrderInfos = {
   due_date: string;
   order_status: string;
   order_details: OrderDetails[];
+};
+
+export type CreateMemberRequest = {
+  club_id: number;
+  code: string;
+  phone_number?: string;
+  full_name: string;
+};
+
+export type UpdateMemberRequest = {
+  member_id: number;
+  code?: string;
+  phone_number?: string;
+  full_name?: string;
 };

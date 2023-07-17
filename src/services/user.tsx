@@ -1,4 +1,5 @@
 import { ApiServiceAuthor, axiosApi } from "../http-common";
+import { BookClubInfo } from "./types";
 
 type ResetPasswordParams = {
   username_or_email: string;
@@ -21,6 +22,17 @@ const getUser = () => {
 const getUserMembership = () => {
   return ApiServiceAuthor.get("/user/membership");
 };
+
+async function getStaffClubs(): Promise<BookClubInfo[]> {
+  try {
+    const response = await ApiServiceAuthor.get("/user/membership");
+    const data = response.data;
+    return data.filter((d: any) => d["is_staff"]).map((d: any) => d["book_club"]);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error;
+  }
+}
 
 const getUserShareClub = (data: any) => {
   return ApiServiceAuthor.post("/user/book/share-club", data);
@@ -68,5 +80,6 @@ const userService = {
   getUserShareClub,
   resetPassword,
   updatePassword,
+  getStaffClubs,
 };
 export default userService;

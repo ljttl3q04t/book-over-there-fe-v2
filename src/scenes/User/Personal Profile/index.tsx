@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-// import {PlusOutlined } from '@ant-design/icons';
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, DatePicker, Form, Image, Input, notification, Select, Upload } from "antd";
 import type { RangePickerProps } from "antd/es/date-picker";
