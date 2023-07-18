@@ -94,6 +94,7 @@ export type OrderDetails = {
   book_name: string;
   order_id: number;
   return_date: string;
+  due_date: string;
   order_status: string;
   overdue_day_count: number | undefined;
 };

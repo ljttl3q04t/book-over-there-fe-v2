@@ -3,6 +3,7 @@ import Table, { ColumnsType } from "antd/es/table";
 import dfbServices from "@/services/dfb";
 import { OrderInfos } from "@/services/types";
 import { Tag } from "antd";
+import moment from "moment";
 
 type DataType = {
   orderId: number;
@@ -14,11 +15,13 @@ type DataType = {
   orderDate: string;
   returnDate: string;
   overdueDay: number;
+  dueDate: string;
 };
 
 function OrderStatus(orderStatus: string) {
   const STATUS_COLORS: Record<string, string> = {
-    Confirmed: "green",
+    created: "green",
+    overdue: "red",
   };
   const color = STATUS_COLORS[orderStatus] ?? "geekblue";
   return (
@@ -61,6 +64,7 @@ export function OrderTable() {
             orderDate: order.order_date,
             returnDate: orderDetail.return_date,
             overdueDay: orderDetail.overdue_day_count ?? 0,
+            dueDate: order.due_date,
           });
         }
       }
@@ -128,6 +132,12 @@ export function OrderTable() {
       title: "Overdue Day",
       dataIndex: "overdueDay",
       key: "overdueDay",
+      render: (v, record) => {
+        const today = moment().startOf("day");
+        const dueDateObj = moment(record.dueDate, "YYYY-MM-DD").startOf("day");
+        const overdueDay = today.diff(dueDateObj, "days");
+        return overdueDay < 0 ? v : overdueDay;
+      },
     },
   ];
   return <Table loading={loading} columns={columns} dataSource={tableData} scroll={{ x: 1000, y: 700 }}></Table>;
