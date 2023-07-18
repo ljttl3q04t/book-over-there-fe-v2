@@ -32,9 +32,11 @@ export function UpdateMemberModal(props: UpdateOrderModalProps) {
       const data: UpdateMemberRequest = {
         member_id: currentMember.id,
         code: values.code,
-        phone_number: values.phoneNumber,
         full_name: values.fullName,
       };
+      if (values.phoneNumber) {
+        data.phone_number = values.phoneNumber;
+      }
       console.log(data);
       const message = await dfbServices.updateMember(data);
       notification.success({ message: message, type: "success" });
