@@ -15,6 +15,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { UserContext } from "@/context/UserContext";
 import { getAccessToken } from "../http-common";
 import styled from "styled-components";
+import { useTranslation } from "react-i18next";
 const { Sider } = Layout;
 const { Title } = Typography;
 const StyledSidebarDivider = styled.hr`
@@ -59,6 +60,7 @@ function getItem(
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSidebarOpen, isNonMobile }) => {
+  const { t, i18n } = useTranslation();
   const { pathname } = useLocation();
   const [active, setActive] = React.useState("");
   const navigate = useNavigate();
@@ -68,7 +70,7 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSide
   }, [pathname]);
 
   let items: MenuProps["items"] = [
-    getItem("Home Page", "", <HomeOutlined />),
+    getItem(<>{t('sidebar.homePage')}</>, "", <HomeOutlined />),
     // getItem("Checkout", "checkout", <CheckCircleOutlined />),
   ];
   const getClubStaffItem = (isStaff: any): MenuItem => {

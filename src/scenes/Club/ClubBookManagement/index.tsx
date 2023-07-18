@@ -176,9 +176,13 @@ const ClubStaff = () => {
 
   const fetchClubBookList = React.useCallback(
     (searchForm: ClubStaffBookListParams) => {
+      console.log("lalala");
+      
       setLoading(true);
       ClubService.getClubStaffBookList(searchForm)
         .then((response) => {
+          console.log("response: ",response);
+          
           if (response.data) {
             const data = response.data.results.map((item: any, index: any) => {
               const book: DataTypeBooks = {
@@ -195,6 +199,8 @@ const ClubStaff = () => {
               };
               return book;
             });
+            console.log("data: ",data);
+            
             setClubBookTableSource({
               data,
               total: response.data.count,

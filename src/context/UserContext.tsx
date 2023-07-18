@@ -16,12 +16,16 @@ interface UserContextProps {
   user: User | null;
   setLoggedInUser: (userData: User) => void;
   logoutUser: () => void;
+  language: string;
+  changeLanguage: (language:string) => void;
 }
 
 export const UserContext = createContext<UserContextProps>({
   user: null,
   setLoggedInUser: () => {},
   logoutUser: () => {},
+  language: '',
+  changeLanguage: ()=> {},
 });
 
 interface UserProviderProps {
@@ -30,6 +34,10 @@ interface UserProviderProps {
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const lang = localStorage.getItem("i18nextLng");
+  console.log('lang: ',lang);
+  
+  const [language, setLanguage] = useState<string>(lang ? lang : 'vi');
 
   useEffect(() => {
     // Load the user data from localStorage on component mount
@@ -51,12 +59,19 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     setUser(null);
   };
 
+  const changeLanguage = (language: string) => {
+    // Save the user data to localStorage when setting the logged-in user
+    localStorage.setItem("language", JSON.stringify(language));
+    setLanguage(language)
+  };
   return (
     <UserContext.Provider
       value={{
         user,
         setLoggedInUser,
         logoutUser,
+        language,
+        changeLanguage
       }}
     >
       {children}

@@ -28,6 +28,7 @@ import { ProFormSelect } from "@ant-design/pro-components";
 import Image from "@/component/Image";
 import defaultImage from "@/image/book-default.png";
 import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
+import { useTranslation } from "react-i18next";
 const { Title } = Typography;
 
 const StyledHomeContainer = styled.div`
@@ -103,6 +104,7 @@ const MODAL_CODE = {
   ORDER: "order",
 };
 const Homepage = () => {
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [bookList, setBookList] = useState<any>([]);
   const [option, setOption] = useState({
@@ -461,7 +463,7 @@ const Homepage = () => {
                     {item.clubName}
                   </a>
                   <span onClick={() => executeScroll()} className="extra-title">
-                    See all <RightOutlined style={{ fontSize: "18px" }} />
+                    <>{t('homePage.seeAll')}</> <RightOutlined style={{ fontSize: "18px" }} />
                   </span>
                 </Title>
               </div>
