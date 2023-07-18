@@ -72,6 +72,7 @@ export type BookInfos = {
 };
 
 export type ClubBookInfos = {
+  id: number;
   book: BookInfos;
   code: string;
   club_id: number;
@@ -93,6 +94,8 @@ export type OrderDetails = {
   book_name: string;
   order_id: number;
   return_date: string;
+  order_status: string;
+  overdue_day_count: number | undefined;
 };
 
 export type OrderInfos = {
@@ -101,7 +104,6 @@ export type OrderInfos = {
   club_id: number;
   order_date: string;
   due_date: string;
-  order_status: string;
   order_details: OrderDetails[];
 };
 

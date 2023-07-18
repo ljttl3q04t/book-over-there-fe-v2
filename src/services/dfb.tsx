@@ -84,6 +84,17 @@ export async function getMemberInfos(memberIds: number[]): Promise<MemberInfos[]
   }
 }
 
+export async function getAllMembers(): Promise<MemberInfos[]> {
+  try {
+    const memberIds = await getMemberIds();
+    const memberInfos = await getMemberInfos(memberIds);
+    return memberInfos;
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "An error occurred while creating the member.";
+    throw new Error(errorMessage);
+  }
+}
+
 export async function createMember(member: CreateMemberRequest): Promise<string> {
   try {
     const response = await ApiDfbAuthor.post(`/member/add`, member);
@@ -149,7 +160,6 @@ async function getClubBookInfos(clubBookIds: number[]): Promise<ClubBookInfos[]>
 }
 
 async function createBook(data: any): Promise<string> {
-  console.log(data);
   try {
     const response = await ApiDfbAuthor.post(`/club_book/add`, data);
     if (response.data.result) {
@@ -177,6 +187,20 @@ async function getCategoryList(): Promise<CategoryInfos[]> {
   }
 }
 
+async function createOrder(data: any): Promise<string> {
+  try {
+    const response = await ApiDfbAuthor.post(`/order/create`, data);
+    if (response.data.message) {
+      return response.data.message;
+    } else {
+      throw new Error(response.data.error);
+    }
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "An error occurred";
+    throw new Error(errorMessage);
+  }
+}
+
 const dfbServices = {
   getOrderIds,
   getOrderInfos,
@@ -190,6 +214,8 @@ const dfbServices = {
   getClubBookIds,
   createBook,
   getCategoryList,
+  getAllMembers,
+  createOrder,
 };
 
 export default dfbServices;

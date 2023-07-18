@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import * as React from "react";
 import styled from "styled-components";
 import { OrderTable } from "./OrderTable";
-import { Button } from "antd";
+import { Button, notification } from "antd";
 import { CreateOrderModal } from "./CreateOrderModal";
+import dfbServices from "@/services/dfb";
+import { BookClubInfo, ClubBookInfos, MemberInfos } from "@/services/types";
+import userService from "@/services/user";
 
 const StyledClubOrder = styled.div`
   border-radius: 12px;
@@ -25,7 +28,28 @@ const StyledClubOrder = styled.div`
 `;
 
 const ClubOrder = () => {
-  const [openCreateOrderModal, setOpenCreateOrderModal] = useState(false);
+  const [openCreateOrderModal, setOpenCreateOrderModal] = React.useState(false);
+  const [members, setMembers] = React.useState<MemberInfos[]>([]);
+  const [staffClubs, setStaffClubs] = React.useState<BookClubInfo[]>([]);
+  const [clubBookInfos, setClubBookInfos] = React.useState<ClubBookInfos[]>([]);
+
+  const initFetch = async () => {
+    try {
+      const clubs: BookClubInfo[] = await userService.getStaffClubs();
+      setStaffClubs(clubs);
+      const allMembers = await dfbServices.getAllMembers();
+      setMembers(allMembers);
+      const clubBookIds = await dfbServices.getClubBookIds({ clubs: clubs });
+      const infos = await dfbServices.getClubBookInfos(clubBookIds);
+      setClubBookInfos(infos);
+    } catch (err: any) {
+      notification.error({ message: err.message });
+    }
+  };
+
+  React.useEffect(() => {
+    initFetch();
+  }, []);
 
   return (
     <StyledClubOrder>
@@ -35,14 +59,15 @@ const ClubOrder = () => {
           setOpenCreateOrderModal(true);
         }}
       >
-        Create New Order
+        {"Create New Order"}
       </Button>
       <CreateOrderModal
-        {...{
-          open: openCreateOrderModal,
-          onCancel: () => {
-            setOpenCreateOrderModal(false);
-          },
+        members={members}
+        clubBookInfos={clubBookInfos}
+        staffClubs={staffClubs}
+        open={openCreateOrderModal}
+        onCancel={() => {
+          setOpenCreateOrderModal(false);
         }}
       />
       <OrderTable />

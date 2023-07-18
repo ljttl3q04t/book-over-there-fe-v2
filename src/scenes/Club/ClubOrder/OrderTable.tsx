@@ -12,6 +12,8 @@ type DataType = {
   memberCode: string;
   orderStatus: string;
   orderDate: string;
+  returnDate: string;
+  overdueDay: number;
 };
 
 function OrderStatus(orderStatus: string) {
@@ -55,8 +57,10 @@ export function OrderTable() {
             bookCode: orderDetail.book_code,
             memberFullName: order.member.full_name,
             memberCode: order.member.code,
-            orderStatus: order.order_status,
+            orderStatus: orderDetail.order_status,
             orderDate: order.order_date,
+            returnDate: orderDetail.return_date,
+            overdueDay: orderDetail.overdue_day_count ?? 0,
           });
         }
       }
@@ -115,6 +119,16 @@ export function OrderTable() {
       dataIndex: "orderDate",
       key: "orderDate",
     },
+    {
+      title: "Return Date",
+      dataIndex: "returnDate",
+      key: "returnDate",
+    },
+    {
+      title: "Overdue Day",
+      dataIndex: "overdueDay",
+      key: "overdueDay",
+    },
   ];
-  return <Table loading={loading} columns={columns} dataSource={tableData}></Table>;
+  return <Table loading={loading} columns={columns} dataSource={tableData} scroll={{ x: 1000, y: 700 }}></Table>;
 }

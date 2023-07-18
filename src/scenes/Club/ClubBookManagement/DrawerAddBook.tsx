@@ -30,7 +30,7 @@ const getBase64 = (file: RcFile): Promise<string> =>
 
 function DrawerAddBook({ open, onClose, bookEdit, title, categories }: any) {
   const [form] = Form.useForm();
-  const formRef = React.useRef<FormInstance>(null);
+  const formRef = React.useRef<FormInstance>(form);
   const [previewOpen, setPreviewOpen] = React.useState(false);
   const [previewImage, setPreviewImage] = React.useState("");
   const [previewTitle, setPreviewTitle] = React.useState("");
