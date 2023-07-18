@@ -1,6 +1,5 @@
 import {
   BookOutlined,
-  CheckCircleOutlined,
   HistoryOutlined,
   HomeOutlined,
   MenuFoldOutlined,
@@ -11,7 +10,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, MenuProps, Typography } from "antd";
-import React, { useContext, useEffect, useState } from "react";
+import * as React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { UserContext } from "@/context/UserContext";
 import { getAccessToken } from "../http-common";
@@ -61,10 +60,10 @@ function getItem(
 
 const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSidebarOpen, isNonMobile }) => {
   const { pathname } = useLocation();
-  const [active, setActive] = useState("");
+  const [active, setActive] = React.useState("");
   const navigate = useNavigate();
-  const { user } = useContext(UserContext);
-  useEffect(() => {
+  const { user } = React.useContext(UserContext);
+  React.useEffect(() => {
     setActive(pathname.substring(1));
   }, [pathname]);
 
@@ -76,7 +75,9 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSide
     if (isStaff) {
       return getItem("Club Staff", "sub4", <UserOutlined />, [
         getItem("Club Member Order", "clubstaff/member-order"),
-        getItem("Club Book Management", "clubstaff/books-management"),
+        getItem("Book", "clubstaff/books"),
+        getItem("Order", "clubstaff/orders"),
+        getItem("Member", "clubstaff/members"),
       ]);
     } else {
       return null; // Return null if the user is not a staff member
@@ -91,15 +92,12 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSide
         getClubStaffItem(user?.is_staff),
       ]),
       getItem("User", "sub0", <UserOutlined />, [
-        getItem("My Account", "sub3", <UserOutlined />, [
-          getItem("Personal profile", "my-profile"),
-          // getItem("Payment", "payment"),
-          // getItem("Transaction history", "transactionhistory"),
-        ]),
+        getItem("My Account", "sub3", <UserOutlined />, [getItem("Personal profile", "my-profile")]),
 
         getItem("Book Status", "sub2", <BookOutlined />, [
           getItem("My book", "my-book"),
-          getItem("Book Borrow", "book-borrow")]),
+          getItem("Book Borrow", "book-borrow"),
+        ]),
         getItem("Book History", "book-history", <HistoryOutlined />),
         getItem("Wishlist", "book-wishlist", <UnorderedListOutlined />),
       ]),

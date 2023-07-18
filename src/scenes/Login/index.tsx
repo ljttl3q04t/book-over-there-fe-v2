@@ -1,7 +1,7 @@
 import "../../index.css";
 
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input, Modal, notification, Typography } from "antd";
+import { Button, Checkbox, Form, Input, notification } from "antd";
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -9,9 +9,6 @@ import { AuthService } from "../../services/auth";
 import { UserContext } from "@/context/UserContext";
 import styled from "styled-components";
 import ResetPasswordModal from "@/component/ResetPasswordModal";
-// import { useCookies } from "react-cookie";
-// import { getTokenExpiration } from "@/helpers/TokenHelper";
-const { Title } = Typography;
 const StyledLoginPage = styled.div`
   box-sizing: border-box;
   display: flex;
@@ -105,8 +102,6 @@ const StyledLoginAccessibility = styled.div`
   }
 `;
 const Login = () => {
-  // const [cookie, setCookie] = useCookies(["access_token", "refresh_token"]);
-
   const { setLoggedInUser } = useContext(UserContext);
   const navigate = useNavigate();
   const [openResetPassword, setOpenResetPassword] = useState(false);
@@ -130,7 +125,7 @@ const Login = () => {
         localStorage.setItem("username", token.data.user.username);
         setLoggedInUser(token.data.user);
       },
-      (_reason: any) => {
+      () => {
         notification.info({
           message: "Something wrong. Please check your username & password",
         });
@@ -166,15 +161,6 @@ const Login = () => {
             }}
             onFinish={onFinish}
           >
-            {/* <Title
-              onClick={() => {
-                navigate("/");
-              }}
-              level={2}
-              style={{ textAlign: "center" }}
-            >
-              Book Over There
-            </Title> */}
             <Form.Item
               label="Username"
               name="username"
@@ -219,7 +205,7 @@ const Login = () => {
                 Log in
               </Button>
               <div style={{ paddingTop: "10px" }}>
-                Don't have an account?{" "}
+                Don{"'"}t have an account?{" "}
                 <a style={{ paddingLeft: "5px" }} href="/register">
                   {" "}
                   Register

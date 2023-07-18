@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import defaultImage from "@/image/book-default.png";
 interface DefaultImageProps {
   src: string;
   alt: string;
   defaultSrc?: string;
-  style:React.CSSProperties;
+  style: React.CSSProperties;
 }
 
-const Image: React.FC<DefaultImageProps> = ({ src, alt, defaultSrc = defaultImage ,style}) => {
+const Image: React.FC<DefaultImageProps> = ({ src, alt, defaultSrc = defaultImage, style }) => {
   const [error, setError] = useState(false);
 
   const handleImageError = () => {

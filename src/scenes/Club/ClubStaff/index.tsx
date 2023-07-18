@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
-import Table, { ColumnType, ColumnsType } from "antd/es/table";
+import Table, { ColumnsType } from "antd/es/table";
 import {
   IssuesCloseOutlined,
   PlusCircleFilled,
@@ -45,7 +45,6 @@ import { getColumnSearchProps } from "@/helpers/CommonTable";
 import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
 import { disabledDateBefore, dateFormatList } from "@/helpers/DateHelper";
 import { RcFile } from "antd/es/upload";
-import { ActionType } from "@ant-design/pro-components";
 
 const StyledModalContent = styled.div`
   padding: 30px;
@@ -98,9 +97,6 @@ const MODAL_CODE = {
 const DRAWER_CODE = {
   RETURN: "return",
   EXTEND: "extend",
-};
-const BOOK_COPY_STATUS = {
-  sharing_club: "sharing_club",
 };
 interface ModalContent {
   [key: string]: {
@@ -173,10 +169,6 @@ const actionType = {
 };
 const layout = {
   labelCol: { span: 4 },
-  wrapperCol: { span: 16 },
-};
-const layoutFormDrawer = {
-  labelCol: { span: 8 },
   wrapperCol: { span: 16 },
 };
 const { TextArea } = Input;
@@ -288,14 +280,14 @@ const ClubStaff = () => {
       member_status: MEMBER_STATUS.ACTIVE,
     };
     ClubService.updateMemberClub(updateMemberForm)
-      .then((response) => {
+      .then(() => {
         notification.success({
           message: "Approve successfully!",
           type: "success",
         });
         initFetch();
       })
-      .catch((error) => {
+      .catch(() => {
         notification.error({
           message: `Approve failed, please try again!`,
           type: "error",
@@ -330,9 +322,6 @@ const ClubStaff = () => {
   const handleReset = (clearFilters: () => void) => {
     clearFilters();
     setSearchText("");
-  };
-  const handleCloseOrder = () => {
-    form.resetFields();
   };
 
   const handleCloseModal = () => {
@@ -413,10 +402,6 @@ const ClubStaff = () => {
       console.error(error);
     }
   };
-  const handleOpenViewAllModal = () => {
-    // fetchClubBookList();
-    setActiveModal(MODAL_CODE.VIEW_ALL);
-  };
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     console.log("selectedRowKeys changed: ", newSelectedRowKeys);
     setSelectedRowKeys(newSelectedRowKeys);
@@ -469,7 +454,7 @@ const ClubStaff = () => {
       attachment: fileList[0] as RcFile,
     };
     ClubService.clubMemberBookBorrowingExtend(formData)
-      .then((response) => {
+      .then(() => {
         notification.success({
           message: "Extend successfully!",
           type: "success",
@@ -483,7 +468,7 @@ const ClubStaff = () => {
         };
         fetchMemberBookBorrowing(searchForm);
       })
-      .catch((error) => {
+      .catch(() => {
         notification.error({
           message: `Extend failed, please try again!`,
           type: "error",
@@ -498,7 +483,7 @@ const ClubStaff = () => {
       attachment: fileList[0] as RcFile,
     };
     ClubService.clubMemberBookBorrowingReturn(formData)
-      .then((response) => {
+      .then(() => {
         notification.success({
           message: "Extend successfully!",
           type: "success",
@@ -512,7 +497,7 @@ const ClubStaff = () => {
         };
         fetchMemberBookBorrowing(searchForm);
       })
-      .catch((error) => {
+      .catch(() => {
         notification.error({
           message: `Extend failed, please try again!`,
           type: "error",
@@ -580,7 +565,7 @@ const ClubStaff = () => {
         setLoading(false);
       });
   };
-  const handleDepositBooks = (item: DataType) => {
+  const handleDepositBooks = () => {
     const list_books_id = form.getFieldValue("select_books").map((item: any) => Number(item.split("-")[0]));
     const formData: ClubMemberDepositCreateForm = {
       member_book_copy_ids: list_books_id && list_books_id,
@@ -588,14 +573,14 @@ const ClubStaff = () => {
       attachment: fileList[0] as RcFile,
     };
     ClubService.clubMemberDepositCreate(formData)
-      .then((response) => {
+      .then(() => {
         notification.success({
           message: "Deposit successfully!",
           type: "success",
         });
         handleCloseModal();
       })
-      .catch((error) => {
+      .catch(() => {
         notification.error({
           message: `Deposit failed, please try again!`,
           type: "error",
@@ -603,7 +588,7 @@ const ClubStaff = () => {
       })
       .finally(() => {});
   };
-  const handleWithdrawBooks = (item: DataType) => {
+  const handleWithdrawBooks = () => {
     const list_books_id = form.getFieldValue("select_books").map((item: any) => Number(item.split("-")[0]));
     const formData: ClubMemberWithdrawCreateForm = {
       member_book_copy_ids: list_books_id && list_books_id,
@@ -611,14 +596,14 @@ const ClubStaff = () => {
       attachment: fileList[0] as RcFile,
     };
     ClubService.clubMemberWithdrawCreate(formData)
-      .then((response) => {
+      .then(() => {
         notification.success({
           message: "Withdraw successfully!",
           type: "success",
         });
         handleCloseModal();
       })
-      .catch((error) => {
+      .catch(() => {
         notification.error({
           message: `Withdraw failed, please try again!`,
           type: "error",
@@ -636,14 +621,14 @@ const ClubStaff = () => {
       attachment: fileList[0] as RcFile,
     };
     ClubService.clubMemberOrderCreate(formData)
-      .then((response) => {
+      .then(() => {
         notification.success({
           message: "Order create successfully!",
           type: "success",
         });
         handleCloseModal();
       })
-      .catch((error) => {
+      .catch(() => {
         notification.error({
           message: `Order create failed, please try again!`,
           type: "error",
@@ -733,15 +718,6 @@ const ClubStaff = () => {
       dataIndex: "totalCopyCount",
       key: "totalCopyCount",
     },
-    // {
-    //   title: "Action",
-    //   key: "action",
-    //   render: (_values: DataType) => (
-    //     <Button icon={<PlusCircleFilled />} type="primary" onClick={() => handleOpenOrder(_values)}>
-    //       Order
-    //     </Button>
-    //   ),
-    // },
   ];
   const columnsBookBorrowingList: ColumnsType<DataTypeBooksBorrowing> = [
     {
@@ -780,16 +756,6 @@ const ClubStaff = () => {
       dataIndex: "club_name",
       key: "club_name",
     },
-
-    // {
-    //   title: "Action",
-    //   key: "action",
-    //   render: (_values: DataType) => (
-    //     <Button icon={<PlusCircleFilled />} type="primary" onClick={() => handleOpenOrder(_values)}>
-    //       Order
-    //     </Button>
-    //   ),
-    // },
   ];
   const columns: ColumnsType<DataType> = [
     {
@@ -1198,62 +1164,6 @@ const ClubStaff = () => {
         dataSource={clubMemberTableSource}
         bordered
       />
-      {/* {activeModal === MODAL_CODE.ORDER && (
-        <Modal title="Book Order" width={800} visible={true} onCancel={handleCloseModal} onOk={handleOkOrder}>
-          <StyledModalContent>
-            <Form {...layout} form={form} name="control-ref" style={{ width: 800 }}>
-              <Form.Item
-                name="full_name"
-                label="Full Name"
-                rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} full name` }]}
-              >
-                <Input disabled />
-              </Form.Item>
-              <Form.Item
-                name="phone_number"
-                label="Phone Number"
-                rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} phone number` }]}
-              >
-                <Input disabled />
-              </Form.Item>
-              <Form.Item
-                label="Select Books"
-                name="select_books"
-                rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} select at least one book` }]}
-              >
-                <Select
-                  placeholder="Find books..."
-                  mode="multiple"
-                  showArrow
-                  defaultValue={["gold", "cyan"]}
-                  style={{ width: "100%" }}
-                  options={options}
-                />
-              </Form.Item>
-              <Form.Item
-                name="due_date"
-                label="Due Date"
-                rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} due date` }]}
-              >
-                <DatePicker disabledDate={disabledDate} style={{ width: "100%" }} format={dateFormatList} />
-              </Form.Item>
-              <Form.Item name="note" label="Note" rules={[{ required: false }]}>
-                <TextArea rows={4} placeholder="Note..." />
-              </Form.Item>
-            </Form>
-          </StyledModalContent>
-        </Modal>
-      )} */}
-
-      {/* {activeModal === MODAL_CODE.DEPOSIT && (
-        <Modal title="Deposit Books" visible={true} onCancel={handleCloseModal}>
-        </Modal>
-      )}
-
-      {activeModal === MODAL_CODE.WITHDRAW && (
-        <Modal title="Withdraw Books" visible={true} onCancel={handleCloseModal}>
-        </Modal>
-      )} */}
       {activeModal && (
         <Modal
           closable={false}

@@ -1,4 +1,5 @@
 import { ApiServiceAuthor, axiosApi } from "../http-common";
+import { BookClubInfo } from "./types";
 
 type ResetPasswordParams = {
   username_or_email: string;
@@ -21,6 +22,21 @@ const getUser = () => {
 const getUserMembership = () => {
   return ApiServiceAuthor.get("/user/membership");
 };
+
+async function getStaffClubs(): Promise<BookClubInfo[]> {
+  try {
+    const response = await ApiServiceAuthor.get("/user/membership");
+    if (response.data) {
+      const data = response.data;
+      return data.filter((d: any) => d["is_staff"]).map((d: any) => d["book_club"]);
+    } else {
+      throw new Error(response.data.error);
+    }
+  } catch (error) {
+    const errorMessage = error.response?.data?.error || "An error occurred";
+    throw new Error(errorMessage);
+  }
+}
 
 const getUserShareClub = (data: any) => {
   return ApiServiceAuthor.post("/user/book/share-club", data);
@@ -68,5 +84,6 @@ const userService = {
   getUserShareClub,
   resetPassword,
   updatePassword,
+  getStaffClubs,
 };
 export default userService;

@@ -1,9 +1,8 @@
-import { Avatar, Button, Col, InputRef, Select } from "antd";
+import { Avatar, InputRef, Select } from "antd";
 import Table from "antd/es/table";
 import styled from "styled-components";
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { BookCopy } from "@/services/types";
-import bookService from "@/services/book";
 import { getBookBorrow } from "../MyBook/callService";
 import { FilterConfirmProps } from "antd/es/table/interface";
 import { getColumnSearchProps } from "@/helpers/CommonTable";
@@ -26,7 +25,6 @@ const StyledBookBorrowContainer = styled.div`
 const { Option } = Select;
 
 const BookBorrow = () => {
-
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef<InputRef>(null);
@@ -52,27 +50,32 @@ const BookBorrow = () => {
       dataIndex: ["book_image"],
       key: "avatar",
       render: (image: string) => <Avatar shape="square" size={148} src={image} />,
-      
     },
     {
       title: "Name",
       dataIndex: ["book_name"],
       key: "name",
-      ...getColumnSearchProps("book_name", searchInput,
-        searchText, setSearchText, searchedColumn, setSearchedColumn,
-        handleReset, handleSearch),
+      ...getColumnSearchProps(
+        "book_name",
+        searchInput,
+        searchText,
+        setSearchText,
+        searchedColumn,
+        setSearchedColumn,
+        handleReset,
+        handleSearch,
+      ),
     },
     {
       title: "Start Date",
       dataIndex: "start_date",
       key: "start_date",
-      
     },
     {
       title: "Due Date",
       dataIndex: ["due_date"],
       key: "due_date",
-      render: (value:any) => <p>{formatDate(value, 'yyyy-mm-dd, hh:ss')}</p>,
+      render: (value: any) => <p>{formatDate(value, "yyyy-mm-dd, hh:ss")}</p>,
     },
     {
       title: "Overdue Day Count",
@@ -83,9 +86,16 @@ const BookBorrow = () => {
       title: "Club Name",
       dataIndex: ["club_name"],
       key: "club_name",
-      ...getColumnSearchProps("club_name", searchInput,
-        searchText, setSearchText, searchedColumn, setSearchedColumn,
-        handleReset, handleSearch),
+      ...getColumnSearchProps(
+        "club_name",
+        searchInput,
+        searchText,
+        setSearchText,
+        searchedColumn,
+        setSearchedColumn,
+        handleReset,
+        handleSearch,
+      ),
     },
   ];
 

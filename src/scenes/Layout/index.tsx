@@ -1,4 +1,4 @@
-import { Divider, Layout } from "antd";
+import { Layout } from "antd";
 import React, { useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Outlet } from "react-router-dom";

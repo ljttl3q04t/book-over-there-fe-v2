@@ -1,7 +1,20 @@
 import { getBookByLink } from "@/scenes/User/MyBook/callService";
-import bookService from "@/services/book";
+import dfbServices from "@/services/dfb";
+import { CategoryInfos } from "@/services/types";
 import { PlusOutlined } from "@ant-design/icons";
-import { Button, Drawer, Form, FormInstance, Input, Modal, Space, Upload, notification } from "antd";
+import {
+  Button,
+  Drawer,
+  Form,
+  FormInstance,
+  Input,
+  InputNumber,
+  Modal,
+  Select,
+  Space,
+  Upload,
+  notification,
+} from "antd";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import Tooltip from "antd/lib/tooltip";
 import * as React from "react";
@@ -15,9 +28,9 @@ const getBase64 = (file: RcFile): Promise<string> =>
     reader.onerror = (error) => reject(error);
   });
 
-function DrawerBook({ open, onClose, bookEdit, title }: any) {
+function DrawerAddBook({ open, onClose, bookEdit, title, categories }: any) {
   const [form] = Form.useForm();
-  const formRef = React.useRef<FormInstance>(null);
+  const formRef = React.useRef<FormInstance>(form);
   const [previewOpen, setPreviewOpen] = React.useState(false);
   const [previewImage, setPreviewImage] = React.useState("");
   const [previewTitle, setPreviewTitle] = React.useState("");
@@ -33,7 +46,6 @@ function DrawerBook({ open, onClose, bookEdit, title }: any) {
         image: bookEdit?.bookImage,
         bookStatus: bookEdit?.bookStatus,
         author: bookEdit?.bookAuthor,
-        publisher: bookEdit?.bookPublisher,
       });
       setFileListPreview([
         {
@@ -47,36 +59,25 @@ function DrawerBook({ open, onClose, bookEdit, title }: any) {
   }, [bookEdit]);
 
   const onFinish = async (values: any) => {
-    console.log("fileList[0]: ", fileList[0]);
-    const formData = new FormData();
-    setIsLoading(true);
-    if (fileList[0]) {
-      formData.append("book.name", values.name);
-      formData.append("book.category.name", values.category);
-      formData.append("book.author.name", values.author);
-      formData.append("book.publisher.name", values.publisher);
-      formData.append("book.image", (fileList[0] as RcFile) ? (fileList[0] as RcFile) : "");
-    } else {
-      console.log("file preview: ", fileListPreview);
-
-      formData.append("book.name", values.name);
-      formData.append("book.category.name", values.category);
-      formData.append("book.author.name", values.author);
-      formData.append("book.publisher.name", values.publisher);
-      formData.append("book.image_url", fileListPreview[0]?.url as string);
-    }
-
-    console.log("formData; ", formData);
-
     try {
-      const res = await bookService.createBook(formData);
-      console.log("res: ", res);
+      console.log("values", values);
+      setIsLoading(true);
+      const formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("code", values.code);
+      formData.append("category", values.category);
+      formData.append("author", values.author);
+      formData.append("init_count", values.initialCount);
+      formData.append("current_count", values.currentCount);
+      formData.append("club_id", "5");
 
-      notification.info({
-        message: "Info",
-        description: res.result,
-      });
-      // fetchBookList()
+      // if (fileList.length > 0) {
+      //   formData.append("image", (fileList[0] as RcFile) ? (fileList[0] as RcFile) : "");
+      // } else {
+      //   formData.append("image", fileListPreview[0]?.url as string);
+      // }
+      const message = await dfbServices.createBook(formData);
+      notification.success({ message: message, type: "success" });
       onClose();
       setFileListPreview([]);
       setIsLoading(false);
@@ -84,7 +85,7 @@ function DrawerBook({ open, onClose, bookEdit, title }: any) {
       console.log("err create: ", err.response);
       if (!fileList[0]) {
         notification.error({
-          message: `Validation Error: }`,
+          message: `Validation Error: ${err.message}`,
           description: "please choose a file",
         });
       }
@@ -98,6 +99,7 @@ function DrawerBook({ open, onClose, bookEdit, title }: any) {
         });
       });
     }
+    setIsLoading(false);
   };
 
   const props: UploadProps = {
@@ -153,15 +155,11 @@ function DrawerBook({ open, onClose, bookEdit, title }: any) {
     try {
       setIsLoading(true);
       const book: any = await getBookByLink({ remote_url: value });
-      console.log("book: ", book);
-
       if (book) {
         formRef.current?.setFieldsValue({
           name: book?.book_name,
-          category: book?.book_category_name,
           image: book?.book_image,
           author: book?.book_author_name,
-          publisher: book?.book_publisher_name,
         });
         setFileListPreview([
           {
@@ -197,7 +195,7 @@ function DrawerBook({ open, onClose, bookEdit, title }: any) {
           >
             Cancel
           </Button>
-          <Button onClick={() => form.submit()} type="primary" disabled={isLoading}>
+          <Button onClick={() => form.submit()} type="primary">
             Save
           </Button>
         </Space>
@@ -228,18 +226,48 @@ function DrawerBook({ open, onClose, bookEdit, title }: any) {
           <Input style={{ width: "100%" }} placeholder="Please enter name" min={1} />
         </Form.Item>
 
-        <Form.Item name="category" label="Category" rules={[{ required: true, message: "Please enter category" }]}>
-          <Input style={{ width: "100%" }} placeholder="Please enter category" />
+        <Form.Item name="code" label="Code" rules={[{ required: true, message: "Please enter code" }]}>
+          <Input style={{ width: "100%" }} placeholder="Please enter code" min={1} />
         </Form.Item>
+
+        <Form.Item name="category" label="Category" rules={[{ required: true, message: "Please select a category" }]}>
+          <Select
+            placeholder="Please select a category"
+            showSearch
+            filterOption={(input, option: any) =>
+              (option?.children ?? "").toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {categories.map((category: CategoryInfos) => (
+              <Select.Option key={category.name} value={category.name}>
+                {category.name}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+
         <Form.Item name="author" label="Author" rules={[{ required: true, message: "Please enter author" }]}>
           <Input style={{ width: "100%" }} placeholder="Please enter author" />
         </Form.Item>
-        <Form.Item name="publisher" label="Publisher" rules={[{ required: true, message: "Please enter publisher" }]}>
-          <Input style={{ width: "100%" }} placeholder="Please enter publisher" />
+
+        <Form.Item
+          name="initialCount"
+          label="Initial Count"
+          rules={[{ required: true, message: "Please enter the initial count" }]}
+        >
+          <InputNumber style={{ width: "100%" }} placeholder="Please enter the initial count" />
+        </Form.Item>
+
+        <Form.Item
+          name="currentCount"
+          label="Current Count"
+          rules={[{ required: true, message: "Please enter the current count" }]}
+        >
+          <InputNumber style={{ width: "100%" }} placeholder="Please enter the current count" />
         </Form.Item>
       </Form>
     </Drawer>
   );
 }
 
-export default DrawerBook;
+export default DrawerAddBook;

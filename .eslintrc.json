@@ -3,12 +3,7 @@
     "browser": true,
     "es2021": true
   },
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended",
-    "plugin:react-hooks/recommended"
-  ],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaFeatures": {
@@ -17,22 +12,19 @@
     "ecmaVersion": 12,
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint", "react", "react-hooks"],
+  "plugins": [
+    "@typescript-eslint", 
+    "simple-import-sort",
+    "unused-imports",
+    "unicorn"
+  ],
   "rules": {
-    // Add custom rules or override defaults here
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-empty-function": "off"
   },
   "settings": {
     "react": {
       "version": "detect"
     }
-  },
-  "lint-staged": {
-    "linters": {
-      "src/**/*.{ts,tsx}": [
-        "eslint --fix",
-        "git add"
-      ]
-    }
   }
-  
 }

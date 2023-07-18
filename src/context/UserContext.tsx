@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext, ReactNode } from "react";
+import React, { createContext, useState, useEffect, ReactNode } from "react";
 
 interface User {
   username: string;

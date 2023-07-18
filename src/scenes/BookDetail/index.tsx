@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 import { LikeOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { Button, Col, Descriptions, Row } from "antd";
 import Paragraph from "antd/es/typography/Paragraph";

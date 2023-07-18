@@ -54,7 +54,7 @@ function CardBook({
               marginTop: "1px",
               marginInlineStart: "2px",
               marginInlineEnd: "2px",
-              paddingTop:"20px"
+              paddingTop: "20px",
             }}
           />
         }

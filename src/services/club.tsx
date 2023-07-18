@@ -1,5 +1,4 @@
 import { RcFile } from "antd/es/upload";
-import { create } from "domain";
 import { ApiServiceAuthor, axiosApi } from "../http-common";
 export interface UpdateMemberClubForm {
   membership_id: number;
@@ -70,7 +69,6 @@ const getClubStaffBookList = (params: ClubStaffBookListParams = {}) => {
     page = 1,
     pageSize = 10000,
     membership_id,
-    book_copy__book_status = "",
     deposit_book = false,
     withdraw_book = false,
     create_order_book = false,
@@ -81,10 +79,6 @@ const getClubStaffBookList = (params: ClubStaffBookListParams = {}) => {
   if (membership_id !== undefined) {
     query += `&membership_id=${membership_id}`;
   }
-
-  // if (book_copy__book_status !== "") {
-  //   query += `&book_copy__book_status=${book_copy__book_status}`;
-  // }
 
   if (deposit_book) {
     query += `&deposit_book=${true}`;

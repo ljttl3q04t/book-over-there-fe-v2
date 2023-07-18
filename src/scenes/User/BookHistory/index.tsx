@@ -1,9 +1,8 @@
-import { Avatar, Tag, Col, Row, Select, InputRef } from "antd";
+import { Avatar, Tag, Select, InputRef } from "antd";
 import Table from "antd/es/table";
 import styled from "styled-components";
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { BookCopy } from "@/services/types";
-import bookService from "@/services/book";
 import { getBookHistory } from "../MyBook/callService";
 import { FilterConfirmProps } from "antd/es/table/interface";
 import { getColumnSearchProps } from "@/helpers/CommonTable";
@@ -28,7 +27,6 @@ const statusColors: any = {
 const { Option } = Select;
 
 const BookHistory = () => {
-
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef<InputRef>(null);
@@ -72,24 +70,37 @@ const BookHistory = () => {
       title: "Name",
       dataIndex: ["bookName"],
       key: "bookName",
-      ...getColumnSearchProps("bookName", searchInput,
-        searchText, setSearchText, searchedColumn, setSearchedColumn,
-        handleReset, handleSearch),
+      ...getColumnSearchProps(
+        "bookName",
+        searchInput,
+        searchText,
+        setSearchText,
+        searchedColumn,
+        setSearchedColumn,
+        handleReset,
+        handleSearch,
+      ),
     },
     {
       title: "Action",
       dataIndex: ["action"],
       key: "action",
-      ...getColumnSearchProps("action", searchInput,
-        searchText, setSearchText, searchedColumn, setSearchedColumn,
-        handleReset, handleSearch),
+      ...getColumnSearchProps(
+        "action",
+        searchInput,
+        searchText,
+        setSearchText,
+        searchedColumn,
+        setSearchedColumn,
+        handleReset,
+        handleSearch,
+      ),
     },
     {
       title: "BookStatus",
       dataIndex: ["bookStatus"],
       key: "bookStatus",
       render: (bookStatus: any) => {
-
         return (
           <Tag color={statusColors[bookStatus]} key={status}>
             {bookStatus}
@@ -101,25 +112,46 @@ const BookHistory = () => {
       title: "Category",
       dataIndex: ["bookCategory"],
       key: "bookCategory",
-      ...getColumnSearchProps("bookCategory", searchInput,
-        searchText, setSearchText, searchedColumn, setSearchedColumn,
-        handleReset, handleSearch),
+      ...getColumnSearchProps(
+        "bookCategory",
+        searchInput,
+        searchText,
+        setSearchText,
+        searchedColumn,
+        setSearchedColumn,
+        handleReset,
+        handleSearch,
+      ),
     },
     {
       title: "Author",
       dataIndex: ["bookAuthor"],
       key: "bookAuthor",
-      ...getColumnSearchProps("bookAuthor", searchInput,
-        searchText, setSearchText, searchedColumn, setSearchedColumn,
-        handleReset, handleSearch),
+      ...getColumnSearchProps(
+        "bookAuthor",
+        searchInput,
+        searchText,
+        setSearchText,
+        searchedColumn,
+        setSearchedColumn,
+        handleReset,
+        handleSearch,
+      ),
     },
     {
       title: "Publisher",
       dataIndex: ["bookPublisher"],
       key: "bookPublisher",
-      ...getColumnSearchProps("bookPublisher", searchInput,
-        searchText, setSearchText, searchedColumn, setSearchedColumn,
-        handleReset, handleSearch),
+      ...getColumnSearchProps(
+        "bookPublisher",
+        searchInput,
+        searchText,
+        setSearchText,
+        searchedColumn,
+        setSearchedColumn,
+        handleReset,
+        handleSearch,
+      ),
     },
   ];
 
@@ -165,7 +197,8 @@ const BookHistory = () => {
         }}
         columns={columns}
         dataSource={books}
-        loading={loading} />
+        loading={loading}
+      />
     </StyledMyBookContainer>
   );
 };
