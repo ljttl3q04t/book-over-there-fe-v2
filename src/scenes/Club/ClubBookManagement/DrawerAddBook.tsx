@@ -239,7 +239,7 @@ function DrawerAddBook({ open, onClose, bookEdit, title, categories }: any) {
             }
           >
             {categories.map((category: CategoryInfos) => (
-              <Select.Option key={category.id} value={category.id}>
+              <Select.Option key={category.name} value={category.name}>
                 {category.name}
               </Select.Option>
             ))}
