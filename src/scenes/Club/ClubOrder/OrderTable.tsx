@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import Table, { ColumnsType } from "antd/es/table";
 import dfbServices from "@/services/dfb";
 import { OrderInfos } from "@/services/types";
-import { Tag } from "antd";
+import { Button, Tag, notification } from "antd";
 import moment from "moment";
 
 type DataType = {
   orderId: number;
+  orderDetailId: number;
   bookName: string;
   bookCode: string;
   memberFullName: string;
@@ -35,6 +36,33 @@ export function OrderTable() {
   const [loading, setLoading] = useState(false);
   const [orderIds, setOrderIds] = useState<number[]>([]);
   const [tableData, setTableData] = useState<DataType[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+
+  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    console.log("selectedRowKeys changed: ", newSelectedRowKeys);
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
+
+  const handleReturnBooks = async () => {
+    try {
+      setLoading(true);
+      const data = {
+        order_detail_ids: selectedRowKeys.join(","),
+      };
+      console.log(data);
+      const message = await dfbServices.returnBooks(data);
+      notification.success({ message: message, type: "success" });
+    } catch (error: any) {
+      console.error(error);
+      notification.error({ message: error.message });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchOrderIds = async () => {
     try {
@@ -56,6 +84,7 @@ export function OrderTable() {
         for (const orderDetail of order.order_details) {
           data.push({
             orderId: order.id,
+            orderDetailId: orderDetail.id,
             bookName: orderDetail.book_name,
             bookCode: orderDetail.book_code,
             memberFullName: order.member.full_name,
@@ -127,6 +156,9 @@ export function OrderTable() {
       title: "Return Date",
       dataIndex: "returnDate",
       key: "returnDate",
+      render: (v) => {
+        return v ? moment(v).format("YYYY-MM-DD") : "";
+      },
     },
     {
       title: "Overdue Day",
@@ -140,5 +172,21 @@ export function OrderTable() {
       },
     },
   ];
-  return <Table loading={loading} columns={columns} dataSource={tableData} scroll={{ x: 1000, y: 700 }}></Table>;
+  return (
+    <>
+      <div style={{ padding: "16px" }}>
+        <Button onClick={handleReturnBooks} type="primary" loading={loading} disabled={!selectedRowKeys.length}>
+          Return Book
+        </Button>
+      </div>
+      <Table
+        loading={loading}
+        columns={columns}
+        dataSource={tableData}
+        scroll={{ x: 1000, y: 700 }}
+        rowSelection={rowSelection}
+        rowKey="orderDetailId"
+      ></Table>
+    </>
+  );
 }

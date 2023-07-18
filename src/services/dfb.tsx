@@ -201,6 +201,20 @@ async function createOrder(data: any): Promise<string> {
   }
 }
 
+async function returnBooks(data: any): Promise<string> {
+  try {
+    const response = await ApiDfbAuthor.post(`/order/return_books`, data);
+    if (response.data.message) {
+      return response.data.message;
+    } else {
+      throw new Error(response.data.error);
+    }
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "An error occurred";
+    throw new Error(errorMessage);
+  }
+}
+
 const dfbServices = {
   getOrderIds,
   getOrderInfos,
@@ -216,6 +230,7 @@ const dfbServices = {
   getCategoryList,
   getAllMembers,
   createOrder,
+  returnBooks,
 };
 
 export default dfbServices;
