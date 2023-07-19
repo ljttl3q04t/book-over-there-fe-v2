@@ -6,7 +6,8 @@ import { CreateOrderModal } from "./CreateOrderModal";
 import dfbServices from "@/services/dfb";
 import { BookClubInfo, ClubBookInfos, MemberInfos, OrderInfos } from "@/services/types";
 import userService from "@/services/user";
-import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { DataType } from "./types";
 
 const StyledClubOrder = styled.div`
   border-radius: 12px;
@@ -28,27 +29,16 @@ const StyledClubOrder = styled.div`
     }
   }
 `;
-type DataType = {
-  orderId: number;
-  orderDetailId: number;
-  bookName: string;
-  bookCode: string;
-  memberFullName: string;
-  memberCode: string;
-  orderStatus: string;
-  orderDate: string;
-  returnDate: string;
-  overdueDay: number;
-  dueDate: string;
-};
+
 const ClubOrder = () => {
+  const [loading, setLoading] = React.useState(false);
   const [openCreateOrderModal, setOpenCreateOrderModal] = React.useState(false);
   const [members, setMembers] = React.useState<MemberInfos[]>([]);
   const [staffClubs, setStaffClubs] = React.useState<BookClubInfo[]>([]);
   const [clubBookInfos, setClubBookInfos] = React.useState<ClubBookInfos[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const [tableData, setTableData] = useState<DataType[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = React.useState<React.Key[]>([]);
+  const [tableData, setTableData] = React.useState<DataType[]>([]);
+  const { t } = useTranslation();
 
   const fetchOrderIds = async () => {
     try {
@@ -106,6 +96,7 @@ const ClubOrder = () => {
   };
   const initFetch = async () => {
     try {
+      setLoading(true);
       const clubs: BookClubInfo[] = await userService.getStaffClubs();
       setStaffClubs(clubs);
       const allMembers = await dfbServices.getAllMembers();
@@ -113,8 +104,11 @@ const ClubOrder = () => {
       const clubBookIds = await dfbServices.getClubBookIds({ clubs: clubs });
       const infos = await dfbServices.getClubBookInfos(clubBookIds);
       setClubBookInfos(infos);
+      await fetchOrderIds();
     } catch (err: any) {
       notification.error({ message: err.message });
+    } finally {
+      setLoading(false);
     }
   };
   const handleReturnBooks = async () => {
@@ -132,12 +126,11 @@ const ClubOrder = () => {
       setLoading(false);
     }
   };
-  useEffect(() => {
+
+  React.useEffect(() => {
     initFetch();
   }, []);
-  useEffect(() => {
-    fetchOrderIds();
-  }, []);
+
   return (
     <StyledClubOrder>
       <div className="table-extra-content">
@@ -147,7 +140,7 @@ const ClubOrder = () => {
             setOpenCreateOrderModal(true);
           }}
         >
-          {"Create Order"}
+          {t("Create New Order") as string}
         </Button>
         <Button onClick={handleReturnBooks} type="primary" loading={loading} disabled={!selectedRowKeys.length}>
           Return Book

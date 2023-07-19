@@ -201,6 +201,20 @@ async function createOrder(data: any): Promise<string> {
   }
 }
 
+async function createOrderNewMember(data: any): Promise<string> {
+  try {
+    const response = await ApiDfbAuthor.post(`/order/create/new_member`, data);
+    if (response.data.message) {
+      return response.data.message;
+    } else {
+      throw new Error(response.data.error);
+    }
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "An error occurred";
+    throw new Error(errorMessage);
+  }
+}
+
 async function returnBooks(data: any): Promise<string> {
   try {
     const response = await ApiDfbAuthor.post(`/order/return_books`, data);
@@ -230,6 +244,7 @@ const dfbServices = {
   getCategoryList,
   getAllMembers,
   createOrder,
+  createOrderNewMember,
   returnBooks,
 };
 

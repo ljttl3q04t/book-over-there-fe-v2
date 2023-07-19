@@ -1,13 +1,27 @@
 {
-    "common": {
-        "vietnames": "Tiếng Việt",
-        "english": "Tiếng Anh"
-    },
-    "homePage": {
-        "home": "Trang chủ",
-        "seeAll": "Xem thêm"
-    },
-    "sidebar": {
-        "homePage": "Trang chủ" 
-    }
+  "common": {
+    "vietnames": "Tiếng Việt",
+    "english": "Tiếng Anh"
+  },
+  "homePage": {
+    "home": "Trang chủ",
+    "seeAll": "Xem thêm"
+  },
+  "sidebar": {
+    "homePage": "Trang chủ"
+  },
+  "Book Name": "Tên Sách",
+  "Book Code": "Mã Sách",
+  "Reader Full Name": "H&T Bạn Đọc",
+  "Member Code": "Mã Bạn Đọc",
+  "Order Status": "Trạng Thái",
+  "Order Date": "Ngày Mượn",
+  "Return Date": "Ngày Trả",
+  "Due Date": "Hạn Trả",
+  "Overdue Day": "Số ngày quá hạn",
+  "Create New Order": "Tạo Order Mới",
+  "New Member": "Bạn Đọc Mới",
+  "Full Name": "Họ và Tên",
+  "Phone Number": "Số Điện Thoại",
+  "Duplicated member code": "Mã bạn đọc đã tồn tại"
 }

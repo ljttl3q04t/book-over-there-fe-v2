@@ -1,13 +1,28 @@
 {
-    "common": {
-        "vietnames": "Vietnamese",
-        "english": "English"
-    },
-    "homePage": {
-        "home": "Home",
-        "seeAll": "See All"
-    },
-    "sidebar": {
-        "homePage": "Home Page" 
-    }
+  "common": {
+    "vietnames": "Vietnamese",
+    "english": "English"
+  },
+  "homePage": {
+    "home": "Home",
+    "seeAll": "See All"
+  },
+  "sidebar": {
+    "homePage": "Home Page"
+  },
+  "Book Name": "Book Name",
+  "Book Code": "Book Code",
+  "Reader Full Name": "Reader Full Name",
+  "Member Code": "Member Code",
+  "Order Status": "Order Status",
+  "Order Date": "Order Date",
+  "Return Date": "Return Date",
+  "Due Date": "Hạn Trả",
+  "Overdue Day": "Overdue Day",
+  "Create New Order": "Create New Order",
+  "New Member": "New Member",
+  "Full Name": "Full Name",
+  "Phone Number": "Phone Number",
+  "Select Books": "Select Books",
+  "Duplicated member code": "Duplicated member code"
 }

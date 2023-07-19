@@ -1,21 +1,10 @@
-import React from "react";
+import * as React from "react";
 import Table, { ColumnsType } from "antd/es/table";
 import { Tag } from "antd";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
+import { DataType } from "./types";
 
-type DataType = {
-  orderId: number;
-  orderDetailId: number;
-  bookName: string;
-  bookCode: string;
-  memberFullName: string;
-  memberCode: string;
-  orderStatus: string;
-  orderDate: string;
-  returnDate: string;
-  overdueDay: number;
-  dueDate: string;
-};
 type OrderTableProps = {
   rowSelection: object;
   tableData: DataType[];
@@ -35,6 +24,7 @@ function OrderStatus(orderStatus: string) {
 }
 
 export function OrderTable({ rowSelection, tableData, tableLoading }: OrderTableProps) {
+  const { t } = useTranslation();
   const rowClassName = (record: DataType) => {
     return record.orderStatus === "complete" ? "disabled-row" : "";
   };
@@ -46,40 +36,45 @@ export function OrderTable({ rowSelection, tableData, tableLoading }: OrderTable
       width: "5%",
     },
     {
-      title: "Book Name",
+      title: t("Book Name") as string,
       dataIndex: "bookName",
       key: "bookName",
-      width: "15%",
+      width: "20%",
     },
     {
-      title: "Book Code",
+      title: t("Book Code") as string,
       dataIndex: "bookCode",
       key: "bookCode",
       width: "7%",
     },
     {
-      title: "Member Full Name",
+      title: t("Reader Full Name") as string,
       dataIndex: "memberFullName",
       key: "memberFullName",
     },
     {
-      title: "Member Code",
+      title: t("Member Code") as string,
       dataIndex: "memberCode",
       key: "memberCode",
     },
     {
-      title: "Order Status",
+      title: t("Phone Number") as string,
+      dataIndex: "phoneNumber",
+      key: "phoneNumber",
+    },
+    {
+      title: t("Order Status") as string,
       dataIndex: "orderStatus",
       key: "orderStatus",
       render: OrderStatus,
     },
     {
-      title: "Order Date",
+      title: t("Order Date") as string,
       dataIndex: "orderDate",
       key: "orderDate",
     },
     {
-      title: "Return Date",
+      title: t("Return Date") as string,
       dataIndex: "returnDate",
       key: "returnDate",
       render: (v) => {
@@ -87,7 +82,7 @@ export function OrderTable({ rowSelection, tableData, tableLoading }: OrderTable
       },
     },
     {
-      title: "Overdue Day",
+      title: t("Overdue Day") as string,
       dataIndex: "overdueDay",
       key: "overdueDay",
       render: (v, record) => {
