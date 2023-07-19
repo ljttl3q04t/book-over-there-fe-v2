@@ -92,9 +92,9 @@ export function CreateMemberModal(props: CreateOrderModalProps) {
           <Form.Item
             name="phone_number"
             label="Phone Number"
-            rules={[{ required: false, validator: validatePhoneNumber}]}
+            rules={[{ required: false, validator: validatePhoneNumber }]}
           >
-            <Input  prefix={<PhoneOutlined className="site-form-item-icon" />} placeholder="Phone number..." />
+            <Input prefix={<PhoneOutlined className="site-form-item-icon" />} placeholder="Phone number..." />
           </Form.Item>
         </Form>
       </StyledModalContent>

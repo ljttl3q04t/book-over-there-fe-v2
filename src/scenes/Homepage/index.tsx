@@ -213,7 +213,7 @@ const Homepage = () => {
       );
       await setClubList(filteredClubList);
       await setClubId(filteredClubList[0].clubId);
-      await handleViewAllClubBooks(filteredClubList[0].clubBookIds,clubId);
+      await handleViewAllClubBooks(filteredClubList[0].clubBookIds, clubId);
     } catch (error) {
       // Handle error here
     } finally {

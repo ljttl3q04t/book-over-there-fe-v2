@@ -1,4 +1,4 @@
-import React from  "react";
+import React from "react";
 import Table, { ColumnsType } from "antd/es/table";
 import { Tag } from "antd";
 import moment from "moment";

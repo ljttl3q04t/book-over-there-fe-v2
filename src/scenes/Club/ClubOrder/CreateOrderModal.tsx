@@ -26,7 +26,7 @@ const layout = {
 };
 
 export function CreateOrderModal(props: CreateOrderModalProps) {
-  const { open, onCancel, members, clubBookInfos, staffClubs ,onRefresh} = props;
+  const { open, onCancel, members, clubBookInfos, staffClubs, onRefresh } = props;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form] = Form.useForm();
   const formRef = React.useRef<FormInstance>(form);

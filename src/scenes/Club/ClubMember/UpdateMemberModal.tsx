@@ -34,7 +34,7 @@ export function UpdateMemberModal(props: UpdateOrderModalProps) {
   const handleSubmit = async () => {
     try {
       setIsSubmitting(true);
-      const values = await form.validateFields();      
+      const values = await form.validateFields();
       const data: UpdateMemberRequest = {
         member_id: currentMember.id,
         code: values.code,

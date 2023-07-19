@@ -63,7 +63,7 @@ const ClubOrder = () => {
       setLoading(false);
     }
   };
-  const fetchOrderInfos = async (orderIds:number[]) => {
+  const fetchOrderInfos = async (orderIds: number[]) => {
     try {
       setLoading(true);
       const orderInfos: OrderInfos[] = await dfbServices.getOrderInfos(orderIds);
@@ -100,7 +100,7 @@ const ClubOrder = () => {
     selectedRowKeys,
     onChange: onSelectChange,
     getCheckboxProps: (record: DataType) => ({
-      disabled: record.orderStatus === 'complete', // Column configuration not to be checked
+      disabled: record.orderStatus === "complete", // Column configuration not to be checked
       name: record.orderStatus,
     }),
   };
@@ -137,7 +137,7 @@ const ClubOrder = () => {
   }, []);
   useEffect(() => {
     fetchOrderIds();
-  },[])
+  }, []);
   return (
     <StyledClubOrder>
       <div className="table-extra-content">
@@ -161,8 +161,8 @@ const ClubOrder = () => {
         onCancel={() => {
           setOpenCreateOrderModal(false);
         }}
-        onRefresh={async() => {
-         await fetchOrderIds()
+        onRefresh={async () => {
+          await fetchOrderIds();
         }}
       />
       <OrderTable tableLoading={loading} tableData={tableData} rowSelection={rowSelection} />

@@ -114,7 +114,7 @@ const Login = () => {
       (token: any) => {
         const tokenn = token.data.access_token;
         localStorage.setItem("access_token", tokenn);
-        const {user_id} = decodeJWT(tokenn);
+        const { user_id } = decodeJWT(tokenn);
         token.data.user.user_id = user_id;
         navigate("/");
         notification.success({
