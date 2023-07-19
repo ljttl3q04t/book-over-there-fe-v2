@@ -116,7 +116,7 @@ const ClubMember = () => {
           },
         }}
       />
-      <MemberTable onRefresh={fetchMemberIds} tableData={tableData} tableLoading={loading} />
+      <MemberTable onRefresh={fetchMemberIds} tableData={tableData} tableLoading={loading && tableLoading} />
     </StyledClubOrder>
   );
 };
