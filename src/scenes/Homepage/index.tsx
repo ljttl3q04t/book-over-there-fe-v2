@@ -150,8 +150,6 @@ const Homepage = () => {
     try {
       setLoading(true);
       const values = await form.validateFields();
-      console.log(clubId, "clubId");
-
       const data = {
         member_id: user?.user_id,
         club_id: clubId,

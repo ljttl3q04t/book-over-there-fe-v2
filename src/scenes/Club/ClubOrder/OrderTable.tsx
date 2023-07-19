@@ -1,10 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from  "react";
 import Table, { ColumnsType } from "antd/es/table";
-import dfbServices from "@/services/dfb";
-import { OrderInfos } from "@/services/types";
-import { Button, Tag, notification } from "antd";
+import { Tag } from "antd";
 import moment from "moment";
-import styled from "styled-components";
 
 type DataType = {
   orderId: number;
@@ -24,13 +21,6 @@ type OrderTableProps = {
   tableData: DataType[];
   tableLoading: boolean;
 };
-const StyledTable = styled(Table)`
-  .disabled-row {
-    background-color: #f5f5f5; /* Example background color for disabled rows */
-    pointer-events: none; /* Disable pointer events on the row */
-    opacity: 0.5; /* Example opacity for disabled rows */
-  }
-`;
 function OrderStatus(orderStatus: string) {
   const STATUS_COLORS: Record<string, string> = {
     created: "green",
