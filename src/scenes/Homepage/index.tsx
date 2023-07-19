@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ProFormText, QueryFilter } from "@ant-design/pro-form";
 import { Button, Typography, MenuProps, Dropdown, Space, Affix, Modal, Form, Input, List, Avatar } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
@@ -28,6 +27,7 @@ import { ProFormSelect } from "@ant-design/pro-components";
 import Image from "@/component/Image";
 import defaultImage from "@/image/book-default.png";
 import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
+import { useTranslation } from "react-i18next";
 const { Title } = Typography;
 
 const StyledHomeContainer = styled.div`
@@ -103,6 +103,7 @@ const MODAL_CODE = {
   ORDER: "order",
 };
 const Homepage = () => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [bookList, setBookList] = useState<any>([]);
   const [option, setOption] = useState({
@@ -117,7 +118,7 @@ const Homepage = () => {
   const [activeModal, setActiveModal] = useState("");
   const [form] = Form.useForm();
 
-  const [chunksSize, setChunksSize] = useState(calculateChunksSize());
+  const [, setChunksSize] = useState(calculateChunksSize());
   const tableBookRef = useRef(null);
   const executeScroll = () => tableBookRef.current.scrollIntoView({ behavior: "smooth", block: "start" }); // run this function from an event handler or pass it to useEffect to execute scroll
   const { user } = useContext(UserContext);
@@ -431,7 +432,7 @@ const Homepage = () => {
             <List
               itemLayout="horizontal"
               dataSource={selectedRows}
-              renderItem={(item, index) => (
+              renderItem={(item: any) => (
                 <List.Item>
                   <List.Item.Meta
                     avatar={<Avatar src={item.image ? item.image : defaultImage} />}
@@ -461,7 +462,7 @@ const Homepage = () => {
                     {item.clubName}
                   </a>
                   <span onClick={() => executeScroll()} className="extra-title">
-                    See all <RightOutlined style={{ fontSize: "18px" }} />
+                    <>{t("homePage.seeAll")}</> <RightOutlined style={{ fontSize: "18px" }} />
                   </span>
                 </Title>
               </div>

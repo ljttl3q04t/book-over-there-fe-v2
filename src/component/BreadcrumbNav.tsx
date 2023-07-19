@@ -1,7 +1,8 @@
-import React from "react";
+import * as React from "react";
 import { Breadcrumb } from "antd";
 import { Link, useLocation, matchPath } from "react-router-dom";
 import styled from "styled-components";
+import { useTranslation } from "react-i18next";
 
 const StyledBreadCrumb = styled.div`
   padding: 10px 30px 10px;
@@ -15,7 +16,7 @@ const StyledBreadCrumb = styled.div`
   }
 `;
 const breadcrumbItems = [
-  { path: "/", breadcrumbName: "Home" },
+  { path: "/", breadcrumbName: "homePage.home" },
   { path: "/checkout", breadcrumbName: "Checkout" },
   { path: "/support", breadcrumbName: "Support" },
   { path: "/book-detail/:id", breadcrumbName: "Book Detail" },
@@ -33,6 +34,7 @@ const breadcrumbItems = [
 ];
 
 const BreadcrumbNav = ({ displayPageName }: any) => {
+  const { t } = useTranslation();
   const location = useLocation();
   const pathSegments = location.pathname.split("/");
   const breadcrumbItem = breadcrumbItems.find((item) => {
@@ -40,7 +42,7 @@ const BreadcrumbNav = ({ displayPageName }: any) => {
     return match ? true : false;
   });
 
-  const pageName = breadcrumbItem ? breadcrumbItem.breadcrumbName : "";
+  const pageName = breadcrumbItem ? t(breadcrumbItem.breadcrumbName) : "";
   return (
     <StyledBreadCrumb>
       <Breadcrumb>
@@ -55,7 +57,9 @@ const BreadcrumbNav = ({ displayPageName }: any) => {
             if (breadcrumbItem) {
               return (
                 <Breadcrumb.Item key={path}>
-                  <Link to={path}>{breadcrumbItem.breadcrumbName}</Link>
+                  <Link to={path}>
+                    <>{t(breadcrumbItem.breadcrumbName)}</>
+                  </Link>
                 </Breadcrumb.Item>
               );
             } else {

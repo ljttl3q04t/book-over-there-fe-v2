@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BellOutlined, ProfileOutlined, HeartTwoTone, UserAddOutlined, UserOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import { Badge, Button, Dropdown, Image, Modal, Space } from "antd";
+import { Badge, Button, Dropdown, Image, Modal, Select, Space } from "antd";
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { UserContext } from "@/context/UserContext";
 import BreadcrumbNav from "@/component/BreadcrumbNav";
+import { useTranslation } from "react-i18next";
 
 const StyledNavBar = styled.div`
   padding: 10px 20px 10px 0;
@@ -32,8 +33,8 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
   const access = localStorage.getItem("access_token");
   const navigate = useNavigate();
   const [changePW, setChangePW] = useState(false);
-  const { user, logoutUser } = useContext(UserContext);
-  console.log(user, "user");
+  const { user, logoutUser, language, changeLanguage } = useContext(UserContext);
+  const { t, i18n } = useTranslation();
 
   const iconNotifi = () => {
     return (
@@ -75,6 +76,12 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
     },
   ];
 
+  const handleChangeLanguage = (e: any) => {
+    const language = e;
+    i18n.changeLanguage(language);
+    changeLanguage(language);
+  };
+
   return (
     <StyledNavBar>
       {/* <Search
@@ -88,6 +95,15 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
       <div style={{ float: "right", display: "flex", alignItems: "center" }}>
         {access !== null ? (
           <>
+            <Select
+              value={language}
+              style={{ width: 120 }}
+              onChange={handleChangeLanguage}
+              options={[
+                { value: "vi", label: t("common.vietnames") },
+                { value: "en", label: t("common.english") },
+              ]}
+            />
             {/* {iconNotifi()} */}
             <Image
               style={{

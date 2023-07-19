@@ -56,6 +56,15 @@ dependencies:
   dayjs:
     specifier: ^1.11.9
     version: 1.11.9
+  i18next:
+    specifier: 19.6.3
+    version: 19.6.3
+  i18next-browser-languagedetector:
+    specifier: 5.0.1
+    version: 5.0.1
+  i18next-http-backend:
+    specifier: 1.0.17
+    version: 1.0.17
   jsonwebtoken:
     specifier: ^9.0.0
     version: 9.0.0
@@ -74,6 +83,9 @@ dependencies:
   react-highlight-words:
     specifier: ^0.20.0
     version: 0.20.0(react@18.2.0)
+  react-i18next:
+    specifier: 11.7.0
+    version: 11.7.0(i18next@19.6.3)(react@18.2.0)
   react-multi-carousel:
     specifier: ^2.8.4
     version: 2.8.4
@@ -8494,6 +8506,12 @@ packages:
       terser: 5.19.0
     dev: false
 
+  /html-parse-stringify2@2.0.1:
+    resolution: {integrity: sha512-wMKQ3aJ/dwXzDHPpA7XgsRXXCkEhHkAF6Ioh7D51lgZO7Qy0LmcFddC9TI/qNQJvSM1KL8KbcR3FtuybsrzFlQ==}
+    dependencies:
+      void-elements: 2.0.1
+    dev: false
+
   /html-webpack-plugin@5.5.3(webpack@5.88.1):
     resolution: {integrity: sha512-6YrDKTuqaP/TquFH7h4srYWsZx+x6k6+FbsTm0ziCwGHDP78Unr1r9F/H4+sGmMbX08GQcJ+K64x55b+7VM/jg==}
     engines: {node: '>=10.13.0'}
@@ -8633,6 +8651,24 @@ packages:
 
   /hyphenate-style-name@1.0.4:
     resolution: {integrity: sha512-ygGZLjmXfPHj+ZWh6LwbC37l43MhfztxetbFCoYTM2VjkIUpeHgSNn7QIyVFj7YQ1Wl9Cbw5sholVJPzWvC2MQ==}
+    dev: false
+
+  /i18next-browser-languagedetector@5.0.1:
+    resolution: {integrity: sha512-7K4A6DJ2rNz3Yd835Y493UgkzUxgpGsCeIMKLGkt6Ps0cbgSaJ+LdATFNFA+ujp2brmsUM9BeDThXKhabXUbUw==}
+    dependencies:
+      '@babel/runtime': 7.22.6
+    dev: false
+
+  /i18next-http-backend@1.0.17:
+    resolution: {integrity: sha512-puuvW34DTeZcy4for3so0MqZHNFMOyURgnwWo8zkhurMPREZmn5l/4Bv0o3tXWOrZrWsn+WDCytE2yjNWec8zw==}
+    dependencies:
+      node-fetch: 2.6.0
+    dev: false
+
+  /i18next@19.6.3:
+    resolution: {integrity: sha512-eYr98kw/C5z6kY21ti745p4IvbOJwY8F2T9tf/Lvy5lFnYRqE45+bppSgMPmcZZqYNT+xO0N0x6rexVR2wtZZQ==}
+    dependencies:
+      '@babel/runtime': 7.22.6
     dev: false
 
   /iconv-lite@0.4.24:
@@ -10749,6 +10785,11 @@ packages:
   /node-addon-api@3.2.1:
     resolution: {integrity: sha512-mmcei9JghVNDYydghQmeDX8KoAm0FAiYyIcUt/N4nhyAipB17pllZQDOJD2fotxABnt4Mdz+dKTO7eftLg4d0A==}
     dev: true
+
+  /node-fetch@2.6.0:
+    resolution: {integrity: sha512-8dG4H5ujfvFiqDmVu9fQ5bOHUC15JMjMY/Zumv26oOvvVJjM67KF8koCWIabKQ1GJIa9r2mMZscBq/TbdOcmNA==}
+    engines: {node: 4.x || >=6.0.0}
+    dev: false
 
   /node-fetch@2.6.7:
     resolution: {integrity: sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==}
@@ -13224,6 +13265,18 @@ packages:
       react: 18.2.0
     dev: false
 
+  /react-i18next@11.7.0(i18next@19.6.3)(react@18.2.0):
+    resolution: {integrity: sha512-8tvVkpuxQlubcszZON+jmoCgiA9gCZ74OAYli9KChPhETtq8pJsANBTe9KRLRLmX3ubumgvidURWr0VvKz1tww==}
+    peerDependencies:
+      i18next: '>= 19.0.0'
+      react: '>= 16.8.0'
+    dependencies:
+      '@babel/runtime': 7.22.6
+      html-parse-stringify2: 2.0.1
+      i18next: 19.6.3
+      react: 18.2.0
+    dev: false
+
   /react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
@@ -15441,6 +15494,11 @@ packages:
       sass: 1.63.3
     optionalDependencies:
       fsevents: 2.3.2
+
+  /void-elements@2.0.1:
+    resolution: {integrity: sha512-qZKX4RnBzH2ugr8Lxa7x+0V6XD9Sb/ouARtiasEQCHB1EVU4NXtmHsDDrx1dO4ne5fc3J6EW05BP1Dl0z0iung==}
+    engines: {node: '>=0.10.0'}
+    dev: false
 
   /w3c-hr-time@1.0.2:
     resolution: {integrity: sha512-z8P5DvDNjKDoFIHK7q8r8lackT6l+jo/Ye3HOle7l9nICP9lf1Ci25fy9vHd0JOWewkIFzXIEig3TdKT7JQ5fQ==}

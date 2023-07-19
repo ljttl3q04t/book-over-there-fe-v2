@@ -1,0 +1,13 @@
+{
+    "common": {
+        "vietnames": "Tiếng Việt",
+        "english": "Tiếng Anh"
+    },
+    "homePage": {
+        "home": "Trang chủ",
+        "seeAll": "Xem thêm"
+    },
+    "sidebar": {
+        "homePage": "Trang chủ" 
+    }
+}

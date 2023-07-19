@@ -1,0 +1,13 @@
+{
+    "common": {
+        "vietnames": "Vietnamese",
+        "english": "English"
+    },
+    "homePage": {
+        "home": "Home",
+        "seeAll": "See All"
+    },
+    "sidebar": {
+        "homePage": "Home Page" 
+    }
+}
