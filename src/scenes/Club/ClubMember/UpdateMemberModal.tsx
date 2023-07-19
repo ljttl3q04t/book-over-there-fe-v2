@@ -37,7 +37,6 @@ export function UpdateMemberModal(props: UpdateOrderModalProps) {
       if (values.phoneNumber) {
         data.phone_number = values.phoneNumber;
       }
-      console.log(data);
       const message = await dfbServices.updateMember(data);
       notification.success({ message: message, type: "success" });
       onCancel();

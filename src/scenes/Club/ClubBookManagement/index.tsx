@@ -128,8 +128,6 @@ const ClubStaff = () => {
   }, []);
 
   const handleTableChange = (pagination: any) => {
-    console.log(pagination, "pagination");
-
     setOption({
       ...option,
       pageIndex: pagination.current,
@@ -260,7 +258,6 @@ const ClubStaff = () => {
               onClick={(e) => {
                 e.preventDefault();
                 setIdBook(_values);
-                console.log("_values", _values);
               }}
             >
               <Space>
@@ -303,16 +300,10 @@ const ClubStaff = () => {
   ];
 
   const handleMenuClick: MenuProps["onClick"] = (e) => {
-    console.log("click", e);
-    if (e.key === "0") {
-      console.log("000000");
-      // handleOpenShareBook(null)
-    } else if (e.key === "1") {
+    if (e.key === "1") {
       setOpen(true);
       setBookEdit(bookEdit);
       setTitle("Edit Book");
-    } else if (e.key === "2") {
-      console.log("click Delete");
     }
   };
 

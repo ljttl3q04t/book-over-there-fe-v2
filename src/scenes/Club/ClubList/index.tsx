@@ -99,8 +99,6 @@ const ClubList = () => {
 
   const handleOpenJoin = (_item: any) => {
     setClubId(_item.id);
-    console.log(user, "useruseruser");
-
     form.setFieldsValue({
       full_name: user?.full_name,
       phone_number: user?.phone_number,

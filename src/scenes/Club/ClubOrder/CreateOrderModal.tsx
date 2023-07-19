@@ -41,7 +41,6 @@ export function CreateOrderModal(props: CreateOrderModalProps) {
     try {
       setIsSubmitting(true);
       const values = await form.validateFields();
-      console.log(values);
       const data = {
         member_id: values.member,
         club_id: values.club,

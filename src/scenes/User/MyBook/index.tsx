@@ -76,8 +76,6 @@ function MyBook() {
   });
 
   const handleTableChange = (pagination: any) => {
-    console.log("pagination: ", pagination);
-
     setOption({
       ...option,
       pageIndex: pagination.current,
@@ -126,7 +124,6 @@ function MyBook() {
     try {
       setLoading(true);
       const response: any = await userService.getUserShareClub(data);
-      console.log("response getUserShareClub: ", response);
       setLoading(false);
       handleCloseModalShareBook();
       const bookList: any = await fetchBookList();
@@ -289,7 +286,6 @@ function MyBook() {
               onClick={(e) => {
                 e.preventDefault();
                 setIdBook(_values);
-                console.log("_values", _values);
               }}
             >
               <Space>
@@ -323,29 +319,20 @@ function MyBook() {
   ];
 
   const handleMenuClick: MenuProps["onClick"] = (e) => {
-    console.log("click", e);
     if (e.key === "0") {
-      console.log("000000");
       handleOpenShareBook();
     } else if (e.key === "1") {
-      console.log("11111111");
       setOpen(true);
 
       const bookEdit: EditBook = getObjectByIdInArray(books, idBook);
       setBookEdit(bookEdit);
       setTitle("Edit Book");
-    } else if (e.key === "2") {
-      console.log("click Delete");
     }
   };
 
   const menuProps = {
     items,
     onClick: handleMenuClick,
-  };
-
-  const handleChange = (value: string | string[]) => {
-    console.log(`Selected: ${value}`);
   };
 
   return (
@@ -394,13 +381,7 @@ function MyBook() {
       >
         <Form {...layout} ref={formRef} name="control-ref" style={{ width: 800 }}>
           <Form.Item name="book_copy_ids" label="My books" rules={[{ required: true }]}>
-            <Select
-              mode="multiple"
-              size="middle"
-              placeholder="Please select"
-              onChange={handleChange}
-              style={{ width: "100%" }}
-            >
+            <Select mode="multiple" size="middle" placeholder="Please select" style={{ width: "100%" }}>
               {books.map((book, index) => {
                 if (book.bookStatus !== "sharing_club") {
                   return (
@@ -414,7 +395,7 @@ function MyBook() {
           </Form.Item>
 
           <Form.Item name="club_id" label="Asign to club" rules={[{ required: true }]}>
-            <Select size="middle" placeholder="Please select" onChange={handleChange} style={{ width: "100%" }}>
+            <Select size="middle" placeholder="Please select" style={{ width: "100%" }}>
               {clubListJoined.map((club, index) => (
                 <Option key={index} value={club?.id} label={club.book_club.name}>
                   <div className="demo-option-label-item">

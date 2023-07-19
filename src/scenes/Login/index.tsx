@@ -106,18 +106,13 @@ const Login = () => {
   const navigate = useNavigate();
   const [openResetPassword, setOpenResetPassword] = useState(false);
 
-  // localStorage.setItem("access_token", 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjg2OTA5MDkzLCJpYXQiOjE2ODY5MDU0OTMsImp0aSI6IjJlYjdjNTQxZDc0NTRkM2M5ZDYwNDQ5MGVhNWUwNmEwIiwidXNlcl9pZCI6MX0.Tn052OpOkGVXaS2S6BejuSW47zqSe0mAk9_euJOmykI');
   const onFinish = (values: any) => {
     AuthService.login(
       values.username,
       values.password,
       (token: any) => {
-        console.log(token.data, " token.data");
-
         const tokenn = token.data.access_token;
         localStorage.setItem("access_token", tokenn);
-        // const expirationTime = getTokenExpiration(token);
-        // setCookie("access_token", tokenn, { path: "/", expires: expirationTime });
         navigate("/");
         notification.success({
           message: "Login successfully!",

@@ -39,7 +39,6 @@ export function OrderTable() {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-    console.log("selectedRowKeys changed: ", newSelectedRowKeys);
     setSelectedRowKeys(newSelectedRowKeys);
   };
   const rowSelection = {
@@ -53,7 +52,6 @@ export function OrderTable() {
       const data = {
         order_detail_ids: selectedRowKeys.join(","),
       };
-      console.log(data);
       const message = await dfbServices.returnBooks(data);
       notification.success({ message: message, type: "success" });
     } catch (error: any) {

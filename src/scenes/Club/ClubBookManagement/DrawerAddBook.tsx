@@ -60,7 +60,6 @@ function DrawerAddBook({ open, onClose, bookEdit, title, categories }: any) {
 
   const onFinish = async (values: any) => {
     try {
-      console.log("values", values);
       setIsLoading(true);
       const formData = new FormData();
       formData.append("name", values.name);
@@ -71,18 +70,12 @@ function DrawerAddBook({ open, onClose, bookEdit, title, categories }: any) {
       formData.append("current_count", values.currentCount);
       formData.append("club_id", "5");
 
-      // if (fileList.length > 0) {
-      //   formData.append("image", (fileList[0] as RcFile) ? (fileList[0] as RcFile) : "");
-      // } else {
-      //   formData.append("image", fileListPreview[0]?.url as string);
-      // }
       const message = await dfbServices.createBook(formData);
       notification.success({ message: message, type: "success" });
       onClose();
       setFileListPreview([]);
       setIsLoading(false);
     } catch (err: any) {
-      console.log("err create: ", err.response);
       if (!fileList[0]) {
         notification.error({
           message: `Validation Error: ${err.message}`,
@@ -172,7 +165,7 @@ function DrawerAddBook({ open, onClose, bookEdit, title, categories }: any) {
       }
       setIsLoading(false);
     } catch (error) {
-      console.error("Error fetching book list:", error);
+      console.error(error);
     }
   };
 

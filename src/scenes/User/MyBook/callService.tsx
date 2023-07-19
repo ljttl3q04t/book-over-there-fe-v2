@@ -36,7 +36,6 @@ export const fetchBookList = async () => {
 export const getListBookInit = async (option: any) => {
   try {
     const response = await bookService.getListBook(option.pageIndex, option.pageSize, option.txtSearch);
-    console.log("getListBookInit: ", response);
     const data = response?.data?.results.map((item: any, index: any) => {
       return {
         key: index + 1,
@@ -74,11 +73,8 @@ export const getBookByLink = async (link: any) => {
 export const getBookBorrow = async () => {
   try {
     const response = await bookService.getBookborrow();
-    console.log("getBookborrow: ", response);
     return response;
   } catch (error) {
-    console.error("error", error);
-    // Handle error
     notification.error({
       message: `Validation Error: `,
       description: "System error",
@@ -89,7 +85,6 @@ export const getBookBorrow = async () => {
 export const getBookHistory = async () => {
   try {
     const response: any[] = await bookService.getHistoryBook();
-    console.log("response getBookHistory: ", response);
 
     const data = response.map((item: any, index: any) => {
       return {
@@ -109,8 +104,6 @@ export const getBookHistory = async () => {
         user: item?.book_copy?.user,
       };
     });
-    console.log("data: ", data);
-
     return data;
   } catch (error) {
     console.error("error", error);

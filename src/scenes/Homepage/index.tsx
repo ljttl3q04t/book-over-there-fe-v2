@@ -1,15 +1,8 @@
 import { ProFormText, QueryFilter } from "@ant-design/pro-form";
-import { Button, Typography, MenuProps, Dropdown, Space, Affix, Modal, Form, Input, List, Avatar } from "antd";
+import { Button, Typography, Affix, Modal, Form, Input, List, Avatar } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
-import {
-  HeartTwoTone,
-  EyeTwoTone,
-  PlusCircleTwoTone,
-  MoreOutlined,
-  RightOutlined,
-  PlusCircleOutlined,
-} from "@ant-design/icons";
+import { RightOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import CardBook from "../../component/CardBook";
 import { UserContext } from "@/context/UserContext";
 
@@ -123,7 +116,6 @@ const Homepage = () => {
   const executeScroll = () => tableBookRef.current.scrollIntoView({ behavior: "smooth", block: "start" }); // run this function from an event handler or pass it to useEffect to execute scroll
   const { user } = useContext(UserContext);
   const onSelectChange = (newSelectedRowKeys: React.Key[], selectedRows: any) => {
-    console.log("selectedRowKeys changed: ", selectedRows);
     setSelectedRowKeys(newSelectedRowKeys);
     setSelectedRows(selectedRows);
   };
@@ -243,14 +235,7 @@ const Homepage = () => {
   }, []);
 
   const handleTableChange = (pagination: any) => {
-    console.log("pagination: ", pagination);
-
     setOption({
-      ...option,
-      pageIndex: pagination.current,
-      pageSize: pagination.pageSize,
-    });
-    console.log(".................: ", {
       ...option,
       pageIndex: pagination.current,
       pageSize: pagination.pageSize,
@@ -298,66 +283,7 @@ const Homepage = () => {
         return category?.name;
       },
     },
-    {
-      title: "Action",
-      key: "",
-      dataIndex: "",
-      fixed: "right",
-      render: (_values: any) => {
-        return (
-          <Dropdown menu={menuProps} trigger={["click"]}>
-            <a
-              onClick={(e) => {
-                e.preventDefault();
-                console.log("_values", _values);
-              }}
-            >
-              <Space>
-                <MoreOutlined />
-              </Space>
-            </a>
-          </Dropdown>
-        );
-      },
-    },
   ];
-
-  const items: MenuProps["items"] = [
-    {
-      label: "View",
-      key: "0",
-      icon: <EyeTwoTone />,
-    },
-    {
-      label: "Cart",
-      key: "1",
-      icon: <PlusCircleTwoTone />,
-    },
-    {
-      label: "Wishlist",
-      key: "2",
-      icon: <HeartTwoTone twoToneColor="#eb2f96" />,
-    },
-    {
-      type: "divider",
-    },
-  ];
-
-  const handleMenuClick: MenuProps["onClick"] = (e) => {
-    console.log("click", e);
-    if (e.key === "0") {
-      console.log("000000");
-    } else if (e.key === "1") {
-      console.log("11111111");
-    } else if (e.key === "2") {
-      console.log("click Delete");
-    }
-  };
-
-  const menuProps = {
-    items,
-    onClick: handleMenuClick,
-  };
 
   const [deviceType, setDeviceType] = useState("");
 
