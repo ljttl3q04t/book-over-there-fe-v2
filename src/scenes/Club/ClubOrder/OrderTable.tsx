@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import * as React from "react";
 import Table, { ColumnsType } from "antd/es/table";
 import dfbServices from "@/services/dfb";
 import { OrderInfos } from "@/services/types";
 import { Button, Tag, notification } from "antd";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 
 type DataType = {
   orderId: number;
@@ -12,11 +13,18 @@ type DataType = {
   bookCode: string;
   memberFullName: string;
   memberCode: string;
+  phoneNumber: string;
   orderStatus: string;
   orderDate: string;
   returnDate: string;
   overdueDay: number;
   dueDate: string;
+};
+
+type OrderTableProps = {
+  loading: boolean;
+  setLoading: any;
+  orderIds: number[];
 };
 
 function OrderStatus(orderStatus: string) {
@@ -32,11 +40,11 @@ function OrderStatus(orderStatus: string) {
   );
 }
 
-export function OrderTable() {
-  const [loading, setLoading] = useState(false);
-  const [orderIds, setOrderIds] = useState<number[]>([]);
-  const [tableData, setTableData] = useState<DataType[]>([]);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+export function OrderTable({ loading, setLoading, orderIds }: OrderTableProps) {
+  const [tableData, setTableData] = React.useState<DataType[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = React.useState<React.Key[]>([]);
+
+  const { t } = useTranslation();
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys);
@@ -62,17 +70,6 @@ export function OrderTable() {
     }
   };
 
-  const fetchOrderIds = async () => {
-    try {
-      setLoading(true);
-      const _orderIds = await dfbServices.getOrderIds();
-      setOrderIds(_orderIds);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
   const fetchOrderInfos = async () => {
     try {
       setLoading(true);
@@ -87,6 +84,7 @@ export function OrderTable() {
             bookCode: orderDetail.book_code,
             memberFullName: order.member.full_name,
             memberCode: order.member.code,
+            phoneNumber: order.member.phone_number ?? "",
             orderStatus: orderDetail.order_status,
             orderDate: order.order_date,
             returnDate: orderDetail.return_date,
@@ -103,11 +101,7 @@ export function OrderTable() {
     }
   };
 
-  useEffect(() => {
-    fetchOrderIds();
-  }, []);
-
-  useEffect(() => {
+  React.useEffect(() => {
     if (orderIds.length > 0) {
       fetchOrderInfos();
     }
@@ -120,38 +114,43 @@ export function OrderTable() {
       key: "orderId",
     },
     {
-      title: "Book Name",
+      title: t("Book Name") as string,
       dataIndex: "bookName",
       key: "bookName",
     },
     {
-      title: "Book Code",
+      title: t("Book Code") as string,
       dataIndex: "bookCode",
       key: "bookCode",
     },
     {
-      title: "Member Full Name",
+      title: t("Reader Full Name") as string,
       dataIndex: "memberFullName",
       key: "memberFullName",
     },
     {
-      title: "Member Code",
+      title: t("Member Code") as string,
       dataIndex: "memberCode",
       key: "memberCode",
     },
     {
-      title: "Order Status",
+      title: t("Phone Number") as string,
+      dataIndex: "phoneNumber",
+      key: "phoneNumber",
+    },
+    {
+      title: t("Order Status") as string,
       dataIndex: "orderStatus",
       key: "orderStatus",
       render: OrderStatus,
     },
     {
-      title: "Order Date",
+      title: t("Order Date") as string,
       dataIndex: "orderDate",
       key: "orderDate",
     },
     {
-      title: "Return Date",
+      title: t("Return Date") as string,
       dataIndex: "returnDate",
       key: "returnDate",
       render: (v) => {
@@ -159,7 +158,7 @@ export function OrderTable() {
       },
     },
     {
-      title: "Overdue Day",
+      title: t("Overdue Day") as string,
       dataIndex: "overdueDay",
       key: "overdueDay",
       render: (v, record) => {

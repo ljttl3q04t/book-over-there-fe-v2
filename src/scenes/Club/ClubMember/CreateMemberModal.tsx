@@ -33,7 +33,7 @@ export function CreateMemberModal(props: CreateOrderModalProps) {
       notification.success({ message: message, type: "success" });
       form.resetFields();
       onCancel();
-    } catch (error) {
+    } catch (error: any) {
       const errorMessage = error.message || "An error occurred while creating the member.";
       notification.error({ message: errorMessage });
     } finally {
