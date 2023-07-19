@@ -1,0 +1,21 @@
+FrontEnd:
+Page Order, cân chỉnh lại độ rộng các cột cho hợp lý
+Page Order, refresh order sau khi tạo order mới
+Page Order, refresh order sau khi trả sách
+Page Order, filter order theo Ngày Mượn (from_date, to_date) (default from_date=to_date=today)
+Page Order, chặn không cho return books những order đang ở trạng thái COMPLETED
+
+
+BackEnd:
+Thêm người tạo order
+Thêm người nhận trả sách ( theo order detail)
+Model DFreeOrder add index for column order_date
+Model DFreeOrderDetail add index for column order_status
+
+API `order/get_ids` support filter by order_status
+API `order/get_ids` sort by order_date
+API `order/return_books` throw error nếu sách đã được trả rồi
+
+
+
+Docs:
