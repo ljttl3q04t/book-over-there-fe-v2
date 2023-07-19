@@ -9,6 +9,7 @@ interface User {
   phone_number: string;
   full_name: string;
   birth_date: string;
+  user_id:number;
   // Add any other properties you need for the user
 }
 

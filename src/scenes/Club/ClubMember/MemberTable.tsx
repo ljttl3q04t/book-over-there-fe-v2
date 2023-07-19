@@ -1,9 +1,8 @@
 import * as React from "react";
 import Table, { ColumnsType } from "antd/es/table";
-import dfbServices from "@/services/dfb";
-import { MemberInfos } from "@/services/types";
 import { Button, Space } from "antd";
 import { UpdateMemberModal } from "./UpdateMemberModal";
+import { EditOutlined } from "@ant-design/icons";
 
 type DataType = {
   id: number;
@@ -11,55 +10,14 @@ type DataType = {
   code: string;
   phoneNumber: string;
 };
-
-export function MemberTable() {
-  const [loading, setLoading] = React.useState(false);
-  const [memberIds, setMemberIds] = React.useState<number[]>([]);
-  const [tableData, setTableData] = React.useState<DataType[]>([]);
+type MemberTableProps = {
+  tableData: DataType[];
+  tableLoading: boolean;
+  onRefresh: () => void;
+};
+export function MemberTable({ tableData, tableLoading, onRefresh }: MemberTableProps) {
   const [openUpdateModal, setOpenUpdateModal] = React.useState(false);
   const [currentMember, setCurrentMember] = React.useState<DataType | undefined>();
-
-  const fetchMemberIds = async () => {
-    try {
-      setLoading(true);
-      const _memberIds = await dfbServices.getMemberIds();
-      setMemberIds(_memberIds);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-  const fetchMemberInfos = async () => {
-    try {
-      setLoading(true);
-      const memberInfos: MemberInfos[] = await dfbServices.getMemberInfos(memberIds);
-      const data: DataType[] = [];
-      for (const member of memberInfos) {
-        data.push({
-          id: member.id,
-          fullName: member.full_name,
-          code: member.code,
-          phoneNumber: member.phone_number,
-        });
-      }
-      setTableData(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  React.useEffect(() => {
-    fetchMemberIds();
-  }, []);
-
-  React.useEffect(() => {
-    if (memberIds.length > 0) {
-      fetchMemberInfos();
-    }
-  }, [memberIds]);
 
   const showUpdateModal = (member: DataType) => {
     setCurrentMember(member);
@@ -90,15 +48,17 @@ export function MemberTable() {
     {
       title: "Action",
       key: "action",
+      width: "10%",
       render: (v: DataType) => (
         <Space>
           <Button
             type="primary"
+            icon={<EditOutlined />}
             onClick={() => {
               showUpdateModal(v);
             }}
           >
-            Update
+            Edit
           </Button>
         </Space>
       ),
@@ -106,8 +66,9 @@ export function MemberTable() {
   ];
   return (
     <>
-      <Table columns={columns} loading={loading} dataSource={tableData} scroll={{ x: 1000, y: 700 }} />
+      <Table columns={columns} loading={tableLoading} dataSource={tableData} scroll={{ x: 1000, y: 700 }} />
       <UpdateMemberModal
+        onRefresh={() => onRefresh()}
         {...{
           currentMember,
           open: openUpdateModal,

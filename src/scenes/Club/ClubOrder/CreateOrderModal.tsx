@@ -13,6 +13,7 @@ type CreateOrderModalProps = {
   members: MemberInfos[];
   clubBookInfos: ClubBookInfos[];
   staffClubs: BookClubInfo[];
+  onRefresh: () => void;
 };
 
 const StyledModalContent = styled.div`
@@ -25,7 +26,7 @@ const layout = {
 };
 
 export function CreateOrderModal(props: CreateOrderModalProps) {
-  const { open, onCancel, members, clubBookInfos, staffClubs } = props;
+  const { open, onCancel, members, clubBookInfos, staffClubs ,onRefresh} = props;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form] = Form.useForm();
   const formRef = React.useRef<FormInstance>(form);
@@ -51,6 +52,7 @@ export function CreateOrderModal(props: CreateOrderModalProps) {
       const message = await dfbServices.createOrder(data);
       notification.success({ message: message, type: "success" });
       form.resetFields();
+      await onRefresh();
       onCancel();
     } catch (error: any) {
       console.error(error);
@@ -62,7 +64,7 @@ export function CreateOrderModal(props: CreateOrderModalProps) {
 
   return (
     <Modal
-      title={"Create New Order"}
+      title={"Create Order"}
       open={open}
       width={800}
       footer={[

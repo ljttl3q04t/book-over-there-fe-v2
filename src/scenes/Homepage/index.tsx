@@ -1,5 +1,5 @@
 import { ProFormText, QueryFilter } from "@ant-design/pro-form";
-import { Button, Typography, Affix, Modal, Form, Input, List, Avatar } from "antd";
+import { Button, Typography, Affix, Modal, Form, Input, List, Avatar, DatePicker, notification } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { RightOutlined, PlusCircleOutlined } from "@ant-design/icons";
@@ -21,6 +21,8 @@ import Image from "@/component/Image";
 import defaultImage from "@/image/book-default.png";
 import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
 import { useTranslation } from "react-i18next";
+import dayjs from "dayjs";
+import dfbServices from "@/services/dfb";
 const { Title } = Typography;
 
 const StyledHomeContainer = styled.div`
@@ -95,6 +97,10 @@ const calculateChunksSize = () => {
 const MODAL_CODE = {
   ORDER: "order",
 };
+const initialValues = {
+  order_date: dayjs(),
+  due_date: dayjs().add(35, "day"),
+};
 const Homepage = () => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
@@ -131,6 +137,7 @@ const Homepage = () => {
     });
   };
   const handleCloseModal = async () => {
+    form.resetFields();
     await setActiveModal("");
   };
   const disableOrder = () => {
@@ -138,6 +145,30 @@ const Homepage = () => {
       return true;
     }
     return false;
+  };
+  const handleCreateOrder = async () => {
+    try {
+      setLoading(true);
+      const values = await form.validateFields();
+      console.log(clubId, "clubId");
+
+      const data = {
+        member_id: user?.user_id,
+        club_id: clubId,
+        order_date: dayjs(values.order_date?.toDate()).format("YYYY-MM-DD"),
+        due_date: dayjs(values.due_date?.toDate()).format("YYYY-MM-DD"),
+        club_book_ids: selectedRowKeys.join(","),
+        note: values.note,
+      };
+      const message = await dfbServices.createOrder(data);
+      notification.success({ message: message, type: "success" });
+      form.resetFields();
+    } catch (error: any) {
+      console.error(error);
+      notification.error({ message: error.message });
+    } finally {
+      setLoading(false);
+    }
   };
   const fetchClubList = useCallback(async () => {
     try {
@@ -172,7 +203,6 @@ const Homepage = () => {
               clubBookInfor,
               clubCode: item.code,
             };
-
             return clubSlide;
           } catch (error) {
             return null;
@@ -183,8 +213,9 @@ const Homepage = () => {
       const filteredClubList: DataTypeClubSlide[] = clubList.filter(
         (item) => item && item.clubCode && item.clubCode.startsWith("dfb"),
       );
-      setClubList(filteredClubList);
-      await handleViewAllClubBooks(filteredClubList[0].clubBookIds);
+      await setClubList(filteredClubList);
+      await setClubId(filteredClubList[0].clubId);
+      await handleViewAllClubBooks(filteredClubList[0].clubBookIds,clubId);
     } catch (error) {
       // Handle error here
     } finally {
@@ -326,7 +357,14 @@ const Homepage = () => {
   const defaultFormContent = (onFinish: any, optionalField?: JSX.Element) => {
     return (
       <>
-        <Form onFinish={onFinish} {...layout} form={form} name="control-ref" style={{ width: 800 }}>
+        <Form
+          initialValues={initialValues}
+          onFinish={onFinish}
+          {...layout}
+          form={form}
+          name="control-ref"
+          style={{ width: 800 }}
+        >
           <Form.Item
             name="full_name"
             label="Full Name"
@@ -341,6 +379,21 @@ const Homepage = () => {
           >
             <Input disabled />
           </Form.Item>
+          <Form.Item
+            name="order_date"
+            label="Order Date"
+            rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} order time` }]}
+          >
+            <DatePicker disabled format={["DD/MM/YYYY"]} />
+          </Form.Item>
+
+          <Form.Item
+            name="due_date"
+            label="Due Date"
+            rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} order time` }]}
+          >
+            <DatePicker disabled format={["DD/MM/YYYY"]} />
+          </Form.Item>
           {optionalField}
         </Form>
       </>
@@ -352,7 +405,7 @@ const Homepage = () => {
       width: 800,
       onOk: () => {},
       content: defaultFormContent(
-        () => {},
+        handleCreateOrder,
         <>
           <Form.Item name="selected_book" label="Selected Books:" rules={[{ required: false }]}>
             <List

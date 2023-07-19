@@ -1,6 +1,8 @@
 import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
+import { validatePhoneNumber } from "@/helpers/fuctionHepler";
 import dfbServices from "@/services/dfb";
 import { UpdateMemberRequest } from "@/services/types";
+import { PhoneOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Modal, notification } from "antd";
 import * as React from "react";
 import styled from "styled-components";
@@ -9,6 +11,7 @@ type UpdateOrderModalProps = {
   open: boolean;
   onCancel: () => void;
   currentMember: any;
+  onRefresh: () => void;
 };
 
 const StyledModalContent = styled.div`
@@ -21,25 +24,29 @@ const layout = {
 };
 
 export function UpdateMemberModal(props: UpdateOrderModalProps) {
-  const { open, onCancel, currentMember } = props;
+  const { open, onCancel, currentMember, onRefresh } = props;
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [form] = Form.useForm();
-
+  const handleCancel = () => {
+    form.resetFields();
+    onCancel();
+  };
   const handleSubmit = async () => {
     try {
       setIsSubmitting(true);
-      const values = await form.validateFields();
+      const values = await form.validateFields();      
       const data: UpdateMemberRequest = {
         member_id: currentMember.id,
         code: values.code,
         full_name: values.fullName,
       };
-      if (values.phoneNumber) {
-        data.phone_number = values.phoneNumber;
+      if (values.phone_number) {
+        data.phone_number = values.phone_number;
       }
       const message = await dfbServices.updateMember(data);
       notification.success({ message: message, type: "success" });
-      onCancel();
+      await onRefresh();
+      handleCancel();
     } catch (error: any) {
       const errorMessage = error.message || "An error occurred while updating the member.";
       notification.error({ message: errorMessage });
@@ -57,12 +64,12 @@ export function UpdateMemberModal(props: UpdateOrderModalProps) {
       title={"Update Member"}
       open={open}
       width={800}
+      onCancel={handleCancel}
       footer={[
         <Button
           key="cancel"
           onClick={() => {
-            form.resetFields();
-            onCancel();
+            handleCancel();
           }}
         >
           {"Cancel"}
@@ -80,21 +87,21 @@ export function UpdateMemberModal(props: UpdateOrderModalProps) {
             label="Full Name"
             rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} full name` }]}
           >
-            <Input />
+            <Input placeholder="Full Name..." />
           </Form.Item>
           <Form.Item
             name="code"
             label="Code"
             rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} member code` }]}
           >
-            <Input />
+            <Input placeholder="Code..." />
           </Form.Item>
           <Form.Item
-            name="phoneNumber"
+            name="phone_number"
             label="Phone Number"
-            rules={[{ required: false, message: `${MESSAGE_VALIDATE_BASE} phone number` }]}
+            rules={[{ required: false, validator: validatePhoneNumber }]}
           >
-            <Input />
+            <Input prefix={<PhoneOutlined className="site-form-item-icon" />} placeholder="Phone number..." />
           </Form.Item>
         </Form>
       </StyledModalContent>

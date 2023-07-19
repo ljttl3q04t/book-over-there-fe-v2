@@ -4,6 +4,7 @@ import dfbServices from "@/services/dfb";
 import { OrderInfos } from "@/services/types";
 import { Button, Tag, notification } from "antd";
 import moment from "moment";
+import styled from "styled-components";
 
 type DataType = {
   orderId: number;
@@ -18,7 +19,18 @@ type DataType = {
   overdueDay: number;
   dueDate: string;
 };
-
+type OrderTableProps = {
+  rowSelection: object;
+  tableData: DataType[];
+  tableLoading: boolean;
+};
+const StyledTable = styled(Table)`
+  .disabled-row {
+    background-color: #f5f5f5; /* Example background color for disabled rows */
+    pointer-events: none; /* Disable pointer events on the row */
+    opacity: 0.5; /* Example opacity for disabled rows */
+  }
+`;
 function OrderStatus(orderStatus: string) {
   const STATUS_COLORS: Record<string, string> = {
     created: "green",
@@ -32,102 +44,28 @@ function OrderStatus(orderStatus: string) {
   );
 }
 
-export function OrderTable() {
-  const [loading, setLoading] = useState(false);
-  const [orderIds, setOrderIds] = useState<number[]>([]);
-  const [tableData, setTableData] = useState<DataType[]>([]);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-
-  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-    setSelectedRowKeys(newSelectedRowKeys);
+export function OrderTable({ rowSelection, tableData, tableLoading }: OrderTableProps) {
+  const rowClassName = (record: DataType) => {
+    return record.orderStatus === "complete" ? "disabled-row" : "";
   };
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-  };
-
-  const handleReturnBooks = async () => {
-    try {
-      setLoading(true);
-      const data = {
-        order_detail_ids: selectedRowKeys.join(","),
-      };
-      const message = await dfbServices.returnBooks(data);
-      notification.success({ message: message, type: "success" });
-    } catch (error: any) {
-      console.error(error);
-      notification.error({ message: error.message });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchOrderIds = async () => {
-    try {
-      setLoading(true);
-      const _orderIds = await dfbServices.getOrderIds();
-      setOrderIds(_orderIds);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-  const fetchOrderInfos = async () => {
-    try {
-      setLoading(true);
-      const orderInfos: OrderInfos[] = await dfbServices.getOrderInfos(orderIds);
-      const data: DataType[] = [];
-      for (const order of orderInfos) {
-        for (const orderDetail of order.order_details) {
-          data.push({
-            orderId: order.id,
-            orderDetailId: orderDetail.id,
-            bookName: orderDetail.book_name,
-            bookCode: orderDetail.book_code,
-            memberFullName: order.member.full_name,
-            memberCode: order.member.code,
-            orderStatus: orderDetail.order_status,
-            orderDate: order.order_date,
-            returnDate: orderDetail.return_date,
-            overdueDay: orderDetail.overdue_day_count ?? 0,
-            dueDate: order.due_date,
-          });
-        }
-      }
-      setTableData(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchOrderIds();
-  }, []);
-
-  useEffect(() => {
-    if (orderIds.length > 0) {
-      fetchOrderInfos();
-    }
-  }, [orderIds]);
-
   const columns: ColumnsType<DataType> = [
     {
       title: "Order ID",
       dataIndex: "orderId",
       key: "orderId",
+      width: "5%",
     },
     {
       title: "Book Name",
       dataIndex: "bookName",
       key: "bookName",
+      width: "15%",
     },
     {
       title: "Book Code",
       dataIndex: "bookCode",
       key: "bookCode",
+      width: "7%",
     },
     {
       title: "Member Full Name",
@@ -172,17 +110,13 @@ export function OrderTable() {
   ];
   return (
     <>
-      <div style={{ padding: "16px" }}>
-        <Button onClick={handleReturnBooks} type="primary" loading={loading} disabled={!selectedRowKeys.length}>
-          Return Book
-        </Button>
-      </div>
       <Table
-        loading={loading}
+        loading={tableLoading}
         columns={columns}
         dataSource={tableData}
         scroll={{ x: 1000, y: 700 }}
         rowSelection={rowSelection}
+        rowClassName={rowClassName}
         rowKey="orderDetailId"
       ></Table>
     </>

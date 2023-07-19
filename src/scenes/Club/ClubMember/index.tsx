@@ -4,7 +4,10 @@ import { MemberTable } from "./MemberTable";
 import { Button, notification } from "antd";
 import { CreateMemberModal } from "./CreateMemberModal";
 import userService from "@/services/user";
-import { BookClubInfo } from "@/services/types";
+import { BookClubInfo, MemberInfos } from "@/services/types";
+import { PlusCircleOutlined } from "@ant-design/icons";
+import { useEffect, useState } from "react";
+import dfbServices from "@/services/dfb";
 
 const StyledClubOrder = styled.div`
   border-radius: 12px;
@@ -15,6 +18,7 @@ const StyledClubOrder = styled.div`
   > .table-extra-content {
     display: flex;
     justify-content: space-between;
+    padding: 20px 0;
     gap: 10px;
     h1 {
       font-size: 24px;
@@ -25,12 +29,19 @@ const StyledClubOrder = styled.div`
     }
   }
 `;
+type DataType = {
+  id: number;
+  fullName: string;
+  code: string;
+  phoneNumber: string;
+};
 
 const ClubMember = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [loading, setLoading] = React.useState(false);
-  const [openCreateModal, setOpenCreateMOdal] = React.useState(false);
-  const [staffClubs, setStaffClubs] = React.useState<BookClubInfo[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [tableLoading, setTableLoading] = useState(false);
+  const [openCreateModal, setOpenCreateMOdal] = useState(false);
+  const [staffClubs, setStaffClubs] = useState<BookClubInfo[]>([]);
+  const [tableData, setTableData] = useState<DataType[]>([]);
 
   const fetchInit = async () => {
     try {
@@ -43,21 +54,59 @@ const ClubMember = () => {
       setLoading(false);
     }
   };
+  const fetchMemberIds = async () => {
+    try {
+      setTableLoading(true);
+      const memberIds = await dfbServices.getMemberIds();
+      if (memberIds.length > 0) {
+        await fetchMemberInfos(memberIds);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setTableLoading(false);
+    }
+  };
+  const fetchMemberInfos = async (memberIds: number[]) => {
+    try {
+      const memberInfos: MemberInfos[] = await dfbServices.getMemberInfos(memberIds);
+      const data: DataType[] = [];
+      for (const member of memberInfos) {
+        data.push({
+          id: member.id,
+          fullName: member.full_name,
+          code: member.code,
+          phoneNumber: member.phone_number,
+        });
+      }
+      setTableData(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-  React.useEffect(() => {
+  useEffect(() => {
+    fetchMemberIds();
+  }, []);
+
+  useEffect(() => {
     fetchInit();
   }, []);
 
   return (
     <StyledClubOrder>
-      <Button
-        type="primary"
-        onClick={() => {
-          setOpenCreateMOdal(true);
-        }}
-      >
-        {"Create New Member"}
-      </Button>
+      <div className="table-extra-content">
+        <Button
+          type="primary"
+          icon={<PlusCircleOutlined />}
+          onClick={() => {
+            setOpenCreateMOdal(true);
+          }}
+        >
+          {"Add Member"}
+        </Button>
+      </div>
+
       <CreateMemberModal
         {...{
           open: openCreateModal,
@@ -67,7 +116,7 @@ const ClubMember = () => {
           },
         }}
       />
-      <MemberTable />
+      <MemberTable onRefresh={fetchMemberIds} tableData={tableData} tableLoading={loading} />
     </StyledClubOrder>
   );
 };

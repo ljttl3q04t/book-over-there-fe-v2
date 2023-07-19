@@ -1,6 +1,8 @@
 import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
+import { validatePhoneNumber } from "@/helpers/fuctionHepler";
 import dfbServices from "@/services/dfb";
 import { BookClubInfo } from "@/services/types";
+import { PhoneOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Modal, Select, notification } from "antd";
 import * as React from "react";
 import styled from "styled-components";
@@ -65,7 +67,7 @@ export function CreateMemberModal(props: CreateOrderModalProps) {
       <StyledModalContent>
         <Form {...layout} form={form} name="control-ref" style={{ width: 800 }}>
           <Form.Item name="club_id" label="Club" rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} club` }]}>
-            <Select value={staffClubs[0]?.id}>
+            <Select placeholder="Choose club..." value={staffClubs[0]?.id}>
               {staffClubs.map((club) => (
                 <Select.Option key={club.id} value={club.id}>
                   {club.name}
@@ -78,21 +80,21 @@ export function CreateMemberModal(props: CreateOrderModalProps) {
             label="Full Name"
             rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} full name` }]}
           >
-            <Input />
+            <Input placeholder="Fullname..." />
           </Form.Item>
           <Form.Item
             name="code"
             label="Code"
             rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} member code` }]}
           >
-            <Input />
+            <Input placeholder="Code..." />
           </Form.Item>
           <Form.Item
             name="phone_number"
             label="Phone Number"
-            rules={[{ required: false, message: `${MESSAGE_VALIDATE_BASE} phone number` }]}
+            rules={[{ required: false, validator: validatePhoneNumber}]}
           >
-            <Input />
+            <Input  prefix={<PhoneOutlined className="site-form-item-icon" />} placeholder="Phone number..." />
           </Form.Item>
         </Form>
       </StyledModalContent>

@@ -1,3 +1,5 @@
+import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
+
 export const getDeviceType = () => {
   const isMobile = window.matchMedia("(max-width: 464px)").matches;
   const isTablet = window.matchMedia("(min-width: 464px) and (max-width: 1024px)").matches;
@@ -56,4 +58,21 @@ export const formatDate = (dateString: string, format: string) => {
   formattedDate = formattedDate.replace("ss", seconds);
 
   return formattedDate;
+};
+
+export const validatePhoneNumber = (_: any, value: string) => {
+  const phoneRegex = /^\d{10}$/; // Assumes 10-digit phone numbers, adjust as per your needs
+  const numericRegex = /^\d+$/;
+
+  if (!value || (phoneRegex.test(value) && numericRegex.test(value))) {
+    return Promise.resolve();
+  }
+  return Promise.reject(`${MESSAGE_VALIDATE_BASE} 10 digits phone number`);
+};
+
+export const decodeJWT = (token: string) => {
+  const payloadBase64 = token.split(".")[1];
+  const decodedPayload = atob(payloadBase64);
+  const parsedPayload = JSON.parse(decodedPayload);
+  return parsedPayload;
 };

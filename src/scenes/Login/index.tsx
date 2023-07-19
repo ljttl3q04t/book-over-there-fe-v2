@@ -9,6 +9,7 @@ import { AuthService } from "../../services/auth";
 import { UserContext } from "@/context/UserContext";
 import styled from "styled-components";
 import ResetPasswordModal from "@/component/ResetPasswordModal";
+import { decodeJWT } from "@/helpers/fuctionHepler";
 const StyledLoginPage = styled.div`
   box-sizing: border-box;
   display: flex;
@@ -113,6 +114,8 @@ const Login = () => {
       (token: any) => {
         const tokenn = token.data.access_token;
         localStorage.setItem("access_token", tokenn);
+        const {user_id} = decodeJWT(tokenn);
+        token.data.user.user_id = user_id;
         navigate("/");
         notification.success({
           message: "Login successfully!",
