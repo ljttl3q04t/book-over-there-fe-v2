@@ -10,6 +10,7 @@ interface User {
   full_name: string;
   birth_date: string;
   user_id: number;
+  membership_info: number;
   // Add any other properties you need for the user
 }
 

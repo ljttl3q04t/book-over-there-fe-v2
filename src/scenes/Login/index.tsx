@@ -10,6 +10,7 @@ import { UserContext } from "@/context/UserContext";
 import styled from "styled-components";
 import ResetPasswordModal from "@/component/ResetPasswordModal";
 import { decodeJWT } from "@/helpers/fuctionHepler";
+import userService from "@/services/user";
 const StyledLoginPage = styled.div`
   box-sizing: border-box;
   display: flex;
@@ -107,15 +108,21 @@ const Login = () => {
   const navigate = useNavigate();
   const [openResetPassword, setOpenResetPassword] = useState(false);
 
-  const onFinish = (values: any) => {
+  const onFinish = async (values: any) => {
     AuthService.login(
       values.username,
       values.password,
-      (token: any) => {
+      async (token: any) => {
         const tokenn = token.data.access_token;
         localStorage.setItem("access_token", tokenn);
         const { user_id } = decodeJWT(tokenn);
         token.data.user.user_id = user_id;
+        const response: any = await userService.getUserMembership();
+        console.log(response,"response");
+        
+        if (response.data && response.data.length > 0) {
+          token.data.user.membership_info = response.data;
+        }
         navigate("/");
         notification.success({
           message: "Login successfully!",

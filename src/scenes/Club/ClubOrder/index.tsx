@@ -3,11 +3,14 @@ import styled from "styled-components";
 import { OrderTable } from "./OrderTable";
 import { Button, notification } from "antd";
 import { CreateOrderModal } from "./CreateOrderModal";
+import { ReturnOrderModal } from "./ReturnOrderModal";
 import dfbServices from "@/services/dfb";
 import { BookClubInfo, ClubBookInfos, MemberInfos, OrderInfos } from "@/services/types";
 import userService from "@/services/user";
 import { useTranslation } from "react-i18next";
 import { DataType } from "./types";
+import { useState } from "react";
+import dayjs from "dayjs";
 
 const StyledClubOrder = styled.div`
   border-radius: 12px;
@@ -31,13 +34,16 @@ const StyledClubOrder = styled.div`
 `;
 
 const ClubOrder = () => {
-  const [loading, setLoading] = React.useState(false);
-  const [openCreateOrderModal, setOpenCreateOrderModal] = React.useState(false);
-  const [members, setMembers] = React.useState<MemberInfos[]>([]);
-  const [staffClubs, setStaffClubs] = React.useState<BookClubInfo[]>([]);
-  const [clubBookInfos, setClubBookInfos] = React.useState<ClubBookInfos[]>([]);
-  const [selectedRowKeys, setSelectedRowKeys] = React.useState<React.Key[]>([]);
-  const [tableData, setTableData] = React.useState<DataType[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [openCreateOrderModal, setOpenCreateOrderModal] = useState(false);
+  const [openReturnOrderModal, setOpenReturnOrderModal] = useState(false);
+  const [members, setMembers] = useState<MemberInfos[]>([]);
+  const [staffClubs, setStaffClubs] = useState<BookClubInfo[]>([]);
+  const [clubBookInfos, setClubBookInfos] = useState<ClubBookInfos[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [tableData, setTableData] = useState<DataType[]>([]);
+  const [selectedRows, setSelectedRows] = useState<DataType[]>([]);
+
   const { t } = useTranslation();
 
   const fetchOrderIds = async () => {
@@ -83,8 +89,9 @@ const ClubOrder = () => {
     }
   };
 
-  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+  const onSelectChange = (newSelectedRowKeys: React.Key[], selectedRows: any) => {
     setSelectedRowKeys(newSelectedRowKeys);
+    setSelectedRows(selectedRows);
   };
   const rowSelection = {
     selectedRowKeys,
@@ -111,14 +118,17 @@ const ClubOrder = () => {
       setLoading(false);
     }
   };
-  const handleReturnBooks = async () => {
-    try {
+  const handleReturnBooks = async (formData: any) => {
+    try {      
       setLoading(true);
       const data = {
         order_detail_ids: selectedRowKeys.join(","),
+        return_date:dayjs(formData.return_date).format('YYYY-MM-DD'),
       };
       const message = await dfbServices.returnBooks(data);
       notification.success({ message: message, type: "success" });
+      await fetchOrderIds();
+      setOpenReturnOrderModal(false)
     } catch (error: any) {
       console.error(error);
       notification.error({ message: error.message });
@@ -142,7 +152,12 @@ const ClubOrder = () => {
         >
           {t("Create New Order") as string}
         </Button>
-        <Button onClick={handleReturnBooks} type="primary" loading={loading} disabled={!selectedRowKeys.length}>
+        <Button
+          onClick={() => setOpenReturnOrderModal(true)}
+          type="primary"
+          loading={loading}
+          disabled={!selectedRowKeys.length}
+        >
           Return Book
         </Button>
       </div>
@@ -158,6 +173,13 @@ const ClubOrder = () => {
           await fetchOrderIds();
         }}
       />
+      <ReturnOrderModal
+        open={openReturnOrderModal}
+        onCancel={() => setOpenReturnOrderModal(false)}
+        handleReturnBooks={handleReturnBooks}
+        loading={loading}
+        selectedRows={selectedRows}
+      ></ReturnOrderModal>
       <OrderTable tableLoading={loading} tableData={tableData} rowSelection={rowSelection} />
     </StyledClubOrder>
   );
