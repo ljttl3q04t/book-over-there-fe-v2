@@ -138,6 +138,16 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
           </>
         ) : (
           <StyledActionLog>
+             <Select
+              value={language}
+              style={{ width: 120 }}
+              onChange={handleChangeLanguage}
+              options={[
+                { value: "vi", label: t('common.vietnames') },
+                { value: "en", label: t('common.english') },
+                
+              ]}
+            />
             <Button
               icon={<UserOutlined />}
               type="primary"
