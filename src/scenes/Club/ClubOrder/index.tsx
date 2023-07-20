@@ -1,16 +1,19 @@
 import * as React from "react";
 import styled from "styled-components";
 import { OrderTable } from "./OrderTable";
-import { Button, notification } from "antd";
+import { Button, DatePicker, Row, Select, notification } from "antd";
 import { CreateOrderModal } from "./CreateOrderModal";
 import { ReturnOrderModal } from "./ReturnOrderModal";
 import dfbServices from "@/services/dfb";
 import { BookClubInfo, ClubBookInfos, MemberInfos, OrderInfos } from "@/services/types";
 import userService from "@/services/user";
 import { useTranslation } from "react-i18next";
-import { DataType } from "./types";
+import { DataType, ORDER_STATUS_LIST } from "./types";
 import { useState } from "react";
 import dayjs from "dayjs";
+import { dateFormatList } from "@/helpers/DateHelper";
+
+const { RangePicker } = DatePicker;
 
 const StyledClubOrder = styled.div`
   border-radius: 12px;
@@ -20,8 +23,7 @@ const StyledClubOrder = styled.div`
   margin-top: 30px;
   > .table-extra-content {
     display: flex;
-    justify-content: space-between;
-    gap: 10px;
+    gap: 32px;
     padding: 20px 0;
     h1 {
       font-size: 24px;
@@ -73,6 +75,7 @@ const ClubOrder = () => {
             bookCode: orderDetail.book_code,
             memberFullName: order.member.full_name,
             memberCode: order.member.code,
+            memberPhoneNumber: order.member.phone_number,
             orderStatus: orderDetail.order_status,
             orderDate: order.order_date,
             returnDate: orderDetail.return_date,
@@ -119,16 +122,16 @@ const ClubOrder = () => {
     }
   };
   const handleReturnBooks = async (formData: any) => {
-    try {      
+    try {
       setLoading(true);
       const data = {
         order_detail_ids: selectedRowKeys.join(","),
-        return_date:dayjs(formData.return_date).format('YYYY-MM-DD'),
+        return_date: dayjs(formData.return_date).format("YYYY-MM-DD"),
       };
       const message = await dfbServices.returnBooks(data);
       notification.success({ message: message, type: "success" });
       await fetchOrderIds();
-      setOpenReturnOrderModal(false)
+      setOpenReturnOrderModal(false);
     } catch (error: any) {
       console.error(error);
       notification.error({ message: error.message });
@@ -143,6 +146,23 @@ const ClubOrder = () => {
 
   return (
     <StyledClubOrder>
+      <Row className="table-extra-content">
+        <Select
+          style={{ width: "12%" }}
+          placeholder={t("Order Status") as string}
+          filterOption={(input, option: any) =>
+            (option?.children ?? "").toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+        >
+          <Select.Option value="all">{(t("orderStatus.all") as string).toUpperCase()}</Select.Option>
+          {ORDER_STATUS_LIST.map((orderStatus: string) => (
+            <Select.Option key={orderStatus} value={orderStatus}>
+              {(t(`orderStatus.${orderStatus}`) as string).toUpperCase()}
+            </Select.Option>
+          ))}
+        </Select>
+        <RangePicker style={{ width: "12%" }} format={dateFormatList} />
+      </Row>
       <div className="table-extra-content">
         <Button
           type="primary"
@@ -158,7 +178,7 @@ const ClubOrder = () => {
           loading={loading}
           disabled={!selectedRowKeys.length}
         >
-          Return Book
+          {t("Return Book") as string}
         </Button>
       </div>
       <CreateOrderModal

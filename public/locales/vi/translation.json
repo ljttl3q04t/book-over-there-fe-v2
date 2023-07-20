@@ -10,6 +10,12 @@
   "sidebar": {
     "homePage": "Trang chủ"
   },
+  "orderStatus": {
+    "complete": "Đã Trả",
+    "overdue": "Quá Hạn",
+    "created": "Đang Mượn",
+    "all": "Tất cả"
+  },
   "Book Name": "Tên Sách",
   "Book Code": "Mã Sách",
   "Reader Full Name": "H&T Bạn Đọc",
@@ -19,9 +25,10 @@
   "Return Date": "Ngày Trả",
   "Due Date": "Hạn Trả",
   "Overdue Day": "Số ngày quá hạn",
-  "Create New Order": "Tạo Order Mới",
+  "Create New Order": "Mượn sách",
   "New Member": "Bạn Đọc Mới",
   "Full Name": "Họ và Tên",
   "Phone Number": "Số Điện Thoại",
-  "Duplicated member code": "Mã bạn đọc đã tồn tại"
+  "Duplicated member code": "Mã bạn đọc đã tồn tại",
+  "Return Book": "Trả sách"
 }

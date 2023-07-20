@@ -1,4 +1,3 @@
-import * as React from "react";
 import Table, { ColumnsType } from "antd/es/table";
 import { Tag } from "antd";
 import moment from "moment";
@@ -10,7 +9,7 @@ type OrderTableProps = {
   tableData: DataType[];
   tableLoading: boolean;
 };
-function OrderStatus(orderStatus: string) {
+function OrderStatus(orderStatus: string, value: string) {
   const STATUS_COLORS: Record<string, string> = {
     created: "green",
     overdue: "red",
@@ -18,7 +17,7 @@ function OrderStatus(orderStatus: string) {
   const color = STATUS_COLORS[orderStatus] ?? "geekblue";
   return (
     <Tag color={color} key={orderStatus}>
-      {orderStatus.toUpperCase()}
+      {value.toUpperCase()}
     </Tag>
   );
 }
@@ -59,14 +58,14 @@ export function OrderTable({ rowSelection, tableData, tableLoading }: OrderTable
     },
     {
       title: t("Phone Number") as string,
-      dataIndex: "phoneNumber",
-      key: "phoneNumber",
+      dataIndex: "memberPhoneNumber",
+      key: "memberPhoneNumber",
     },
     {
       title: t("Order Status") as string,
       dataIndex: "orderStatus",
       key: "orderStatus",
-      render: OrderStatus,
+      render: (v) => OrderStatus(v, t(`orderStatus.${v}`)),
     },
     {
       title: t("Order Date") as string,

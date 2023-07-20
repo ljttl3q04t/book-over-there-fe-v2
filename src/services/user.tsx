@@ -15,10 +15,6 @@ const registerUser = (data: any) => {
   return axiosApi.post("/user/register", data);
 };
 
-const getUser = () => {
-  return ApiServiceAuthor.get("/user/info");
-};
-
 const getUserMembership = () => {
   return ApiServiceAuthor.get("/user/membership");
 };
@@ -78,7 +74,6 @@ async function updatePassword(data: UpdatePasswordParams): Promise<string> {
 
 const userService = {
   registerUser,
-  getUser,
   updateUser,
   getUserMembership,
   getUserShareClub,

@@ -118,8 +118,6 @@ const Login = () => {
         const { user_id } = decodeJWT(tokenn);
         token.data.user.user_id = user_id;
         const response: any = await userService.getUserMembership();
-        console.log(response,"response");
-        
         if (response.data && response.data.length > 0) {
           token.data.user.membership_info = response.data;
         }

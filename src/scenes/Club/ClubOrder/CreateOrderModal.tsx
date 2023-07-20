@@ -14,7 +14,7 @@ type CreateOrderModalProps = {
   members: MemberInfos[];
   clubBookInfos: ClubBookInfos[];
   staffClubs: BookClubInfo[];
-  onRefresh: () => void;
+  onRefresh: any;
 };
 
 const StyledModalContent = styled.div`
