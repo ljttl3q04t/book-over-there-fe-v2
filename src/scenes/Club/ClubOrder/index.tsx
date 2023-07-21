@@ -161,7 +161,7 @@ const ClubOrder = () => {
       const data = await form.validateFields();
       setFilterData(data);
       if (data.order_date) {
-        data.order_date = dayjs(data.joined_at).format("YYYY-MM-DD");
+        data.order_date = dayjs(data.order_date).format("YYYY-MM-DD");
       }
       const _orderIds = await dfbServices.getOrderIds(data);
       setOrderIds(_orderIds);
