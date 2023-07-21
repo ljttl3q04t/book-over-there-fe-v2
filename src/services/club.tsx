@@ -1,9 +1,12 @@
 import { RcFile } from "antd/es/upload";
 import { ApiServiceAuthor, axiosApi } from "../http-common";
+
 export interface UpdateMemberClubForm {
   membership_id: number;
-  member_status: string;
+  member_status?: string;
+  is_staff?: boolean;
 }
+
 export interface ClubMemberOrderCreateForm {
   membership_id: number | undefined;
   member_book_copy_ids: number[];
@@ -60,9 +63,21 @@ const getClubBookList = () => {
 const getClubMemberList = () => {
   return ApiServiceAuthor.get("/club/member/list");
 };
-const updateMemberClub = (data: UpdateMemberClubForm) => {
-  return ApiServiceAuthor.post("/club/member/update", data);
-};
+
+async function updateMemberClub(data: UpdateMemberClubForm): Promise<string> {
+  try {
+    const response = await ApiServiceAuthor.post("/club/member/update", data);
+    if (response.data.message) {
+      return response.data.message;
+    } else {
+      throw new Error(response.data.error);
+    }
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "An error occurred";
+    throw new Error(errorMessage);
+  }
+}
+
 const getClubStaffBookList = (params: ClubStaffBookListParams = {}) => {
   const {
     searchText = "",

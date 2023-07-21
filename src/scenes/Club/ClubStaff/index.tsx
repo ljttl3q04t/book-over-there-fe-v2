@@ -1,11 +1,12 @@
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState, useRef, useContext } from "react";
 import Table, { ColumnsType } from "antd/es/table";
 
 import styled from "styled-components";
-import ClubService from "@/services/club";
+import ClubService, { UpdateMemberClubForm } from "@/services/club";
 import dayjs from "dayjs";
-import { Tag } from "antd";
+import { Button, Tag, notification } from "antd";
 import { useTranslation } from "react-i18next";
+import { UserContext } from "@/context/UserContext";
 
 const StyledClubStaffList = styled.div`
   border-radius: 12px;
@@ -28,6 +29,10 @@ const StyledClubStaffList = styled.div`
   }
 `;
 type MemberStatus = "active" | "pending";
+const MEMBER_STATUS = {
+  ACTIVE: "active",
+  PENDING: "pending",
+};
 const statusColors = {
   active: "green",
   pending: "geekblue",
@@ -52,7 +57,30 @@ const ClubStaff = () => {
   const [loading, setLoading] = useState(false);
   const [clubMemberTableSource, setClubMemberTableSource] = useState<DataType[]>([]);
   const bookClubName = useRef<string>("");
+  const { user } = useContext(UserContext);
+
   const { t } = useTranslation();
+
+  const handleUpdateMember = async (record: any, action: "approve" | "setStaff", isStaff?: boolean) => {
+    try {
+      setLoading(true);
+      const updateMemberForm: UpdateMemberClubForm = {
+        membership_id: record.membershipId,
+      };
+      if (action === "approve") {
+        updateMemberForm.member_status = MEMBER_STATUS.ACTIVE;
+      } else {
+        updateMemberForm.is_staff = isStaff;
+      }
+      const message = await ClubService.updateMemberClub(updateMemberForm);
+      notification.success({ message: t(message) as string, type: "success" });
+      initFetch();
+    } catch (error: any) {
+      notification.error({ message: t(error.message) as string });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const initFetch = useCallback(async () => {
     setLoading(true);
@@ -89,7 +117,7 @@ const ClubStaff = () => {
   const memberStatusMapping = (status: MemberStatus) => {
     return (
       <Tag color={statusColors[status]} key={status}>
-        {status.toUpperCase()}
+        {(t(status) as string).toUpperCase()}
       </Tag>
     );
   };
@@ -113,7 +141,7 @@ const ClubStaff = () => {
     {
       title: t("Member Status") as string,
       dataIndex: "",
-      key: "",
+      key: "memberStatus",
       width: "10%",
       render: (item: any) => {
         return memberStatusMapping(item.memberStatus);
@@ -133,11 +161,45 @@ const ClubStaff = () => {
     },
     {
       title: t("Staff") as string,
-      key: "iStaff",
+      key: "isStaff",
       dataIndex: "isStaff",
       width: "10%",
       render: (item: any) => {
-        return memberStaffMapping(item.isStaff);
+        return memberStaffMapping(item);
+      },
+    },
+    {
+      title: t("Action") as string,
+      key: "action",
+      dataIndex: "action",
+      width: "20%",
+      render: (_item, record) => {
+        return (
+          <>
+            {record?.memberStatus === MEMBER_STATUS.PENDING && (
+              <Button
+                type="primary"
+                onClick={() => {
+                  handleUpdateMember(record, "approve");
+                }}
+                loading={loading}
+              >
+                {t("Approve") as string}
+              </Button>
+            )}
+            {user?.is_club_admin && record?.memberStatus === MEMBER_STATUS.ACTIVE && record.isStaff == false && (
+              <Button
+                type="primary"
+                onClick={() => {
+                  handleUpdateMember(record, "setStaff", !record.isStaff);
+                }}
+                loading={loading}
+              >
+                {t("Staff") as string}
+              </Button>
+            )}
+          </>
+        );
       },
     },
   ];

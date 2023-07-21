@@ -4,6 +4,7 @@ interface User {
   username: string;
   email: string;
   is_staff: boolean;
+  is_club_admin: boolean;
   address: string;
   avatar: string;
   phone_number: string;

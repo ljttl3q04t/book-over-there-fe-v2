@@ -44,5 +44,17 @@
   "Book": "Sách",
   "Club Member": "Thành viên",
   "Club List": "CLB",
-  "Club": "CLB Sách"
+  "Club": "CLB Sách",
+  "No.": "STT",
+  "Joined Date": "Ngày Tham Gia",
+  "Leave Date": "Ngày Rời Khỏi",
+  "Member Status": "Trạng Thái",
+  "Staff": "Thủ Thư",
+  "Member Name": "Tên Thành Viên",
+  "Action": "Thao Tác",
+  "Approve": "Chấp Thuận",
+  "pending": "Đang Chờ",
+  "active": "Đang Hoạt Động",
+  "Approve successfully": "Chấp thuận thành công",
+  "An error occurred": "Có lỗi xảy ra"
 }

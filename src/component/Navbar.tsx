@@ -36,10 +36,6 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
   const { user, logoutUser, language, changeLanguage } = useContext(UserContext);
   const { t, i18n } = useTranslation();
 
-  const handleChangePassword = (_e: any) => {
-    setChangePW(true);
-  };
-
   const handleLogout = (_e: any) => {
     logoutUser();
     localStorage.clear();

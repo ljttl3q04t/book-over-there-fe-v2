@@ -4,7 +4,6 @@ import {
   HomeOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  MessageOutlined,
   TeamOutlined,
   UnorderedListOutlined,
   UserOutlined,
