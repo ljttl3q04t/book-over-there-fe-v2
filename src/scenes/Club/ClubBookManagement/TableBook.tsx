@@ -13,7 +13,7 @@ function TableBook({ loading, clubBookInfos }: TableBookProps) {
   const columns = [
     {
       title: "",
-      dataIndex: "image",
+      dataIndex: ["book", "image"],
       key: "",
       width: "10%",
       render: (_values: any) => {

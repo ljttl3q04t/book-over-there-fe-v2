@@ -1,6 +1,6 @@
 import { getBookByLink } from "@/scenes/User/MyBook/callService";
 import dfbServices from "@/services/dfb";
-import { CategoryInfos } from "@/services/types";
+import { BookClubInfo, CategoryInfos } from "@/services/types";
 import { PlusOutlined } from "@ant-design/icons";
 import {
   Button,
@@ -18,6 +18,14 @@ import {
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import Tooltip from "antd/lib/tooltip";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
+
+type DrawerAddBookProps = {
+  open: boolean;
+  onClose: any;
+  categories: any;
+  club: BookClubInfo | undefined;
+};
 
 const { Search } = Input;
 const getBase64 = (file: RcFile): Promise<string> =>
@@ -28,7 +36,7 @@ const getBase64 = (file: RcFile): Promise<string> =>
     reader.onerror = (error) => reject(error);
   });
 
-function DrawerAddBook({ open, onClose, title, categories }: any) {
+function DrawerAddBook({ open, onClose, club, categories }: DrawerAddBookProps) {
   const [form] = Form.useForm();
   const formRef = React.useRef<FormInstance>(form);
   const [previewOpen, setPreviewOpen] = React.useState(false);
@@ -36,11 +44,13 @@ function DrawerAddBook({ open, onClose, title, categories }: any) {
   const [previewTitle, setPreviewTitle] = React.useState("");
   const [fileList, setFileList] = React.useState<UploadFile[]>([]);
   const [fileListPreview, setFileListPreview] = React.useState<UploadFile[]>([]);
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+
+  const { t } = useTranslation();
 
   const onFinish = async (values: any) => {
     try {
-      setIsLoading(true);
+      setLoading(true);
       const formData = new FormData();
       formData.append("name", values.name);
       formData.append("code", values.code);
@@ -48,13 +58,16 @@ function DrawerAddBook({ open, onClose, title, categories }: any) {
       formData.append("author", values.author);
       formData.append("init_count", values.initialCount);
       formData.append("current_count", values.currentCount);
-      formData.append("club_id", "5");
-
+      formData.append("club_id", (club?.id ?? "").toString());
+      if (fileList[0]) {
+        formData.append("image", (fileList[0] as RcFile) ? (fileList[0] as RcFile) : "");
+      } else {
+        formData.append("image_url", values.image);
+      }
       const message = await dfbServices.createBook(formData);
       notification.success({ message: message, type: "success" });
       onClose();
       setFileListPreview([]);
-      setIsLoading(false);
     } catch (err: any) {
       if (!fileList[0]) {
         notification.error({
@@ -71,8 +84,9 @@ function DrawerAddBook({ open, onClose, title, categories }: any) {
           });
         });
       });
+    } finally {
+      setLoading(false);
     }
-    setIsLoading(false);
   };
 
   const props: UploadProps = {
@@ -126,7 +140,7 @@ function DrawerAddBook({ open, onClose, title, categories }: any) {
 
   const changeLink = async (value: string) => {
     try {
-      setIsLoading(true);
+      setLoading(true);
       const book: any = await getBookByLink({ remote_url: value });
       if (book) {
         formRef.current?.setFieldsValue({
@@ -143,7 +157,7 @@ function DrawerAddBook({ open, onClose, title, categories }: any) {
           },
         ]);
       }
-      setIsLoading(false);
+      setLoading(false);
     } catch (error) {
       console.error(error);
     }
@@ -152,7 +166,7 @@ function DrawerAddBook({ open, onClose, title, categories }: any) {
   return (
     <Drawer
       size={"large"}
-      title={title}
+      title={t("Add Book") as string}
       onClose={() => {
         onClose();
         setFileListPreview([]);
@@ -168,7 +182,7 @@ function DrawerAddBook({ open, onClose, title, categories }: any) {
           >
             Cancel
           </Button>
-          <Button onClick={() => form.submit()} type="primary">
+          <Button onClick={() => form.submit()} type="primary" loading={loading}>
             Save
           </Button>
         </Space>
@@ -178,7 +192,7 @@ function DrawerAddBook({ open, onClose, title, categories }: any) {
         <Form.Item name="link" label="Link">
           <Tooltip title="You can select link book from Tiki or Fahasa " color={"#108ee9"}>
             <Search
-              disabled={isLoading}
+              disabled={loading}
               size="large"
               style={{ width: "100%" }}
               placeholder="You can select link book from Tiki or Fahasa"
@@ -195,15 +209,27 @@ function DrawerAddBook({ open, onClose, title, categories }: any) {
           </Modal>
         </Form.Item>
 
-        <Form.Item name="name" label="Name" rules={[{ required: true, message: "Please enter name" }]}>
+        <Form.Item
+          name="name"
+          label={t("Book Name") as string}
+          rules={[{ required: true, message: "Please enter name" }]}
+        >
           <Input style={{ width: "100%" }} placeholder="Please enter name" min={1} />
         </Form.Item>
 
-        <Form.Item name="code" label="Code" rules={[{ required: true, message: "Please enter code" }]}>
+        <Form.Item
+          name="code"
+          label={t("Book Code") as string}
+          rules={[{ required: true, message: "Please enter code" }]}
+        >
           <Input style={{ width: "100%" }} placeholder="Please enter code" min={1} />
         </Form.Item>
 
-        <Form.Item name="category" label="Category" rules={[{ required: true, message: "Please select a category" }]}>
+        <Form.Item
+          name="category"
+          label={t("Category") as string}
+          rules={[{ required: true, message: "Please select a category" }]}
+        >
           <Select
             placeholder="Please select a category"
             showSearch
@@ -219,13 +245,17 @@ function DrawerAddBook({ open, onClose, title, categories }: any) {
           </Select>
         </Form.Item>
 
-        <Form.Item name="author" label="Author" rules={[{ required: true, message: "Please enter author" }]}>
+        <Form.Item
+          name="author"
+          label={t("Author") as string}
+          rules={[{ required: true, message: "Please enter author" }]}
+        >
           <Input style={{ width: "100%" }} placeholder="Please enter author" />
         </Form.Item>
 
         <Form.Item
           name="initialCount"
-          label="Initial Count"
+          label={t("Initial Count") as string}
           rules={[{ required: true, message: "Please enter the initial count" }]}
         >
           <InputNumber style={{ width: "100%" }} placeholder="Please enter the initial count" />
@@ -233,7 +263,7 @@ function DrawerAddBook({ open, onClose, title, categories }: any) {
 
         <Form.Item
           name="currentCount"
-          label="Current Count"
+          label={t("Current Count") as string}
           rules={[{ required: true, message: "Please enter the current count" }]}
         >
           <InputNumber style={{ width: "100%" }} placeholder="Please enter the current count" />
