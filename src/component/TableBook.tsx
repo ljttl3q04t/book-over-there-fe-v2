@@ -87,7 +87,17 @@ function TableBook({ loading, setLoading, clubBookIds }: TableBookProps) {
 
   return (
     <>
-      <Table loading={loading} columns={columns} scroll={{ x: 1500, y: 700 }} dataSource={dataTable} />
+      <Table
+        loading={loading}
+        columns={columns}
+        scroll={{ x: 1500, y: 700 }}
+        dataSource={dataTable}
+        pagination={{
+          defaultPageSize: 50, // Set the default pageSize to 50
+          showSizeChanger: true, // Optional: To allow users to change pageSize
+          pageSizeOptions: ["10", "20", "50", "100"], // Optional: Specify other pageSize options
+        }}
+      />
     </>
   );
 }
