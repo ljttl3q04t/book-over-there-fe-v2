@@ -16,6 +16,9 @@
     "created": "Đang Mượn",
     "all": "Tất cả"
   },
+  "Login": "Đăng Nhập",
+  "Logout": "Đăng Xuất",
+  "Register": "Đăng Ký",
   "Book Name": "Tên Sách",
   "Book Code": "Mã Sách",
   "Reader Full Name": "H&T Bạn Đọc",

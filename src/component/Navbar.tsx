@@ -48,12 +48,7 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
 
   const items: MenuProps["items"] = [
     {
-      label: "Change password",
-      key: "1",
-      onClick: handleChangePassword,
-    },
-    {
-      label: "Logout",
+      label: t("Logout") as string,
       key: "2",
       onClick: handleLogout,
     },
@@ -123,7 +118,7 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
                   marginLeft: 5,
                 }}
               >
-                Login
+                {t("Login") as string}
               </Space>
             </Button>
             <Button
@@ -140,7 +135,7 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
                   marginLeft: 5,
                 }}
               >
-                Register
+                {t("Register") as string}
               </Space>
             </Button>
           </StyledActionLog>
