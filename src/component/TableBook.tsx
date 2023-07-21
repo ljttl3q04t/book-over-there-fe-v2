@@ -26,6 +26,7 @@ const columns: ColumnsType<DataTypeClubBook> = [
     title: "",
     dataIndex: "image",
     key: "",
+    width: "10%",
     render: (_values: any) => {
       return (
         <>
@@ -38,16 +39,19 @@ const columns: ColumnsType<DataTypeClubBook> = [
     title: "Name",
     dataIndex: "bookName",
     key: "bookName",
+    width: "50%",
   },
   {
     title: "Category",
     dataIndex: "categoryName",
     key: "categoryName",
+    width: "15%",
   },
   {
     title: "Author",
     key: "authorName",
     dataIndex: "authorName",
+    width: "15%",
   },
 ];
 
