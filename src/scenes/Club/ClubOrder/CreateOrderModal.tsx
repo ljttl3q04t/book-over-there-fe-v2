@@ -30,15 +30,25 @@ export function CreateOrderModal(props: CreateOrderModalProps) {
   const { open, onCancel, members, clubBookInfos, staffClubs, onRefresh } = props;
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isNewMember, setIsNewMember] = React.useState(false);
+  const { t } = useTranslation();
+
   const [form] = Form.useForm();
   const formRef = React.useRef<FormInstance>(form);
-  const { t } = useTranslation();
+  const [orderDate, setOrderDate] = React.useState(moment());
+  const [dueDate, setDueDate] = React.useState(moment().add(35, "days"));
+
+  const handleOrderDateChange = (date: any) => {
+    const newDueDate = date.add(35, "days");
+    setOrderDate(date);
+    setDueDate(newDueDate);
+    formRef.current?.setFieldsValue({ due_date: newDueDate });
+  };
 
   React.useEffect(() => {
     formRef.current?.setFieldsValue({
       club: staffClubs[0]?.id,
-      order_date: moment(),
-      due_date: moment().add(35, "days"),
+      order_date: orderDate,
+      due_date: dueDate,
     });
     setIsNewMember(false);
   }, [open]);
@@ -97,7 +107,7 @@ export function CreateOrderModal(props: CreateOrderModalProps) {
       centered
     >
       <StyledModalContent>
-        <Form {...layout} form={form} name="control-ref" style={{ width: 800 }}>
+        <Form {...layout} form={form} ref={formRef} name="control-ref" style={{ width: 800 }}>
           <Form.Item name="club" label="Club" rules={[{ required: true, message: "Please select club" }]}>
             <Select placeholder="Please select a club">
               {staffClubs.map((club) => (
@@ -108,9 +118,12 @@ export function CreateOrderModal(props: CreateOrderModalProps) {
             </Select>
           </Form.Item>
 
-          <Form.Item name="member" label="Member" rules={[{ required: true, message: "Please select a member" }]}>
+          <Form.Item
+            name="member"
+            label={t("Select Member") as string}
+            rules={[{ required: true, message: t("Please select a member") as string }]}
+          >
             <Select
-              placeholder="Please select a member"
               showSearch
               filterOption={(input, option: any) =>
                 (option?.children ?? "").toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -147,7 +160,7 @@ export function CreateOrderModal(props: CreateOrderModalProps) {
               <Form.Item
                 name="memberPhoneNumber"
                 label={t("Phone Number") as string}
-                rules={[{ required: false, message: `${MESSAGE_VALIDATE_BASE} phone number` }]}
+                rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} phone number` }]}
               >
                 <Input />
               </Form.Item>
@@ -155,12 +168,11 @@ export function CreateOrderModal(props: CreateOrderModalProps) {
           )}
 
           <Form.Item
-            label="Select Books"
+            label={t("Select Books") as string}
             name="select_books"
-            rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} select at least one book` }]}
+            rules={[{ required: true, message: t("Please enter your select at least one book") as string }]}
           >
             <Select
-              placeholder="Find books..."
               mode="multiple"
               showArrow
               style={{ width: "100%" }}
@@ -169,6 +181,9 @@ export function CreateOrderModal(props: CreateOrderModalProps) {
                 (option?.children ?? "").toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
             >
+              {clubBookInfos.map((item) => (
+                <Select.Option value={item.id}>{`${item.book.name} - ${item.code}`}</Select.Option>
+              ))}
               {clubBookInfos.map((item) => {
                 return <Select.Option value={item.id}>{`${item.book.name}`}</Select.Option>;
               })}
@@ -178,17 +193,19 @@ export function CreateOrderModal(props: CreateOrderModalProps) {
           <Form.Item
             name="order_date"
             label={t("Order Date") as string}
+            initialValue={orderDate}
             rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} order time` }]}
           >
-            <DatePicker format={["DD/MM/YYYY"]} />
+            <DatePicker format={["DD/MM/YYYY"]} onChange={handleOrderDateChange} />
           </Form.Item>
 
           <Form.Item
             name="due_date"
             label={t("Due Date") as string}
+            initialValue={dueDate}
             rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} order time` }]}
           >
-            <DatePicker format={["DD/MM/YYYY"]} />
+            <DatePicker format={["DD/MM/YYYY"]} disabled />
           </Form.Item>
         </Form>
       </StyledModalContent>
