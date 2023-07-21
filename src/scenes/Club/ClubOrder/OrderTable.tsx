@@ -12,7 +12,7 @@ type OrderTableProps = {
 function OrderStatus(orderStatus: string, value: string) {
   const STATUS_COLORS: Record<string, string> = {
     created: "green",
-    overdue: "red",
+    overdue: "volcano",
   };
   const color = STATUS_COLORS[orderStatus] ?? "geekblue";
   return (
@@ -85,10 +85,14 @@ export function OrderTable({ rowSelection, tableData, tableLoading }: OrderTable
       dataIndex: "overdueDay",
       key: "overdueDay",
       render: (v, record) => {
-        const today = moment().startOf("day");
-        const dueDateObj = moment(record.dueDate, "YYYY-MM-DD").startOf("day");
-        const overdueDay = today.diff(dueDateObj, "days");
-        return overdueDay < 0 ? v : overdueDay;
+        let result = v;
+        if (record.orderStatus === "complete" && record.returnDate) {
+          const dueDateObj = moment(record.dueDate, "YYYY-MM-DD").startOf("day");
+          const overdueDayCount = moment(record.returnDate).startOf("day").diff(dueDateObj, "days");
+          result = overdueDayCount < 0 ? v : overdueDayCount;
+        }
+        if (!result) return "";
+        return <Tag color={"volcano"}>{`${result} ${t("days") as string}`}</Tag>;
       },
     },
   ];
