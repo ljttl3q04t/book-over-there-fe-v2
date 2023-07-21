@@ -111,9 +111,11 @@ const ClubStaff = () => {
         setLoading(false);
       });
   }, []);
+
   useEffect(() => {
     initFetch();
   }, []);
+
   const memberStatusMapping = (status: MemberStatus) => {
     return (
       <Tag color={statusColors[status]} key={status}>
@@ -121,10 +123,12 @@ const ClubStaff = () => {
       </Tag>
     );
   };
+
   const memberStaffMapping = (isStaff: boolean) => {
     const color = isStaff ? "green" : "volcano";
     return <Tag color={color}>{isStaff ? "Yes" : "No"}</Tag>;
   };
+
   const columns: ColumnsType<DataType> = [
     {
       title: t("No.") as string,

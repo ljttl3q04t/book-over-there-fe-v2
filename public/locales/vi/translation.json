@@ -59,5 +59,10 @@
   "An error occurred": "Có lỗi xảy ra",
   "Select Member": "Chọn Người Mượn",
   "Please select a member": "Hãy chọn người mượn",
-  "Please enter your select at least one book": "Hãy chọn ít nhất 1 cuốn sách"
+  "Please enter your select at least one book": "Hãy chọn ít nhất 1 cuốn sách",
+  "Category": "Thể Loại",
+  "Author": "Tác Giả",
+  "Add Book": "Thêm Sách",
+  "Current Count": "Số lượng hiện tại",
+  "Initial Count": "Số lượng ban đầu"
 }

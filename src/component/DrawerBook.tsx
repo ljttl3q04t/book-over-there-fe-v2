@@ -88,6 +88,8 @@ function DrawerBook({ open, onClose, bookEdit, title }: any) {
           });
         });
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
