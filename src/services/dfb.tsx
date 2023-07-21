@@ -7,11 +7,12 @@ import {
   MemberInfos,
   OrderInfos,
   UpdateMemberRequest,
+  getOrderIdsOptions,
 } from "./types";
 
-export async function getOrderIds(): Promise<number[]> {
+export async function getOrderIds(data?: getOrderIdsOptions): Promise<number[]> {
   try {
-    const response = await ApiDfbAuthor.post(`/order/get_ids`);
+    const response = await ApiDfbAuthor.post(`/order/get_ids`, data);
     const { order_ids } = response.data;
     return order_ids;
   } catch (error) {
@@ -32,6 +33,7 @@ export async function getOrderDetailIds(): Promise<number[]> {
 }
 
 export async function getOrderInfos(orderIds: number[]): Promise<OrderInfos[]> {
+  if (!orderIds.length) return [];
   try {
     const data = {
       order_ids: orderIds.join(","),

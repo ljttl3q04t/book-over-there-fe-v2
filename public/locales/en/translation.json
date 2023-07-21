@@ -10,6 +10,12 @@
   "sidebar": {
     "homePage": "Home Page"
   },
+  "orderStatus": {
+    "complete": "complete",
+    "overdue": "overdue",
+    "created": "created",
+    "all": "all"
+  },
   "Book Name": "Book Name",
   "Book Code": "Book Code",
   "Reader Full Name": "Reader Full Name",

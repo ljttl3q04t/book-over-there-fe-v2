@@ -30,5 +30,9 @@
   "Full Name": "Họ và Tên",
   "Phone Number": "Số Điện Thoại",
   "Duplicated member code": "Mã bạn đọc đã tồn tại",
-  "Return Book": "Trả sách"
+  "Return Book": "Trả sách",
+  "create order date": "Ngày Mượn Sách",
+  "Start Date": "Từ Ngày",
+  "To Date": "Đến Ngày",
+  "Selected Books": "Chọn Sách"
 }

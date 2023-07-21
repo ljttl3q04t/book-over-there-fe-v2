@@ -1,9 +1,9 @@
 import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
-import { dateFormatList, disabledDateBefore } from "@/helpers/DateHelper";
+import { dateFormatList } from "@/helpers/DateHelper";
 import { Button, Form, Modal, DatePicker, List, Avatar } from "antd";
-import React from "react";
 import styled from "styled-components";
 import defaultImage from "@/image/book-default.png";
+import { useTranslation } from "react-i18next";
 
 type ReturnOrderModalProps = {
   open: boolean;
@@ -32,9 +32,11 @@ export function ReturnOrderModal(props: ReturnOrderModalProps) {
   const handleSubmitForm = async () => {
     handleReturnBooks(form.getFieldsValue());
   };
+  const { t } = useTranslation();
+
   return (
     <Modal
-      title={"Create New Member"}
+      title={t("Return Book") as string}
       open={open}
       onCancel={handleCancelModal}
       width={800}
@@ -50,7 +52,7 @@ export function ReturnOrderModal(props: ReturnOrderModalProps) {
     >
       <StyledModalContent>
         <Form onFinish={handleSubmitForm} {...layout} form={form} name="control-ref" style={{ width: 800 }}>
-          <Form.Item name="list_item" label="Selected Books" rules={[{ required: false }]}>
+          <Form.Item name="list_item" label={t("Selected Books") as string} rules={[{ required: false }]}>
             <List
               itemLayout="horizontal"
               dataSource={selectedRows}
@@ -63,10 +65,10 @@ export function ReturnOrderModal(props: ReturnOrderModalProps) {
           </Form.Item>
           <Form.Item
             name="return_date"
-            label="Return Date"
+            label={t("Return Date") as string}
             rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} return date` }]}
           >
-            <DatePicker disabledDate={disabledDateBefore} style={{ width: "100%" }} format={dateFormatList} />
+            <DatePicker style={{ width: "100%" }} format={dateFormatList} />
           </Form.Item>
         </Form>
       </StyledModalContent>

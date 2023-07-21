@@ -125,3 +125,8 @@ export type UpdateMemberRequest = {
 export type GetClubBookIdsOptions = {
   clubs?: BookClubInfo[];
 };
+
+export type getOrderIdsOptions = {
+  order_status?: "created" | "completed" | "overdue";
+  order_date?: string;
+};

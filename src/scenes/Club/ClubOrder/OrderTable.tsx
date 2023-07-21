@@ -29,7 +29,7 @@ export function OrderTable({ rowSelection, tableData, tableLoading }: OrderTable
   };
   const columns: ColumnsType<DataType> = [
     {
-      title: "Order ID",
+      title: "ID",
       dataIndex: "orderId",
       key: "orderId",
       width: "5%",
