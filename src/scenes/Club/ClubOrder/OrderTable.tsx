@@ -102,6 +102,11 @@ export function OrderTable({ rowSelection, tableData, tableLoading }: OrderTable
         rowSelection={rowSelection}
         rowClassName={rowClassName}
         rowKey="orderDetailId"
+        pagination={{
+          defaultPageSize: 50, // Set the default pageSize to 50
+          showSizeChanger: true, // Optional: To allow users to change pageSize
+          pageSizeOptions: ["10", "20", "50", "100"], // Optional: Specify other pageSize options
+        }}
       ></Table>
     </>
   );
