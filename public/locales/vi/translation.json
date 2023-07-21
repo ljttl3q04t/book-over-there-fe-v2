@@ -56,5 +56,8 @@
   "pending": "Đang Chờ",
   "active": "Đang Hoạt Động",
   "Approve successfully": "Chấp thuận thành công",
-  "An error occurred": "Có lỗi xảy ra"
+  "An error occurred": "Có lỗi xảy ra",
+  "Select Member": "Chọn Người Mượn",
+  "Please select a member": "Hãy chọn người mượn",
+  "Please enter your select at least one book": "Hãy chọn ít nhất 1 cuốn sách"
 }
