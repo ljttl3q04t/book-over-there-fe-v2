@@ -36,23 +36,6 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
   const { user, logoutUser, language, changeLanguage } = useContext(UserContext);
   const { t, i18n } = useTranslation();
 
-  const iconNotifi = () => {
-    return (
-      <Space size="middle" style={{ marginRight: 15 }}>
-        <Badge size="small" count={5}>
-          <HeartTwoTone
-            twoToneColor="#eb2f96"
-            style={{ fontSize: "20px", cursor: "pointer" }}
-            onClick={() => navigate("/book-wishlist")}
-          />
-        </Badge>
-        <Badge dot={true}>
-          <BellOutlined style={{ fontSize: "20px", cursor: "pointer" }} />
-        </Badge>
-      </Space>
-    );
-  };
-
   const handleChangePassword = (_e: any) => {
     setChangePW(true);
   };
@@ -84,27 +67,19 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
 
   return (
     <StyledNavBar>
-      {/* <Search
-                placeholder="Enter book name to search...."
-                allowClear
-                enterButton="Search"
-                size="large"
-            onSearch={onSearch}
-            /> */}
       <BreadcrumbNav displayPageName={false} />
       <div style={{ float: "right", display: "flex", alignItems: "center" }}>
+        <Select
+          value={language}
+          style={{ width: 180, padding: 32 }}
+          onChange={handleChangeLanguage}
+          options={[
+            { value: "vi", label: t("common.vietnames") },
+            { value: "en", label: t("common.english") },
+          ]}
+        />
         {access !== null ? (
           <>
-            <Select
-              value={language}
-              style={{ width: 120 }}
-              onChange={handleChangeLanguage}
-              options={[
-                { value: "vi", label: t("common.vietnames") },
-                { value: "en", label: t("common.english") },
-              ]}
-            />
-            {/* {iconNotifi()} */}
             <Image
               style={{
                 float: "left",
