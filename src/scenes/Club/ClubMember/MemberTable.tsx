@@ -64,9 +64,20 @@ export function MemberTable({ tableData, tableLoading, onRefresh }: MemberTableP
       ),
     },
   ];
+
   return (
     <>
-      <Table columns={columns} loading={tableLoading} dataSource={tableData} scroll={{ x: 1000, y: 700 }} />
+      <Table
+        columns={columns}
+        loading={tableLoading}
+        dataSource={tableData.sort((a, b) => b.id - a.id)}
+        scroll={{ x: 1000, y: 700 }}
+        pagination={{
+          defaultPageSize: 50, // Set the default pageSize to 50
+          showSizeChanger: true, // Optional: To allow users to change pageSize
+          pageSizeOptions: ["10", "20", "50", "100"], // Optional: Specify other pageSize options
+        }}
+      />
       <UpdateMemberModal
         onRefresh={() => onRefresh()}
         {...{
