@@ -62,7 +62,7 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
       <div style={{ float: "right", display: "flex", alignItems: "center" }}>
         <Select
           value={language}
-          style={{ width: 180, padding: 32 }}
+          style={{ width: 100 }}
           onChange={handleChangeLanguage}
           options={[
             { value: "vi", label: t("common.vietnames") },

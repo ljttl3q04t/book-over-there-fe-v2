@@ -21,7 +21,8 @@ const StyledClubOrder = styled.div`
   margin-top: 30px;
   > .table-extra-content {
     display: flex;
-    gap: 32px;
+    flex-direction: column;
+    /* gap: 32px; */
     padding: 20px 0;
     h1 {
       font-size: 24px;
@@ -147,6 +148,8 @@ const ClubOrder = () => {
       notification.success({ message: message, type: "success" });
       await fetchOrderIds();
       setOpenReturnOrderModal(false);
+      setSelectedRowKeys([]);
+      setSelectedRows([]);
     } catch (error: any) {
       console.error(error);
       notification.error({ message: error.message });
@@ -188,30 +191,33 @@ const ClubOrder = () => {
 
   return (
     <StyledClubOrder>
-      <FilterOrder
-        handleQuerySubmit={handleQuerySubmit}
-        handleQueryCancel={handleQueryCancel}
-        loading={loading}
-        form={form}
-      />
-
       <div className="table-extra-content">
-        <Button
-          type="primary"
-          onClick={() => {
-            setOpenCreateOrderModal(true);
-          }}
-        >
-          {t("Create New Order") as string}
-        </Button>
-        <Button
-          onClick={() => setOpenReturnOrderModal(true)}
-          type="primary"
+        <FilterOrder
+          handleQuerySubmit={handleQuerySubmit}
+          handleQueryCancel={handleQueryCancel}
           loading={loading}
-          disabled={!selectedRowKeys.length}
-        >
-          {t("Return Book") as string}
-        </Button>
+          form={form}
+        />
+        <div>
+          {" "}
+          <Button
+            type="primary"
+            onClick={() => {
+              setOpenCreateOrderModal(true);
+            }}
+            style={{marginRight:"10px"}}
+          >
+            {t("Create New Order") as string}
+          </Button>
+          <Button
+            onClick={() => setOpenReturnOrderModal(true)}
+            type="primary"
+            loading={loading}
+            disabled={!selectedRowKeys.length}
+          >
+            {t("Return Book") as string}
+          </Button>
+        </div>
       </div>
       <CreateOrderModal
         members={members}
