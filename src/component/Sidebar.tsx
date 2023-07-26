@@ -5,7 +5,6 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   TeamOutlined,
-  UnorderedListOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, MenuProps, Typography } from "antd";

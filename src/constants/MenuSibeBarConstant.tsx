@@ -5,7 +5,6 @@ import {
   HomeOutlined,
   MessageOutlined,
   TeamOutlined,
-  UnorderedListOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { MenuProps } from "antd";

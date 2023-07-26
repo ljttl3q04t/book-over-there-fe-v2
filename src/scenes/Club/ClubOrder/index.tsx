@@ -205,7 +205,7 @@ const ClubOrder = () => {
             onClick={() => {
               setOpenCreateOrderModal(true);
             }}
-            style={{marginRight:"10px"}}
+            style={{ marginRight: "10px" }}
           >
             {t("Create New Order") as string}
           </Button>
