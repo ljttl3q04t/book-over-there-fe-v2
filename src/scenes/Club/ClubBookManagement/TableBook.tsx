@@ -15,7 +15,7 @@ function TableBook({ loading, clubBookInfos }: TableBookProps) {
       title: "",
       dataIndex: ["book", "image"],
       key: "",
-      width: "10%",
+      width: "8%",
       render: (_values: any) => {
         return (
           <>
@@ -25,22 +25,40 @@ function TableBook({ loading, clubBookInfos }: TableBookProps) {
       },
     },
     {
+      title: t("Book Code") as string,
+      dataIndex: ["code"],
+      key: "bookCode",
+      width: "8%",
+    },
+    {
       title: t("Book Name") as string,
       dataIndex: ["book", "name"],
       key: "bookName",
-      width: "50%",
-    },
-    {
-      title: t("Category") as string,
-      dataIndex: ["book", "category", "name"],
-      key: "categoryName",
-      width: "15%",
+      width: "40%",
     },
     {
       title: t("Author") as string,
       key: "authorName",
       dataIndex: ["book", "author", "name"],
-      width: "15%",
+      width: "16%",
+    },
+    {
+      title: t("Category") as string,
+      dataIndex: ["book", "category", "name"],
+      key: "categoryName",
+      width: "16%",
+    },
+    {
+      title: t("Initial Count") as string,
+      key: "init_count",
+      dataIndex: "init_count",
+      width: "8%",
+    },
+    {
+      title: t("Current Count") as string,
+      key: "current_count",
+      dataIndex: "current_count",
+      width: "8%",
     },
   ];
 

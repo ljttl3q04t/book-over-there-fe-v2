@@ -25,6 +25,7 @@ type DrawerAddBookProps = {
   onClose: any;
   categories: any;
   club: BookClubInfo | undefined;
+  initFetch: any;
 };
 
 const { Search } = Input;
@@ -36,7 +37,7 @@ const getBase64 = (file: RcFile): Promise<string> =>
     reader.onerror = (error) => reject(error);
   });
 
-function DrawerAddBook({ open, onClose, club, categories }: DrawerAddBookProps) {
+function DrawerAddBook({ open, onClose, club, categories, initFetch }: DrawerAddBookProps) {
   const [form] = Form.useForm();
   const formRef = React.useRef<FormInstance>(form);
   const [previewOpen, setPreviewOpen] = React.useState(false);
@@ -66,6 +67,7 @@ function DrawerAddBook({ open, onClose, club, categories }: DrawerAddBookProps) 
       }
       const message = await dfbServices.createBook(formData);
       notification.success({ message: message, type: "success" });
+      initFetch();
       onClose();
       setFileListPreview([]);
     } catch (err: any) {

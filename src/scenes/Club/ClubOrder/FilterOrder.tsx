@@ -1,6 +1,6 @@
 import { ORDER_STATUS_LIST } from "./types";
 import { useTranslation } from "react-i18next";
-import { Button, Col, DatePicker, Form, Row, Select, Space } from "antd";
+import { Button, Col, DatePicker, Form, Row, Select } from "antd";
 import { dateFormatList } from "@/helpers/DateHelper";
 import styled from "styled-components";
 type FilterOrderProps = {
@@ -39,8 +39,10 @@ export function FilterOrder(props: FilterOrderProps) {
             </Form.Item>
           </Col>
           <Col span={10}>
-          <Form.Item>
-              <Button onClick={handleQueryCancel} style={{marginRight:"10px"}}>Reset</Button>
+            <Form.Item>
+              <Button onClick={handleQueryCancel} style={{ marginRight: "10px" }}>
+                Reset
+              </Button>
               <Button type="primary" loading={loading} onClick={handleQuerySubmit}>
                 Filter
               </Button>

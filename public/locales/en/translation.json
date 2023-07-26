@@ -11,7 +11,7 @@
     "homePage": "Home Page"
   },
   "orderStatus": {
-    "complete": "complete",
+    "completed": "completed",
     "overdue": "overdue",
     "created": "created",
     "all": "all"

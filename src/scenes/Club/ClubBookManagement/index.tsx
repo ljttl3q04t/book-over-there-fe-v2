@@ -51,14 +51,18 @@ const ClubStaff = () => {
     setCategories(_categories);
   };
 
+  const fetchBooks = async (_club: BookClubInfo) => {
+    const clubBookIds = await dfbServices.getClubBookIds({ clubs: [_club] });
+    const infos = await dfbServices.getClubBookInfos(clubBookIds);
+    setClubBookInfos(infos);
+  };
+
   const initFetch = async () => {
     try {
       setLoading(true);
       const _club = await fetchClub();
       await fetchCategory();
-      const clubBookIds = await dfbServices.getClubBookIds({ clubs: [_club] });
-      const infos = await dfbServices.getClubBookInfos(clubBookIds);
-      setClubBookInfos(infos);
+      await fetchBooks(_club);
     } catch (error: any) {
       notification.error({ message: error.message });
     } finally {
@@ -85,7 +89,13 @@ const ClubStaff = () => {
         </Button>
       </div>
       <TableBook loading={loading} clubBookInfos={clubBookInfos} />
-      <DrawerAddBook open={open} onClose={() => setOpen(false)} categories={categories} club={club} />
+      <DrawerAddBook
+        open={open}
+        onClose={() => setOpen(false)}
+        categories={categories}
+        club={club}
+        initFetch={initFetch}
+      />
     </StyledClubStaffList>
   );
 };

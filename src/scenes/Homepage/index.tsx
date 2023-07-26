@@ -378,6 +378,13 @@ const Homepage = () => {
             <Input disabled />
           </Form.Item>
           <Form.Item
+            name="address"
+            label={t("Address") as string}
+            rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} address` }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
             name="order_date"
             label="Order Date"
             rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} order time` }]}
