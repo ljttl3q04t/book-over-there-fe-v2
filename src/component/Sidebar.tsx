@@ -97,7 +97,6 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSide
           getItem("Book Borrow", "book-borrow"),
         ]),
         getItem("Book History", "book-history", <HistoryOutlined />),
-        getItem("Wishlist", "book-wishlist", <UnorderedListOutlined />),
       ]),
       // getItem("Support", "support", <MessageOutlined />),
     ];

@@ -1,6 +1,6 @@
 import "./App.scss";
 import "./CustomAnt.scss";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import loadable from "@loadable/component";
 import { UserContext } from "@/context/UserContext";
@@ -21,7 +21,6 @@ const LayoutCustom = loadable(() => import("@/scenes/Layout/index"));
 const Login = loadable(() => import("@/scenes/Login"));
 const Register = loadable(() => import("@/scenes/Register"));
 const BookHistory = loadable(() => import("@/scenes/User/BookHistory"));
-const BookWishList = loadable(() => import("@/scenes/User/BookWishList"));
 const MyBook = loadable(() => import("@/scenes/User/MyBook"));
 const BookBorrow = loadable(() => import("@/scenes/User/BookBorrow"));
 const Payment = loadable(() => import("@/scenes/User/Payment"));
@@ -71,7 +70,6 @@ const App = () => {
                 <Route path="/my-book" Component={MyBook} />
                 <Route path="/book-borrow" Component={BookBorrow} />
                 <Route path="/book-history" Component={BookHistory} />
-                <Route path="/book-wishlist" Component={BookWishList} />
               </>
             ) : (
               <Route path="/" element={<Error403 />} />

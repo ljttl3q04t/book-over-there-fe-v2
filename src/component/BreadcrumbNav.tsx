@@ -30,7 +30,6 @@ const breadcrumbItems = [
   { path: "/my-book", breadcrumbName: "My Book" },
   { path: "/book-history", breadcrumbName: "Book History" },
   { path: "/book-borrow", breadcrumbName: "Book Borrow" },
-  { path: "/book-wishlist", breadcrumbName: "Book Wishlist" },
 ];
 
 const BreadcrumbNav = ({ displayPageName }: any) => {

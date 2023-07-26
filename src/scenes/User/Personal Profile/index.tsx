@@ -1,5 +1,5 @@
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, DatePicker, Form, Image, Input, notification, Select, Upload } from "antd";
+import { Button, DatePicker, Form, Image, Input, notification, Upload } from "antd";
 import type { RangePickerProps } from "antd/es/date-picker";
 import type { FormInstance } from "antd/es/form";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
@@ -9,8 +9,6 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import Loading from "../../../component/Loading";
 import { UserContext } from "@/context/UserContext";
 import UserService from "@/services/user";
-const { Option } = Select;
-
 const layout = {
   labelCol: { span: 8 },
   wrapperCol: { span: 16 },
@@ -72,7 +70,6 @@ const Personal = () => {
       address: user?.address,
       email: user?.email,
       phone_number: user?.phone_number,
-      gender: "male",
       birth_date: user?.birth_date === null ? "" : dayjs(user?.birth_date),
       avatar: user?.avatar,
     });
@@ -159,13 +156,6 @@ const Personal = () => {
           </Form.Item>
           <Form.Item name="phone_number" label="Phone number" rules={[{ required: true }]}>
             <Input />
-          </Form.Item>
-          <Form.Item name="gender" label="Gender" rules={[{ required: true }]}>
-            <Select placeholder="Select your gender" allowClear defaultValue={"male"}>
-              <Option value="male">Male</Option>
-              <Option value="female">Female</Option>
-              <Option value="other">Other</Option>
-            </Select>
           </Form.Item>
           <Form.Item name="birth_date" label="Date of birth" rules={[{ required: true }]}>
             <DatePicker disabledDate={disabledDate} style={{ width: "100%" }} format={dateFormatList} />

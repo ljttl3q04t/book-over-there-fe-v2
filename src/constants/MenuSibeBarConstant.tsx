@@ -90,11 +90,6 @@ const menuStructure = {
           key: "book-history",
           icon: <HistoryOutlined />,
         },
-        {
-          label: "Wishlist",
-          key: "book-wishlist",
-          icon: <UnorderedListOutlined />,
-        },
       ],
     },
     {

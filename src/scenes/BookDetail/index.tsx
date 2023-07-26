@@ -32,9 +32,6 @@ function BookDetail() {
         <Button icon={<ShoppingCartOutlined />} type="primary">
           Add to cart
         </Button>
-        <Button icon={<LikeOutlined />} style={{ marginLeft: "10px" }}>
-          Wishlist
-        </Button>
       </Col>
     </Row>
   );
