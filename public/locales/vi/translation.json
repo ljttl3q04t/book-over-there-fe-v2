@@ -11,7 +11,7 @@
     "homePage": "Trang chủ"
   },
   "orderStatus": {
-    "completed": "Đã Trả",
+    "complete": "Đã Trả",
     "overdue": "Quá Hạn",
     "created": "Đang Mượn",
     "all": "Tất cả"

@@ -127,6 +127,6 @@ export type GetClubBookIdsOptions = {
 };
 
 export type getOrderIdsOptions = {
-  order_status?: "created" | "completed" | "overdue";
+  order_status?: "created" | "complete" | "overdue";
   order_date?: string;
 };
