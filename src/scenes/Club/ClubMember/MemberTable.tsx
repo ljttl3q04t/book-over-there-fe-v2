@@ -3,6 +3,7 @@ import Table, { ColumnsType } from "antd/es/table";
 import { Button, Space } from "antd";
 import { UpdateMemberModal } from "./UpdateMemberModal";
 import { EditOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 
 type DataType = {
   id: number;
@@ -16,6 +17,7 @@ type MemberTableProps = {
   onRefresh: () => void;
 };
 export function MemberTable({ tableData, tableLoading, onRefresh }: MemberTableProps) {
+  const { t } = useTranslation();
   const [openUpdateModal, setOpenUpdateModal] = React.useState(false);
   const [currentMember, setCurrentMember] = React.useState<DataType | undefined>();
 
@@ -31,22 +33,22 @@ export function MemberTable({ tableData, tableLoading, onRefresh }: MemberTableP
 
   const columns: ColumnsType<DataType> = [
     {
-      title: "Full Name",
+      title: t("Full Name") as string,
       dataIndex: "fullName",
       key: "fullName",
     },
     {
-      title: "Code",
+      title: t("Member Code") as string,
       dataIndex: "code",
       key: "code",
     },
     {
-      title: "Phone Number",
+      title: t("Phone Number") as string,
       dataIndex: "phoneNumber",
       key: "phoneNumber",
     },
     {
-      title: "Action",
+      title: t("Action") as string,
       key: "action",
       width: "10%",
       render: (v: DataType) => (
@@ -58,7 +60,7 @@ export function MemberTable({ tableData, tableLoading, onRefresh }: MemberTableP
               showUpdateModal(v);
             }}
           >
-            Edit
+            {t("Edit") as string}
           </Button>
         </Space>
       ),

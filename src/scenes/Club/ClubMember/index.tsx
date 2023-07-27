@@ -1,4 +1,3 @@
-import * as React from "react";
 import styled from "styled-components";
 import { MemberTable } from "./MemberTable";
 import { Button, notification } from "antd";
@@ -8,6 +7,7 @@ import { BookClubInfo, MemberInfos } from "@/services/types";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import dfbServices from "@/services/dfb";
+import { useTranslation } from "react-i18next";
 
 const StyledClubOrder = styled.div`
   border-radius: 12px;
@@ -37,6 +37,7 @@ type DataType = {
 };
 
 const ClubMember = () => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
   const [openCreateModal, setOpenCreateMOdal] = useState(false);
@@ -54,6 +55,7 @@ const ClubMember = () => {
       setLoading(false);
     }
   };
+
   const fetchMemberIds = async () => {
     try {
       setTableLoading(true);
@@ -67,6 +69,7 @@ const ClubMember = () => {
       setTableLoading(false);
     }
   };
+
   const fetchMemberInfos = async (memberIds: number[]) => {
     try {
       const memberInfos: MemberInfos[] = await dfbServices.getMemberInfos(memberIds);
@@ -103,17 +106,16 @@ const ClubMember = () => {
             setOpenCreateMOdal(true);
           }}
         >
-          {"Add Member"}
+          {t("Add New Member") as string}
         </Button>
       </div>
 
       <CreateMemberModal
-        {...{
-          open: openCreateModal,
-          staffClubs,
-          onCancel: () => {
-            setOpenCreateMOdal(false);
-          },
+        fetchMemberIds={fetchMemberIds}
+        open={openCreateModal}
+        staffClubs={staffClubs}
+        onCancel={() => {
+          setOpenCreateMOdal(false);
         }}
       />
       <MemberTable onRefresh={fetchMemberIds} tableData={tableData} tableLoading={loading && tableLoading} />

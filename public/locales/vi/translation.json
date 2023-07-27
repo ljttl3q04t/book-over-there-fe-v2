@@ -51,7 +51,7 @@
   "Member Status": "Trạng Thái",
   "Staff": "Thủ Thư",
   "Member Name": "Tên Thành Viên",
-  "Action": "Thao Tác",
+  "Action": "Thao tác",
   "Approve": "Chấp Thuận",
   "pending": "Đang Chờ",
   "active": "Đang Hoạt Động",
@@ -66,5 +66,7 @@
   "Current Count": "Số lượng hiện tại",
   "Initial Count": "Số lượng ban đầu",
   "days": "ngày",
-  "Address": "Địa chỉ"
+  "Address": "Địa chỉ",
+  "Add New Member": "Thêm bạn đọc mới",
+  "Add New Member Successfully": "Thêm bạn đọc mới thành công"
 }
