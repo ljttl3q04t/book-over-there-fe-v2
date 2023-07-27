@@ -11,12 +11,16 @@ type DataType = {
   code: string;
   phoneNumber: string;
 };
+
 type MemberTableProps = {
   tableData: DataType[];
   tableLoading: boolean;
   onRefresh: () => void;
+  isFilter: boolean;
+  filteredTableData: DataType[];
 };
-export function MemberTable({ tableData, tableLoading, onRefresh }: MemberTableProps) {
+
+export function MemberTable({ tableData, tableLoading, onRefresh, isFilter, filteredTableData }: MemberTableProps) {
   const { t } = useTranslation();
   const [openUpdateModal, setOpenUpdateModal] = React.useState(false);
   const [currentMember, setCurrentMember] = React.useState<DataType | undefined>();
@@ -72,7 +76,7 @@ export function MemberTable({ tableData, tableLoading, onRefresh }: MemberTableP
       <Table
         columns={columns}
         loading={tableLoading}
-        dataSource={tableData.sort((a, b) => b.id - a.id)}
+        dataSource={(isFilter ? filteredTableData : tableData).sort((a, b) => b.id - a.id)}
         scroll={{ x: 1000, y: 700 }}
         pagination={{
           defaultPageSize: 50, // Set the default pageSize to 50

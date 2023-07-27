@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { MemberTable } from "./MemberTable";
-import { Button, notification } from "antd";
+import { Button, Form, notification } from "antd";
 import { CreateMemberModal } from "./CreateMemberModal";
 import userService from "@/services/user";
 import { BookClubInfo, MemberInfos } from "@/services/types";
@@ -8,6 +8,7 @@ import { PlusCircleOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import dfbServices from "@/services/dfb";
 import { useTranslation } from "react-i18next";
+import { FilteMember } from "./FilterMember";
 
 const StyledClubOrder = styled.div`
   border-radius: 12px;
@@ -43,6 +44,10 @@ const ClubMember = () => {
   const [openCreateModal, setOpenCreateMOdal] = useState(false);
   const [staffClubs, setStaffClubs] = useState<BookClubInfo[]>([]);
   const [tableData, setTableData] = useState<DataType[]>([]);
+  const [filteredTableData, setFilteredTableData] = useState<DataType[]>([]);
+  const [isFilter, setIsFilter] = useState(false);
+
+  const [form] = Form.useForm();
 
   const fetchInit = async () => {
     try {
@@ -88,6 +93,35 @@ const ClubMember = () => {
     }
   };
 
+  const handleQuerySubmit = async () => {
+    try {
+      setLoading(true);
+      const { value } = await form.validateFields();
+      if (value) {
+        const lowerCaseValue = value.toLowerCase();
+        const newTableData = tableData.filter((d) => {
+          return (
+            d.code.toLowerCase().indexOf(lowerCaseValue) >= 0 ||
+            d.fullName.toLowerCase().indexOf(lowerCaseValue) >= 0 ||
+            d.phoneNumber.toLowerCase().indexOf(lowerCaseValue) >= 0
+          );
+        });
+        setFilteredTableData(newTableData);
+        setIsFilter(true);
+      }
+    } catch (error: any) {
+      notification.error({ message: error.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleQueryCancel = async () => {
+    form.resetFields();
+    setFilteredTableData([]);
+    setIsFilter(false);
+  };
+
   useEffect(() => {
     fetchMemberIds();
   }, []);
@@ -99,6 +133,12 @@ const ClubMember = () => {
   return (
     <StyledClubOrder>
       <div className="table-extra-content">
+        <FilteMember
+          form={form}
+          loading={loading}
+          handleQuerySubmit={handleQuerySubmit}
+          handleQueryCancel={handleQueryCancel}
+        />
         <Button
           type="primary"
           icon={<PlusCircleOutlined />}
@@ -118,7 +158,13 @@ const ClubMember = () => {
           setOpenCreateMOdal(false);
         }}
       />
-      <MemberTable onRefresh={fetchMemberIds} tableData={tableData} tableLoading={loading && tableLoading} />
+      <MemberTable
+        isFilter={isFilter}
+        filteredTableData={filteredTableData}
+        onRefresh={fetchMemberIds}
+        tableData={tableData}
+        tableLoading={loading && tableLoading}
+      />
     </StyledClubOrder>
   );
 };

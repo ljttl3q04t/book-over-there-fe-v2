@@ -11,11 +11,12 @@
     "homePage": "Trang chủ"
   },
   "orderStatus": {
-    "complete": "Đã Trả",
+    "completed": "Đã Trả",
     "overdue": "Quá Hạn",
     "created": "Đang Mượn",
     "all": "Tất cả"
   },
+  "Search": "Tìm kiếm",
   "Login": "Đăng Nhập",
   "Logout": "Đăng Xuất",
   "Register": "Đăng Ký",
