@@ -101,9 +101,9 @@ const ClubMember = () => {
         const lowerCaseValue = value.toLowerCase();
         const newTableData = tableData.filter((d) => {
           return (
-            d.code.toLowerCase().indexOf(lowerCaseValue) >= 0 ||
-            d.fullName.toLowerCase().indexOf(lowerCaseValue) >= 0 ||
-            d.phoneNumber.toLowerCase().indexOf(lowerCaseValue) >= 0
+            (d.code ?? "").toLowerCase().indexOf(lowerCaseValue) >= 0 ||
+            (d.fullName ?? "").toLowerCase().indexOf(lowerCaseValue) >= 0 ||
+            (d.phoneNumber ?? "").toLowerCase().indexOf(lowerCaseValue) >= 0
           );
         });
         setFilteredTableData(newTableData);
