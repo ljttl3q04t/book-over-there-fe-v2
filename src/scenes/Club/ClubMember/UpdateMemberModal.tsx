@@ -4,7 +4,9 @@ import dfbServices from "@/services/dfb";
 import { UpdateMemberRequest } from "@/services/types";
 import { PhoneOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Modal, notification } from "antd";
+import TextArea from "antd/es/input/TextArea";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 
 type UpdateOrderModalProps = {
@@ -12,6 +14,8 @@ type UpdateOrderModalProps = {
   onCancel: () => void;
   currentMember: any;
   onRefresh: () => void;
+  handleEditMember: any;
+  loading: boolean;
 };
 
 const StyledModalContent = styled.div`
@@ -25,8 +29,9 @@ const layout = {
 
 export function UpdateMemberModal(props: UpdateOrderModalProps) {
   const { open, onCancel, currentMember, onRefresh } = props;
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [form] = Form.useForm();
+  const { t } = useTranslation();
+
   const handleCancel = () => {
     form.resetFields();
     onCancel();
@@ -74,7 +79,7 @@ export function UpdateMemberModal(props: UpdateOrderModalProps) {
         >
           {"Cancel"}
         </Button>,
-        <Button key="submit" type="primary" loading={isSubmitting} onClick={handleSubmit}>
+        <Button key="submit" type="primary" loading={loading} onClick={handleEditMember}>
           {"Submit"}
         </Button>,
       ]}
@@ -102,6 +107,9 @@ export function UpdateMemberModal(props: UpdateOrderModalProps) {
             rules={[{ required: false, validator: validatePhoneNumber }]}
           >
             <Input prefix={<PhoneOutlined className="site-form-item-icon" />} placeholder="Phone number..." />
+          </Form.Item>
+          <Form.Item name="notes" label={t("Notes") as string} rules={[{ required: false }]}>
+            <TextArea rows={4} placeholder="Note..." />
           </Form.Item>
         </Form>
       </StyledModalContent>

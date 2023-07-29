@@ -52,6 +52,11 @@ export function MemberTable({ tableData, tableLoading, onRefresh, isFilter, filt
       key: "phoneNumber",
     },
     {
+      title: t("Notes") as string,
+      dataIndex: "notes",
+      key: "notes",
+    },
+    {
       title: t("Action") as string,
       key: "action",
       width: "10%",

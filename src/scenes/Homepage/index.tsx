@@ -23,6 +23,7 @@ import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
 import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 import dfbServices from "@/services/dfb";
+import { DataTypeClubBook, DataTypeClubSlide } from "./types";
 const { Title } = Typography;
 
 const StyledHomeContainer = styled.div`
@@ -65,23 +66,6 @@ interface ModalContent {
     content: JSX.Element;
     width: string | number;
   };
-}
-interface DataTypeClubBook {
-  no: number;
-  bookName: string;
-  categoryName: string;
-  authorName: string;
-  publisherName: string;
-  image: string;
-  club: string;
-  totalCopyCount: number;
-}
-interface DataTypeClubSlide {
-  clubName: string;
-  clubId: number;
-  clubBookIds: number[];
-  clubBookInfor: DataTypeClubBook[];
-  clubCode: string;
 }
 const { TextArea } = Input;
 const calculateChunksSize = () => {
