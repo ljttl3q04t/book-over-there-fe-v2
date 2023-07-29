@@ -88,8 +88,8 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSide
         // getItem("Club Book", "clubbook"),
         getClubStaffItem(user?.is_staff),
       ]),
-      getItem("User", "sub0", <UserOutlined />, [
-        getItem("My Account", "sub3", <UserOutlined />, [getItem("Personal profile", "my-profile")]),
+      getItem(t("User") as string, "sub0", <UserOutlined />, [
+        getItem(t("My Account") as string, "sub3", <UserOutlined />, [getItem(t("Personal Profile") as string, "my-profile")]),
 
         getItem("Book Status", "sub2", <BookOutlined />, [
           getItem("My book", "my-book"),

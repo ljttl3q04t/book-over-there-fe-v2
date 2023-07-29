@@ -9,6 +9,8 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import Loading from "../../../component/Loading";
 import { UserContext } from "@/context/UserContext";
 import UserService from "@/services/user";
+import { useTranslation } from "react-i18next";
+
 const layout = {
   labelCol: { span: 8 },
   wrapperCol: { span: 16 },
@@ -19,6 +21,7 @@ const tailLayout = {
 };
 
 const Personal = () => {
+  const { t } = useTranslation();
   const formRef = React.useRef<FormInstance>(null);
   const [loading, setLoading] = useState(false);
   const dateFormatList = ["DD/MM/YYYY"];
@@ -33,7 +36,7 @@ const Personal = () => {
   const uploadButton = (
     <div>
       {loading ? <LoadingOutlined /> : <PlusOutlined />}
-      <div style={{ marginTop: 8 }}>Upload</div>
+      <div style={{ marginTop: 8 }}>{t("Upload") as string}</div>
     </div>
   );
 
@@ -92,15 +95,15 @@ const Personal = () => {
 
   const onFinish = (values: any) => {
     setLoading(true);
-    const data = {
+    const data: any = {
       username: values.username,
       full_name: values.full_name,
       address: values.address,
       email: values.email,
       phone_number: values.phone_number,
       birth_date: dayjs(values.birth_date).format("YYYY-MM-DD"),
-      avatar: fileList[0] as RcFile,
     };
+    if (fileList[0]) data.avatar = fileList[0] as RcFile;
 
     UserService.updateUser(data)
       .then((res: any) => {
@@ -142,35 +145,35 @@ const Personal = () => {
           <Image style={{ float: "left" }} width={200} src={user?.avatar} />
         </div>
         <Form {...layout} ref={formRef} name="control-ref" onFinish={onFinish} style={{ width: 600 }}>
-          <Form.Item name="username" label="Username" rules={[{ required: true }]}>
+          <Form.Item name="username" label={t("Username") as string} rules={[{ required: true }]}>
             <Input disabled />
           </Form.Item>
-          <Form.Item name="full_name" label="Full Name" rules={[{ required: true }]}>
+          <Form.Item name="full_name" label={t("Full Name") as string} rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="address" label="Address" rules={[{ required: true }]}>
+          <Form.Item name="address" label={t("Address") as string} rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="email" label="Email" rules={[{ required: true }]}>
+          <Form.Item name="email" label={t("Email") as string} rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="phone_number" label="Phone number" rules={[{ required: true }]}>
+          <Form.Item name="phone_number" label={t("Phone Number") as string} rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="birth_date" label="Date of birth" rules={[{ required: true }]}>
+          <Form.Item name="birth_date" label={t("Date of birth") as string} rules={[{ required: true }]}>
             <DatePicker disabledDate={disabledDate} style={{ width: "100%" }} format={dateFormatList} />
           </Form.Item>
-          <Form.Item name="avatar" label="Avatar">
+          <Form.Item name="avatar" label={t("Avatar") as string}>
             <Upload multiple={false} {...props} listType="picture-card">
               {uploadButton}
             </Upload>
           </Form.Item>
           <Form.Item {...tailLayout}>
             <Button style={{ marginRight: "10px" }} type="primary" htmlType="submit">
-              Submit
+              {t("Submit") as string}
             </Button>
             <Button htmlType="button" onClick={initFetch}>
-              Cancel
+              {t("Cancel") as string}
             </Button>
           </Form.Item>
         </Form>
