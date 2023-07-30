@@ -14,8 +14,6 @@ type UpdateOrderModalProps = {
   onCancel: () => void;
   currentMember: any;
   onRefresh: () => void;
-  handleEditMember: any;
-  loading: boolean;
 };
 
 const StyledModalContent = styled.div`
@@ -29,6 +27,9 @@ const layout = {
 
 export function UpdateMemberModal(props: UpdateOrderModalProps) {
   const { open, onCancel, currentMember, onRefresh } = props;
+  const [loading, setLoading] = React.useState(false);
+  const [hasChange, setHasChange] = React.useState(false);
+
   const [form] = Form.useForm();
   const { t } = useTranslation();
 
@@ -36,31 +37,42 @@ export function UpdateMemberModal(props: UpdateOrderModalProps) {
     form.resetFields();
     onCancel();
   };
+
+  const handleFormValuesChange = (changedValues: any) => {
+    const isDiff = Object.keys(changedValues).some((field) => {
+      return changedValues[field] != currentMember[field];
+    });
+    setHasChange(isDiff);
+  };
+
   const handleSubmit = async () => {
     try {
-      setIsSubmitting(true);
+      setLoading(true);
       const values = await form.validateFields();
       const data: UpdateMemberRequest = {
         member_id: currentMember.id,
         code: values.code,
         full_name: values.fullName,
+        notes: values.notes,
+        club_id: currentMember.clubId,
       };
-      if (values.phone_number) {
-        data.phone_number = values.phone_number;
+      if (values.phoneNumber) {
+        data.phone_number = values.phoneNumber;
       }
       const message = await dfbServices.updateMember(data);
       notification.success({ message: message, type: "success" });
-      await onRefresh();
+      onRefresh();
       handleCancel();
     } catch (error: any) {
       const errorMessage = error.message || "An error occurred while updating the member.";
       notification.error({ message: errorMessage });
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
   React.useEffect(() => {
+    setHasChange(false);
     form.setFieldsValue(currentMember);
   }, [currentMember, form]);
 
@@ -77,16 +89,23 @@ export function UpdateMemberModal(props: UpdateOrderModalProps) {
             handleCancel();
           }}
         >
-          {"Cancel"}
+          {t("Cancel") as string}
         </Button>,
-        <Button key="submit" type="primary" loading={loading} onClick={handleEditMember}>
-          {"Submit"}
+        <Button key="submit" type="primary" loading={loading} onClick={handleSubmit} disabled={!hasChange}>
+          {t("Submit") as string}
         </Button>,
       ]}
       centered
     >
       <StyledModalContent>
-        <Form {...layout} id="updateMemberForm" form={form} name="control-ref" style={{ width: 800 }}>
+        <Form
+          {...layout}
+          id="updateMemberForm"
+          form={form}
+          name="control-ref"
+          style={{ width: 800 }}
+          onValuesChange={handleFormValuesChange}
+        >
           <Form.Item
             name="fullName"
             label="Full Name"
@@ -102,7 +121,7 @@ export function UpdateMemberModal(props: UpdateOrderModalProps) {
             <Input placeholder="Code..." />
           </Form.Item>
           <Form.Item
-            name="phone_number"
+            name="phoneNumber"
             label="Phone Number"
             rules={[{ required: false, validator: validatePhoneNumber }]}
           >

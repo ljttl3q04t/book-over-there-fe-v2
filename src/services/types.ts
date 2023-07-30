@@ -86,6 +86,7 @@ export type MemberInfos = {
   phone_number: string;
   full_name: string;
   code: string;
+  notes: string;
 };
 
 export type OrderDetails = {
@@ -117,9 +118,11 @@ export type CreateMemberRequest = {
 
 export type UpdateMemberRequest = {
   member_id: number;
+  club_id: number;
   code?: string;
   phone_number?: string;
   full_name?: string;
+  notes?: string;
 };
 
 export type GetClubBookIdsOptions = {

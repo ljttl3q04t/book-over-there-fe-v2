@@ -34,7 +34,9 @@ type DataType = {
   id: number;
   fullName: string;
   code: string;
-  phoneNumber: string;
+  phoneNumber?: string;
+  clubId: number;
+  notes?: string;
 };
 
 const ClubMember = () => {
@@ -85,6 +87,8 @@ const ClubMember = () => {
           fullName: member.full_name,
           code: member.code,
           phoneNumber: member.phone_number,
+          clubId: member.club_id,
+          notes: member.notes ?? "",
         });
       }
       setTableData(data);

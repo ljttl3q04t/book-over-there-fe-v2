@@ -10,6 +10,7 @@ type DataType = {
   fullName: string;
   code: string;
   phoneNumber: string;
+  clubId: number;
 };
 
 type MemberTableProps = {
@@ -90,12 +91,10 @@ export function MemberTable({ tableData, tableLoading, onRefresh, isFilter, filt
         }}
       />
       <UpdateMemberModal
-        onRefresh={() => onRefresh()}
-        {...{
-          currentMember,
-          open: openUpdateModal,
-          onCancel: hideUpdateModal,
-        }}
+        open={openUpdateModal}
+        currentMember={currentMember}
+        onCancel={hideUpdateModal}
+        onRefresh={onRefresh}
       />
     </>
   );
