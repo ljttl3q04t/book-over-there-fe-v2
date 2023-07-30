@@ -7,6 +7,7 @@ import { UserContext } from "@/context/UserContext";
 import { useBeforeRender } from "./component/Error";
 import ClubOrder from "./scenes/Club/ClubOrder";
 import ClubMember from "./scenes/Club/ClubMember";
+import ClubOrderOnline from "./scenes/Club/ClubOrderOnline";
 const Error404 = loadable(() => import("@/component/Error404"));
 const Error403 = loadable(() => import("@/component/Error403"));
 
@@ -62,6 +63,7 @@ const App = () => {
                 {user?.is_staff && <Route path="/clubstaff/books" Component={ClubBookManagement} />}
                 {user?.is_staff && <Route path="/clubstaff/orders" Component={ClubOrder} />}
                 {user?.is_staff && <Route path="/clubstaff/members" Component={ClubMember} />}
+                {user?.is_staff && <Route path="/clubstaff/online-orders" Component={ClubOrderOnline} />}
                 <Route path="/clubbook" Component={ClubBook} />
                 <Route path="/bookclub" Component={ClubBook} />
                 <Route path="/my-profile" Component={Personal} />

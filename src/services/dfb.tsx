@@ -4,6 +4,7 @@ import {
   ClubBookInfos,
   CreateMemberRequest,
   CreateOrderDraftOptions,
+  DraftOrderInfos,
   GetClubBookIdsOptions,
   MemberInfos,
   OrderInfos,
@@ -249,6 +250,40 @@ async function createDraftOrder(data: CreateOrderDraftOptions): Promise<string> 
   }
 }
 
+async function getDraftOrderIds(): Promise<number[]> {
+  try {
+    const response = await ApiDfbAuthor.post(`/order/draft/get_ids`);
+    if (response.data.draft_order_ids) {
+      return response.data.draft_order_ids;
+    } else {
+      throw new Error(response.data.error);
+    }
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "An error occurred";
+    throw new Error(errorMessage);
+  }
+}
+
+async function getDraftOrderInfos(draftOrderIds: number[]): Promise<DraftOrderInfos[]> {
+  if (!draftOrderIds.length) {
+    return [];
+  }
+  const data = {
+    draft_order_ids: draftOrderIds.join(","),
+  };
+  try {
+    const response = await ApiDfbAuthor.post(`/order/draft/get_infos`, data);
+    if (response.data.draft_order_infos) {
+      return response.data.draft_order_infos;
+    } else {
+      throw new Error(response.data.error);
+    }
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "An error occurred";
+    throw new Error(errorMessage);
+  }
+}
+
 const dfbServices = {
   getOrderIds,
   getOrderInfos,
@@ -267,6 +302,8 @@ const dfbServices = {
   createOrderNewMember,
   returnBooks,
   createDraftOrder,
+  getDraftOrderIds,
+  getDraftOrderInfos,
 };
 
 export default dfbServices;

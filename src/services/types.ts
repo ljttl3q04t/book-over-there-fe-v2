@@ -145,3 +145,15 @@ export type CreateOrderDraftOptions = {
   club_id: number;
   notes?: string;
 };
+
+export type DraftOrderInfos = {
+  id: number;
+  full_name: string;
+  phone_number: string;
+  address: string;
+  order_date: string;
+  due_date: string;
+  club_id: number;
+  user_id: number;
+  club_book_ids: number[];
+};

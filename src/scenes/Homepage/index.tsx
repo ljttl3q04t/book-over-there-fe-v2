@@ -115,7 +115,7 @@ const Homepage = () => {
     onChange: onSelectChange,
   };
   const handleOpenOrderModal = async () => {
-    await setActiveModal(MODAL_CODE.ORDER);
+    setActiveModal(MODAL_CODE.ORDER);
     form.setFieldsValue({
       full_name: user?.full_name,
       phone_number: user?.phone_number,
@@ -123,7 +123,7 @@ const Homepage = () => {
   };
   const handleCloseModal = async () => {
     form.resetFields();
-    await setActiveModal("");
+    setActiveModal("");
   };
   const disableOrder = () => {
     if (selectedRows.length === 0 || !user) {
@@ -140,7 +140,7 @@ const Homepage = () => {
         club_id: clubId,
         order_date: dayjs(values.order_date?.toDate()).format("YYYY-MM-DD"),
         due_date: dayjs(values.due_date?.toDate()).format("YYYY-MM-DD"),
-        club_book_ids: selectedRowKeys.join(","),
+        club_book_ids: selectedRows.map((d) => d.id).join(","),
         notes: values.note,
         full_name: values.full_name,
         phone_number: values.phone_number,
@@ -200,8 +200,8 @@ const Homepage = () => {
       const filteredClubList: DataTypeClubSlide[] = clubList.filter(
         (item) => item && item.clubCode && item.clubCode.startsWith("dfb"),
       );
-      await setClubList(filteredClubList);
-      await setClubId(filteredClubList[0].clubId);
+      setClubList(filteredClubList);
+      setClubId(filteredClubList[0].clubId);
       await handleViewAllClubBooks(filteredClubList[0].clubBookIds, clubId);
     } catch (error) {
       // Handle error here
@@ -217,8 +217,7 @@ const Homepage = () => {
         setBookList([]);
       } else {
         const clubBookInfos = await BookService.getClubBookInfos(clubBookIds.slice(0, 200));
-        const books = Object.values(clubBookInfos).map((b) => b.book);
-        setBookList(books);
+        setBookList(clubBookInfos);
       }
       setLoading(false);
     } catch (error) {
@@ -230,11 +229,6 @@ const Homepage = () => {
     const { book_name, book_category } = data;
     const _clubBookIds = await bookService.getClubBookIds({ club_id: clubId, book_name, book_category });
     handleViewAllClubBooks(_clubBookIds);
-    setOption({
-      pageIndex: 1,
-      pageSize: 10,
-      ...data,
-    });
   };
   useEffect(() => {
     fetchClubList();
@@ -262,7 +256,7 @@ const Homepage = () => {
   const columns: ColumnsType<any> = [
     {
       title: "",
-      dataIndex: "image",
+      dataIndex: ["book", "image"],
       key: "",
       render: (_values: any) => {
         return (
@@ -274,23 +268,23 @@ const Homepage = () => {
     },
     {
       title: "Name",
-      dataIndex: "name",
+      dataIndex: ["book", "name"],
       key: "name",
     },
     {
-      title: "Category",
-      dataIndex: "category",
+      title: t("Category") as string,
+      dataIndex: ["book", "category"],
       key: "category",
       render: (category: any) => {
         return category?.name;
       },
     },
     {
-      title: "Author",
+      title: t("Author") as string,
+      dataIndex: ["book", "author"],
       key: "author",
-      dataIndex: "author",
-      render: (category: any) => {
-        return category?.name;
+      render: (author: any) => {
+        return author?.name;
       },
     },
   ];
@@ -400,14 +394,13 @@ const Homepage = () => {
               renderItem={(item: any) => (
                 <List.Item>
                   <List.Item.Meta
-                    avatar={<Avatar src={item.image ? item.image : defaultImage} />}
-                    title={<p>{item.name}</p>}
+                    avatar={<Avatar src={item.book.image ? item.book.image : defaultImage} />}
+                    title={<p>{item.book.name}</p>}
                   />
                 </List.Item>
               )}
             />{" "}
           </Form.Item>
-
           <Form.Item name="note" label={t("Notes") as string} rules={[{ required: false }]}>
             <TextArea rows={4} />
           </Form.Item>

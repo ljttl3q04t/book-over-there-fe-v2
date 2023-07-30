@@ -74,6 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSide
         getItem(t("Club Member") as string, "clubstaff/member-order"),
         getItem(t("Book") as string, "clubstaff/books"),
         getItem(t("Order") as string, "clubstaff/orders"),
+        getItem(t("Online Order") as string, "clubstaff/online-orders"),
         getItem(t("Member") as string, "clubstaff/members"),
       ]);
     } else {
