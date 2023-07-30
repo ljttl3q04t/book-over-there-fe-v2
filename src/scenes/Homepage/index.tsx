@@ -24,6 +24,7 @@ import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 import dfbServices from "@/services/dfb";
 import { DataTypeClubBook, DataTypeClubSlide } from "./types";
+import { CreateOrderDraftOptions } from "@/services/types";
 const { Title } = Typography;
 
 const StyledHomeContainer = styled.div`
@@ -97,7 +98,7 @@ const Homepage = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<[]>([]);
 
-  const [clubId, setClubId] = useState();
+  const [clubId, setClubId] = useState(0);
   const [activeModal, setActiveModal] = useState("");
   const [form] = Form.useForm();
 
@@ -134,21 +135,25 @@ const Homepage = () => {
     try {
       setLoading(true);
       const values = await form.validateFields();
-      const data = {
-        member_id: user?.user_id,
+      const data: CreateOrderDraftOptions = {
+        user_id: user?.user_id ?? 0,
         club_id: clubId,
         order_date: dayjs(values.order_date?.toDate()).format("YYYY-MM-DD"),
         due_date: dayjs(values.due_date?.toDate()).format("YYYY-MM-DD"),
         club_book_ids: selectedRowKeys.join(","),
-        note: values.note,
+        notes: values.note,
+        full_name: values.full_name,
+        phone_number: values.phone_number,
+        address: values.address,
       };
-      const message = await dfbServices.createOrder(data);
+      const message = await dfbServices.createDraftOrder(data);
       notification.success({ message: message, type: "success" });
       form.resetFields();
     } catch (error: any) {
       console.error(error);
       notification.error({ message: error.message });
     } finally {
+      setActiveModal("");
       setLoading(false);
     }
   };
@@ -288,14 +293,6 @@ const Homepage = () => {
         return category?.name;
       },
     },
-    {
-      title: "Publisher",
-      key: "publisher",
-      dataIndex: "publisher",
-      render: (category: any) => {
-        return category?.name;
-      },
-    },
   ];
 
   const [deviceType, setDeviceType] = useState("");
@@ -349,14 +346,14 @@ const Homepage = () => {
         >
           <Form.Item
             name="full_name"
-            label="Full Name"
+            label={t("Full Name") as string}
             rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} full name` }]}
           >
             <Input disabled />
           </Form.Item>
           <Form.Item
             name="phone_number"
-            label="Phone Number"
+            label={t("Phone Number") as string}
             rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} phone number` }]}
           >
             <Input disabled />
@@ -370,7 +367,7 @@ const Homepage = () => {
           </Form.Item>
           <Form.Item
             name="order_date"
-            label="Order Date"
+            label={t("Order Date") as string}
             rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} order time` }]}
           >
             <DatePicker disabled format={["DD/MM/YYYY"]} />
@@ -378,7 +375,7 @@ const Homepage = () => {
 
           <Form.Item
             name="due_date"
-            label="Due Date"
+            label={t("Due Date") as string}
             rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} order time` }]}
           >
             <DatePicker disabled format={["DD/MM/YYYY"]} />
@@ -396,7 +393,7 @@ const Homepage = () => {
       content: defaultFormContent(
         handleCreateOrder,
         <>
-          <Form.Item name="selected_book" label="Selected Books:" rules={[{ required: false }]}>
+          <Form.Item name="selected_book" label={t("Selected Books") as string} rules={[{ required: false }]}>
             <List
               itemLayout="horizontal"
               dataSource={selectedRows}
@@ -411,8 +408,8 @@ const Homepage = () => {
             />{" "}
           </Form.Item>
 
-          <Form.Item name="note" label="Note" rules={[{ required: false }]}>
-            <TextArea rows={4} placeholder="Note..." />
+          <Form.Item name="note" label={t("Notes") as string} rules={[{ required: false }]}>
+            <TextArea rows={4} />
           </Form.Item>
         </>,
       ),
@@ -550,7 +547,7 @@ const Homepage = () => {
       </StyledHomeContainer>
       <Affix style={{ position: "absolute", bottom: 30, right: 40, zIndex: 999 }}>
         <Button icon={<PlusCircleOutlined />} type="primary" onClick={() => executeScroll()}>
-          Go to order
+          {t("Go to order") as string}
         </Button>
       </Affix>
       {activeModal && (
@@ -566,10 +563,10 @@ const Homepage = () => {
           maskClosable={false}
           footer={[
             <Button key="back" onClick={handleCloseModal}>
-              Return
+              {t("Cancel") as string}
             </Button>,
             <Button key="submit" type="primary" loading={loading} onClick={() => form.submit()}>
-              Submit
+              {t("Submit") as string}
             </Button>,
           ]}
         >

@@ -3,6 +3,7 @@ import {
   CategoryInfos,
   ClubBookInfos,
   CreateMemberRequest,
+  CreateOrderDraftOptions,
   GetClubBookIdsOptions,
   MemberInfos,
   OrderInfos,
@@ -145,6 +146,9 @@ async function getClubBookIds(options: GetClubBookIdsOptions): Promise<number[]>
 }
 
 async function getClubBookInfos(clubBookIds: number[]): Promise<ClubBookInfos[]> {
+  if (!clubBookIds.length) {
+    return [];
+  }
   const data = {
     club_book_ids: clubBookIds.join(","),
   };
@@ -231,6 +235,20 @@ async function returnBooks(data: any): Promise<string> {
   }
 }
 
+async function createDraftOrder(data: CreateOrderDraftOptions): Promise<string> {
+  try {
+    const response = await ApiDfbAuthor.post(`/order/draft/create`, data);
+    if (response.data.message) {
+      return response.data.message;
+    } else {
+      throw new Error(response.data.error);
+    }
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "An error occurred";
+    throw new Error(errorMessage);
+  }
+}
+
 const dfbServices = {
   getOrderIds,
   getOrderInfos,
@@ -248,6 +266,7 @@ const dfbServices = {
   createOrder,
   createOrderNewMember,
   returnBooks,
+  createDraftOrder,
 };
 
 export default dfbServices;

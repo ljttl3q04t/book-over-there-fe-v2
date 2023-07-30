@@ -13,6 +13,9 @@ async function getClubBookIds(data: any): Promise<number[]> {
 }
 
 async function getClubBookInfos(clubBookIds: number[]): Promise<ClubBookInfos[]> {
+  if (!clubBookIds.length) {
+    return [];
+  }
   const data = {
     club_book_ids: clubBookIds.join(","),
   };

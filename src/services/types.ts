@@ -133,3 +133,15 @@ export type getOrderIdsOptions = {
   order_status?: "created" | "complete" | "overdue";
   order_date?: string;
 };
+
+export type CreateOrderDraftOptions = {
+  full_name: string;
+  phone_number: string;
+  address: string;
+  order_date: string;
+  due_date: string;
+  club_book_ids: string;
+  user_id: number;
+  club_id: number;
+  notes?: string;
+}
