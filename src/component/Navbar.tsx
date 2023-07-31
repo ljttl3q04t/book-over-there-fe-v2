@@ -1,13 +1,14 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { BellOutlined, ProfileOutlined, HeartTwoTone, UserAddOutlined, UserOutlined } from "@ant-design/icons";
-import type { MenuProps } from "antd";
-import { Badge, Button, Dropdown, Image, Modal, Select, Space } from "antd";
-import React, { useContext, useEffect, useState } from "react";
+import BreadcrumbNav from "@/component/BreadcrumbNav";
+import { UserContext } from "@/context/UserContext";
+import { validatePhoneNumber } from "@/helpers/fuctionHepler";
+import userService from "@/services/user";
+import { PhoneOutlined, ProfileOutlined, UserAddOutlined, UserOutlined } from "@ant-design/icons";
+import type { FormInstance, MenuProps } from "antd";
+import { Button, Dropdown, Form, Image, Input, Modal, Select, Space, notification } from "antd";
+import { useContext, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { UserContext } from "@/context/UserContext";
-import BreadcrumbNav from "@/component/BreadcrumbNav";
-import { useTranslation } from "react-i18next";
 
 const StyledNavBar = styled.div`
   padding: 10px 20px 10px 0;
@@ -24,19 +25,80 @@ const StyledActionLog = styled.div`
   display: flex;
   gap: 8px;
 `;
-interface NavbarProps {
-  isSidebarOpen: boolean;
-  setIsSidebarOpen: (value: boolean) => void;
-}
 
-const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: any) => {
+const layout = {
+  labelCol: { span: 4 },
+  wrapperCol: { span: 16 },
+};
+
+const Navbar = () => {
   const access = localStorage.getItem("access_token");
   const navigate = useNavigate();
   const [changePW, setChangePW] = useState(false);
   const { user, logoutUser, language, changeLanguage } = useContext(UserContext);
   const { t, i18n } = useTranslation();
+  const [openVerify, setOpenVerify] = useState(false);
+  const [sentOTP, setSentOTP] = useState(false);
+  const [countdown, setCountdown] = useState(300);
+  const [loading, setLoading] = useState(false);
 
-  const handleLogout = (_e: any) => {
+  const [form] = Form.useForm();
+  const formRef = useRef<FormInstance>(form);
+
+  const handleSendOtp = async () => {
+    try {
+      setLoading(true);
+      const message = await userService.sendOTP();
+      notification.success({ message: message, type: "success" });
+      setSentOTP(true);
+      setCountdown(300);
+    } catch (error: any) {
+      const errorMessage = t(error.message || "An error occurred") as string;
+      notification.error({ message: errorMessage });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmitVerify = async () => {
+    try {
+      setLoading(true);
+      const values = await form.validateFields();
+      const message = await userService.verifyOTP(values.otp_code);
+      notification.success({ message: message, type: "success" });
+      setOpenVerify(false);
+    } catch (error: any) {
+      if (error.values === undefined) {
+        const errorMessage = t(error.message || "An error occurred") as string;
+        notification.error({ message: errorMessage });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let timer: any;
+    if (sentOTP && countdown > 0) {
+      timer = setTimeout(() => {
+        setCountdown((prevCountdown) => prevCountdown - 1);
+      }, 1000);
+    }
+
+    return () => {
+      clearTimeout(timer);
+      if (sentOTP && countdown === 0) {
+        setSentOTP(false);
+        setCountdown(2);
+      }
+    };
+  }, [sentOTP, countdown]);
+
+  const handleVerify = () => {
+    setOpenVerify(true);
+  };
+
+  const handleLogout = () => {
     logoutUser();
     localStorage.clear();
     navigate("/");
@@ -60,9 +122,12 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
     <StyledNavBar>
       <BreadcrumbNav displayPageName={false} />
       <div style={{ float: "right", display: "flex", alignItems: "center" }}>
+        <Button type="link" onClick={handleVerify}>
+          {t("Verify") as string}
+        </Button>
         <Select
           value={language}
-          style={{ width: 120 }}
+          style={{ width: 120, marginRight: 8, marginLeft: 8 }}
           onChange={handleChangeLanguage}
           options={[
             { value: "vi", label: t("common.vietnames") },
@@ -137,6 +202,46 @@ const Navbar: React.FC<NavbarProps> = ({ _isSidebarOpen, _setIsSidebarOpen }: an
           </StyledActionLog>
         )}
       </div>
+      <Modal
+        title={t("Verify Phone Number") as string}
+        open={openVerify}
+        onCancel={() => {
+          setOpenVerify(false);
+        }}
+        onOk={handleSubmitVerify}
+        cancelText={t("Cancel") as string}
+        okText={t("Submit") as string}
+        width={800}
+        centered
+        maskClosable={false}
+        confirmLoading={loading}
+      >
+        <Form {...layout} form={form} ref={formRef} name="control-ref" style={{ width: 800 }}>
+          <Form.Item
+            name="phone_number"
+            label={t("Phone Number") as string}
+            rules={[{ required: true, validator: validatePhoneNumber }]}
+          >
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <Input value={user?.phone_number} disabled prefix={<PhoneOutlined className="site-form-item-icon" />} />
+              <div style={{ marginLeft: 10 }}>
+                {sentOTP && countdown > 0 ? (
+                  <Button type="link" loading={sentOTP && countdown > 0}>
+                    {`${t("Resend OTP in") as string} ${countdown} ${t("seconds") as string}`}
+                  </Button>
+                ) : (
+                  <Button type="link" onClick={handleSendOtp} loading={loading}>
+                    {t("Send OTP") as string}
+                  </Button>
+                )}
+              </div>
+            </div>
+          </Form.Item>
+          <Form.Item name="otp_code" label={t("OTP Code") as string} rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
     </StyledNavBar>
   );
 };

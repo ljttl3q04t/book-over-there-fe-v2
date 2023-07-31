@@ -3,14 +3,15 @@ import React, { useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Outlet } from "react-router-dom";
 
-import Navbar from "../../component/Navbar";
-import Sidebar from "../../component/Sidebar";
 import BreadcrumbNav from "@/component/BreadcrumbNav";
+import Navbar from "@/component/Navbar";
+import Sidebar from "@/component/Sidebar";
+import { TopNavbar } from "@/component/TopNavbar";
 const { Content } = Layout;
 
 const LayoutCustom = () => {
   const isNonMobile = useMediaQuery({ minWidth: 600 });
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
     <Layout style={{ height: "100vh" }}>
@@ -21,7 +22,8 @@ const LayoutCustom = () => {
         setIsSidebarOpen={setIsSidebarOpen}
       />
       <Layout>
-        <Navbar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+        <Navbar />
+        {/* <TopNavbar /> */}
         <BreadcrumbNav displayPageName={true} />
         <Content style={{ padding: "24px", overflow: "auto" }}>
           <Outlet />

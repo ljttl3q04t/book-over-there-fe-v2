@@ -83,5 +83,10 @@
   "Notes": "Ghi chú",
   "Go to order": "Mượn sách",
   "Online Order": "Mượn sách Online",
-  "Book History": "Lịch sử mượn sách"
+  "Book History": "Lịch sử mượn sách",
+  "Verify": "Xác minh",
+  "Verify Phone Number": "Xác minh số điện thoại",
+  "seconds": "giây",
+  "Resend OTP in": "Gửi lại OTP sau",
+  "Send OTP": "Gửi OTP"
 }

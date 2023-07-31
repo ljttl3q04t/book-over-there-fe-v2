@@ -72,6 +72,34 @@ async function updatePassword(data: UpdatePasswordParams): Promise<string> {
   }
 }
 
+async function sendOTP(): Promise<string> {
+  try {
+    const response = await ApiServiceAuthor.post("otp/generate", undefined);
+    if (response.data.message) {
+      return response.data.message;
+    } else {
+      throw new Error(response.data.error);
+    }
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "An error occurred";
+    throw new Error(errorMessage);
+  }
+}
+
+async function verifyOTP(code: string): Promise<string> {
+  try {
+    const response = await ApiServiceAuthor.post(`otp/verify/${code}`, undefined);
+    if (response.data.message) {
+      return response.data.message;
+    } else {
+      throw new Error(response.data.error);
+    }
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "An error occurred";
+    throw new Error(errorMessage);
+  }
+}
+
 const userService = {
   registerUser,
   updateUser,
@@ -80,5 +108,7 @@ const userService = {
   resetPassword,
   updatePassword,
   getStaffClubs,
+  sendOTP,
+  verifyOTP,
 };
 export default userService;

@@ -284,6 +284,20 @@ async function getDraftOrderInfos(draftOrderIds: number[]): Promise<DraftOrderIn
   }
 }
 
+async function getUserOrderHistory(): Promise<OrderInfos[]> {
+  try {
+    const response = await ApiDfbAuthor.post(`/user/order_history`);
+    if (response.data.order_infos) {
+      return response.data.order_infos;
+    } else {
+      throw new Error(response.data.error);
+    }
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "An error occurred";
+    throw new Error(errorMessage);
+  }
+}
+
 const dfbServices = {
   getOrderIds,
   getOrderInfos,
@@ -304,6 +318,7 @@ const dfbServices = {
   createDraftOrder,
   getDraftOrderIds,
   getDraftOrderInfos,
+  getUserOrderHistory,
 };
 
 export default dfbServices;

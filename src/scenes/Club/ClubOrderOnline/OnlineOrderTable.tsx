@@ -75,7 +75,7 @@ export function OnlineOrderTable({ tableData, tableLoading }: OnlineOrderTablePr
       title: t("Action") as string,
       key: "action",
       width: "10%",
-      render: (v: any) => (
+      render: () => (
         <Space>
           <Button type="primary" icon={<EditOutlined />} onClick={() => {}}>
             {t("Edit") as string}

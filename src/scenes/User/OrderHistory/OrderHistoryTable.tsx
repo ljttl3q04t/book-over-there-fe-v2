@@ -4,8 +4,7 @@ import moment from "moment";
 import { useTranslation } from "react-i18next";
 import { DataType } from "./types";
 
-type OrderTableProps = {
-  rowSelection: object;
+type OrderHistoryTableProps = {
   tableData: DataType[];
   tableLoading: boolean;
 };
@@ -22,11 +21,8 @@ function OrderStatus(orderStatus: string, value: string) {
   );
 }
 
-export function OrderTable({ rowSelection, tableData, tableLoading }: OrderTableProps) {
+export function OrderHistoryTable({ tableData, tableLoading }: OrderHistoryTableProps) {
   const { t } = useTranslation();
-  const rowClassName = (record: DataType) => {
-    return record.orderStatus === "complete" ? "disabled-row" : "";
-  };
   const columns: ColumnsType<DataType> = [
     {
       title: "ID",
@@ -103,8 +99,6 @@ export function OrderTable({ rowSelection, tableData, tableLoading }: OrderTable
         columns={columns}
         dataSource={tableData}
         scroll={{ x: 1000, y: 700 }}
-        rowSelection={rowSelection}
-        rowClassName={rowClassName}
         rowKey="orderDetailId"
         pagination={{
           defaultPageSize: 50, // Set the default pageSize to 50

@@ -1,5 +1,4 @@
 import {
-  BookOutlined,
   HistoryOutlined,
   HomeOutlined,
   MenuFoldOutlined,
