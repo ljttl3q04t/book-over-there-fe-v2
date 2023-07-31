@@ -5,9 +5,6 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import loadable from "@loadable/component";
 import { UserContext } from "@/context/UserContext";
 import { useBeforeRender } from "./component/Error";
-import ClubOrder from "./scenes/Club/ClubOrder";
-import ClubMember from "./scenes/Club/ClubMember";
-import ClubOrderOnline from "./scenes/Club/ClubOrderOnline";
 const Error404 = loadable(() => import("@/component/Error404"));
 const Error403 = loadable(() => import("@/component/Error403"));
 
@@ -21,7 +18,6 @@ const Homepage = loadable(() => import("@/scenes/Homepage"));
 const LayoutCustom = loadable(() => import("@/scenes/Layout/index"));
 const Login = loadable(() => import("@/scenes/Login"));
 const Register = loadable(() => import("@/scenes/Register"));
-const BookHistory = loadable(() => import("@/scenes/User/BookHistory"));
 const MyBook = loadable(() => import("@/scenes/User/MyBook"));
 const BookBorrow = loadable(() => import("@/scenes/User/BookBorrow"));
 const Payment = loadable(() => import("@/scenes/User/Payment"));
@@ -29,6 +25,10 @@ const Personal = loadable(() => import("@/scenes/User/Personal Profile"));
 const Support = loadable(() => import("@/scenes/User/Support"));
 const Transaction = loadable(() => import("@/scenes/User/Transaction History"));
 const ForgotPassword = loadable(() => import("@/scenes/ForgotPassword"));
+const ClubOrder = loadable(() => import("@/scenes/Club/ClubOrder"));
+const ClubMember = loadable(() => import("@/scenes/Club/ClubMember"));
+const ClubOrderOnline = loadable(() => import("@/scenes/Club/ClubOrderOnline"));
+const UserOrderHistory = loadable(() => import("@/scenes/User/OrderHistory"));
 
 const App = () => {
   const token = localStorage.getItem("access_token");
@@ -71,7 +71,7 @@ const App = () => {
                 <Route path="/transactionhistory" Component={Transaction} />
                 <Route path="/my-book" Component={MyBook} />
                 <Route path="/book-borrow" Component={BookBorrow} />
-                <Route path="/book-history" Component={BookHistory} />
+                <Route path="/book-history" Component={UserOrderHistory} />
               </>
             ) : (
               <Route path="/" element={<Error403 />} />

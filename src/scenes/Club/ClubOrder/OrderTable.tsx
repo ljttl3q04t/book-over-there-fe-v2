@@ -10,6 +10,7 @@ type OrderTableProps = {
   tableLoading: boolean;
 };
 function OrderStatus(orderStatus: string, value: string) {
+  console.log(orderStatus);
   const STATUS_COLORS: Record<string, string> = {
     created: "green",
     overdue: "volcano",

@@ -94,11 +94,11 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSide
           getItem(t("Personal Profile") as string, "my-profile"),
         ]),
 
-        getItem("Book Status", "sub2", <BookOutlined />, [
-          getItem("My book", "my-book"),
-          getItem("Book Borrow", "book-borrow"),
-        ]),
-        getItem("Book History", "book-history", <HistoryOutlined />),
+        // getItem("Book Status", "sub2", <BookOutlined />, [
+        //   getItem("My book", "my-book"),
+        //   getItem("Book Borrow", "book-borrow"),
+        // ]),
+        getItem(t("Book History") as string, "book-history", <HistoryOutlined />),
       ]),
       // getItem("Support", "support", <MessageOutlined />),
     ];

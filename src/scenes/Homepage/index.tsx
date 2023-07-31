@@ -119,6 +119,7 @@ const Homepage = () => {
     form.setFieldsValue({
       full_name: user?.full_name,
       phone_number: user?.phone_number,
+      address: user?.address,
     });
   };
   const handleCloseModal = async () => {

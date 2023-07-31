@@ -1,9 +1,10 @@
 import { DraftOrderInfos } from "@/services/types";
-import { Avatar, List, Table } from "antd";
+import { Avatar, Button, List, Space, Table } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { useTranslation } from "react-i18next";
 import defaultImage from "@/image/book-default.png";
 import moment from "moment";
+import { EditOutlined } from "@ant-design/icons";
 
 type OnlineOrderTableProps = {
   tableData: any;
@@ -69,6 +70,18 @@ export function OnlineOrderTable({ tableData, tableLoading }: OnlineOrderTablePr
           </>
         );
       },
+    },
+    {
+      title: t("Action") as string,
+      key: "action",
+      width: "10%",
+      render: (v: any) => (
+        <Space>
+          <Button type="primary" icon={<EditOutlined />} onClick={() => {}}>
+            {t("Edit") as string}
+          </Button>
+        </Space>
+      ),
     },
   ];
 
