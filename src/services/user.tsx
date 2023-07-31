@@ -28,7 +28,7 @@ async function getStaffClubs(): Promise<BookClubInfo[]> {
     } else {
       throw new Error(response.data.error);
     }
-  } catch (error) {
+  } catch (error: any) {
     const errorMessage = error.response?.data?.error || "An error occurred";
     throw new Error(errorMessage);
   }

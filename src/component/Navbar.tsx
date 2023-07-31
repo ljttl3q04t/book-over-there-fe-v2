@@ -2,9 +2,9 @@ import BreadcrumbNav from "@/component/BreadcrumbNav";
 import { UserContext } from "@/context/UserContext";
 import { validatePhoneNumber } from "@/helpers/fuctionHepler";
 import userService from "@/services/user";
-import { PhoneOutlined, ProfileOutlined, UserAddOutlined, UserOutlined } from "@ant-design/icons";
+import { CheckCircleOutlined, PhoneOutlined, ProfileOutlined, UserAddOutlined, UserOutlined } from "@ant-design/icons";
 import type { FormInstance, MenuProps } from "antd";
-import { Button, Dropdown, Form, Image, Input, Modal, Select, Space, notification } from "antd";
+import { Button, Dropdown, Form, Image, Input, Modal, Select, Space, Tag, notification } from "antd";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -35,7 +35,7 @@ const Navbar = () => {
   const access = localStorage.getItem("access_token");
   const navigate = useNavigate();
   const [changePW, setChangePW] = useState(false);
-  const { user, logoutUser, language, changeLanguage } = useContext(UserContext);
+  const { user, logoutUser, language, changeLanguage, setLoggedInUser } = useContext(UserContext);
   const { t, i18n } = useTranslation();
   const [openVerify, setOpenVerify] = useState(false);
   const [sentOTP, setSentOTP] = useState(false);
@@ -66,6 +66,9 @@ const Navbar = () => {
       const values = await form.validateFields();
       const message = await userService.verifyOTP(values.otp_code);
       notification.success({ message: message, type: "success" });
+      if (user) {
+        setLoggedInUser({ ...user, is_verify: true });
+      }
       setOpenVerify(false);
     } catch (error: any) {
       if (error.values === undefined) {
@@ -122,9 +125,16 @@ const Navbar = () => {
     <StyledNavBar>
       <BreadcrumbNav displayPageName={false} />
       <div style={{ float: "right", display: "flex", alignItems: "center" }}>
-        <Button type="link" onClick={handleVerify}>
-          {t("Verify") as string}
-        </Button>
+        {access !== null &&
+          (user?.is_verify ? (
+            <Tag icon={<CheckCircleOutlined />} color="success">
+              {t("Verified") as string}
+            </Tag>
+          ) : (
+            <Button type="link" onClick={handleVerify}>
+              {t("Verify") as string}
+            </Button>
+          ))}
         <Select
           value={language}
           style={{ width: 120, marginRight: 8, marginLeft: 8 }}
