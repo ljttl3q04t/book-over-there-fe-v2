@@ -38,16 +38,26 @@ const getUserShareClub = (data: any) => {
   return ApiServiceAuthor.post("/user/book/share-club", data);
 };
 
-const updateUser = (data: any) => {
-  const formData = new FormData();
-  formData.append("email", data.email);
-  formData.append("phone_number", data.phone_number);
-  formData.append("address", data.address);
-  formData.append("full_name", data.full_name);
-  formData.append("birth_date", data.birth_date);
-  formData.append("avatar", data.avatar);
-  return ApiServiceAuthor.put("/user/info/update", formData);
-};
+async function updateUser(data: any) {
+  try {
+    const formData = new FormData();
+    formData.append("email", data.email);
+    formData.append("phone_number", data.phone_number);
+    formData.append("address", data.address);
+    formData.append("full_name", data.full_name);
+    formData.append("birth_date", data.birth_date);
+    formData.append("avatar", data.avatar);
+    const response = await ApiServiceAuthor.put("/user/info/update", formData);
+    if (response.data) {
+      return response.data;
+    } else {
+      throw new Error(response.data.error);
+    }
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "An error occurred";
+    throw new Error(errorMessage);
+  }
+}
 
 async function resetPassword(data: ResetPasswordParams): Promise<string> {
   try {

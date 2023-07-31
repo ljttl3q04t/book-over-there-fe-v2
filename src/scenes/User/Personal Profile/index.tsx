@@ -93,35 +93,30 @@ const Personal = () => {
     initFetch();
   }, [user]);
 
-  const onFinish = (values: any) => {
-    setLoading(true);
-    const data: any = {
-      username: values.username,
-      full_name: values.full_name,
-      address: values.address,
-      email: values.email,
-      phone_number: values.phone_number,
-      birth_date: dayjs(values.birth_date).format("YYYY-MM-DD"),
-    };
-    if (fileList[0]) data.avatar = fileList[0] as RcFile;
-
-    UserService.updateUser(data)
-      .then((res: any) => {
-        if (res?.error?.message) {
-          notification.info({
-            message: "Info",
-            description: res.payload.error || res.payload,
-          });
-          return;
-        }
-        setLoggedInUser(res.data);
-        setFileList([]);
-        notification.success({
-          message: "Update info successfully",
-          type: "success",
-        });
-      })
-      .finally(() => setLoading(false));
+  const onFinish = async (values: any) => {
+    try {
+      setLoading(true);
+      const data: any = {
+        username: values.username,
+        full_name: values.full_name,
+        address: values.address,
+        email: values.email,
+        phone_number: values.phone_number,
+        birth_date: dayjs(values.birth_date).format("YYYY-MM-DD"),
+      };
+      if (fileList[0]) data.avatar = fileList[0] as RcFile;
+      const user = await UserService.updateUser(data);
+      setLoggedInUser(user);
+      notification.success({
+        message: "Update info successfully",
+        type: "success",
+      });
+    } catch (error: any) {
+      console.error(error);
+      notification.error({ message: t(error.message) as string });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

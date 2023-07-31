@@ -6,7 +6,6 @@ import { Outlet } from "react-router-dom";
 import BreadcrumbNav from "@/component/BreadcrumbNav";
 import Navbar from "@/component/Navbar";
 import Sidebar from "@/component/Sidebar";
-import { TopNavbar } from "@/component/TopNavbar";
 const { Content } = Layout;
 
 const LayoutCustom = () => {
@@ -23,7 +22,6 @@ const LayoutCustom = () => {
       />
       <Layout>
         <Navbar />
-        {/* <TopNavbar /> */}
         <BreadcrumbNav displayPageName={true} />
         <Content style={{ padding: "24px", overflow: "auto" }}>
           <Outlet />

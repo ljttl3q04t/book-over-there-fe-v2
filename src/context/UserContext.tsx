@@ -12,11 +12,11 @@ interface User {
   birth_date: string;
   user_id: number;
   membership_info: number;
-  // Add any other properties you need for the user
+  is_verify: boolean;
 }
 
 interface UserContextProps {
-  user: User | null;
+  user: User | undefined;
   setLoggedInUser: (userData: User) => void;
   logoutUser: () => void;
   language: string;
@@ -24,7 +24,7 @@ interface UserContextProps {
 }
 
 export const UserContext = createContext<UserContextProps>({
-  user: null,
+  user: undefined,
   setLoggedInUser: () => {},
   logoutUser: () => {},
   language: "",
@@ -36,7 +36,7 @@ interface UserProviderProps {
 }
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | undefined>(undefined);
   const lang = localStorage.getItem("i18nextLng");
 
   const [language, setLanguage] = useState<string>(lang ? lang : "vi");
@@ -58,7 +58,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const logoutUser = () => {
     // Clear the user data from localStorage when logging out
     localStorage.removeItem("user");
-    setUser(null);
+    setUser(undefined);
   };
 
   const changeLanguage = (language: string) => {
