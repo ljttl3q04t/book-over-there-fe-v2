@@ -156,4 +156,5 @@ export type DraftOrderInfos = {
   club_id: number;
   user_id: number;
   club_book_ids: number[];
+  draft_status: string;
 };

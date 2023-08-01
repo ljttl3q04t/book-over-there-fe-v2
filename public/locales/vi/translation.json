@@ -16,6 +16,10 @@
     "created": "Đang Mượn",
     "all": "Tất cả"
   },
+  "draftStatus": {
+    "pending": "Đang chờ",
+    "created": "Đã duyệt"
+  },
   "Search": "Tìm kiếm",
   "Login": "Đăng Nhập",
   "Logout": "Đăng Xuất",
@@ -89,5 +93,6 @@
   "seconds": "giây",
   "Resend OTP in": "Gửi lại OTP sau",
   "Send OTP": "Gửi OTP",
-  "Verified": "Đã xác minh"
+  "Verified": "Đã xác minh",
+  "Status": "Trạng thái"
 }

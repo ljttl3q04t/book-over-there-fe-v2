@@ -1,25 +1,48 @@
-import { DraftOrderInfos } from "@/services/types";
-import { Avatar, Button, List, Space, Table } from "antd";
-import { ColumnsType } from "antd/es/table";
-import { useTranslation } from "react-i18next";
 import defaultImage from "@/image/book-default.png";
+import { CheckCircleOutlined, EditOutlined } from "@ant-design/icons";
+import { Avatar, Button, List, Space, Table, Tag } from "antd";
+import { ColumnsType } from "antd/es/table";
 import moment from "moment";
-import { EditOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
+import { OnlineOrderTableRow } from "./types";
+import * as React from "react";
 
 type OnlineOrderTableProps = {
   tableData: any;
   tableLoading: boolean;
+  handleEditOnClick: any;
+  handleOrderConfirm: any;
 };
 
-export function OnlineOrderTable({ tableData, tableLoading }: OnlineOrderTableProps) {
+export function OnlineOrderTable({
+  tableData,
+  tableLoading,
+  handleEditOnClick,
+  handleOrderConfirm,
+}: OnlineOrderTableProps) {
   const { t } = useTranslation();
+  const [loading, setLoading] = React.useState(false);
 
-  const columns: ColumnsType<DraftOrderInfos> = [
+  const onClickConfirm = async (row: any) => {
+    setLoading(true);
+    await handleOrderConfirm(row);
+    setLoading(false);
+  };
+
+  const columns: ColumnsType<OnlineOrderTableRow> = [
     {
       title: t("Full Name") as string,
       dataIndex: "fullName",
       key: "fullName",
       width: "12%",
+      render: (value, row) => {
+        return (
+          <Space direction="vertical">
+            {value}
+            {row.member ? <Tag color="green">{row.member.code}</Tag> : <Tag>{t("New Member") as string}</Tag>}
+          </Space>
+        );
+      },
     },
     {
       title: t("Phone Number") as string,
@@ -72,16 +95,50 @@ export function OnlineOrderTable({ tableData, tableLoading }: OnlineOrderTablePr
       },
     },
     {
+      title: t("Status") as string,
+      key: "status",
+      dataIndex: "draftStatus",
+      render: (value) => {
+        if (value === "pending") {
+          return <Tag>{(t(`draftStatus.${value}`) as string).toUpperCase()}</Tag>;
+        } else {
+          return <Tag color="green">{(t(`draftStatus.${value}`) as string).toUpperCase()}</Tag>;
+        }
+      },
+      width: "8%",
+    },
+    {
       title: t("Action") as string,
       key: "action",
-      width: "10%",
-      render: () => (
-        <Space>
-          <Button type="primary" icon={<EditOutlined />} onClick={() => {}}>
-            {t("Edit") as string}
-          </Button>
-        </Space>
-      ),
+      width: "8%",
+      render: (value: any) => {
+        if (value.draftStatus !== "pending") {
+          return <></>;
+        }
+        return (
+          <Space direction="vertical">
+            <Button
+              type="default"
+              icon={<EditOutlined />}
+              onClick={() => {
+                handleEditOnClick(value);
+              }}
+            >
+              {t("Edit") as string}
+            </Button>
+            <Button
+              type="primary"
+              icon={<CheckCircleOutlined />}
+              onClick={() => {
+                onClickConfirm(value);
+              }}
+              loading={loading}
+            >
+              {t("Confirm") as string}
+            </Button>
+          </Space>
+        );
+      },
     },
   ];
 

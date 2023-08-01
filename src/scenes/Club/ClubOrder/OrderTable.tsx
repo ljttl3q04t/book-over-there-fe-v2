@@ -9,6 +9,7 @@ type OrderTableProps = {
   tableData: DataType[];
   tableLoading: boolean;
 };
+
 function OrderStatus(orderStatus: string, value: string) {
   const STATUS_COLORS: Record<string, string> = {
     created: "green",
