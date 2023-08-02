@@ -94,5 +94,9 @@
   "Resend OTP in": "Gửi lại OTP sau",
   "Send OTP": "Gửi OTP",
   "Verified": "Đã xác minh",
-  "Status": "Trạng thái"
+  "Status": "Trạng thái",
+  "Report": "Báo cáo",
+  "Total Order": "Số lượt người mượn",
+  "Total Book": "Số sách được mượn",
+  "Total New Member": "Số bạn đọc mới"
 }

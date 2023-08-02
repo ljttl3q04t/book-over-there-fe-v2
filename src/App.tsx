@@ -29,6 +29,7 @@ const ClubOrder = loadable(() => import("@/scenes/Club/ClubOrder"));
 const ClubMember = loadable(() => import("@/scenes/Club/ClubMember"));
 const ClubOrderOnline = loadable(() => import("@/scenes/Club/ClubOrderOnline"));
 const UserOrderHistory = loadable(() => import("@/scenes/User/OrderHistory"));
+const ClubReport = loadable(() => import("@/scenes/Club/ClubReport"));
 
 const App = () => {
   const token = localStorage.getItem("access_token");
@@ -59,6 +60,7 @@ const App = () => {
             <Route path="/clublist" Component={ClubList} />
             {token ? (
               <>
+                {user?.is_staff && <Route path="/clubstaff/report" Component={ClubReport} />}
                 {user?.is_staff && <Route path="/clubstaff/member-order" Component={ClubStaff} />}
                 {user?.is_staff && <Route path="/clubstaff/books" Component={ClubBookManagement} />}
                 {user?.is_staff && <Route path="/clubstaff/orders" Component={ClubOrder} />}

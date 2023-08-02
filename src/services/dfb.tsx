@@ -327,6 +327,20 @@ async function getUserOrderHistory(): Promise<OrderInfos[]> {
   }
 }
 
+async function getReport(clubId: string): Promise<any> {
+  try {
+    const response = await ApiDfbAuthor.post(`/report/${clubId}`);
+    if (response.data.data) {
+      return response.data.data;
+    } else {
+      throw new Error(response.data.error);
+    }
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "An error occurred";
+    throw new Error(errorMessage);
+  }
+}
+
 const dfbServices = {
   getOrderIds,
   getOrderInfos,
@@ -350,6 +364,7 @@ const dfbServices = {
   getDraftOrderInfos,
   updateDraftOrder,
   getUserOrderHistory,
+  getReport,
 };
 
 export default dfbServices;
