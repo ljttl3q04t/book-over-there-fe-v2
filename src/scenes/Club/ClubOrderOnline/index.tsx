@@ -155,7 +155,9 @@ const ClubOrderOnline = () => {
       <UpdateOnlineOrderModal
         open={openUpdateModal}
         onCancel={handleUpdateModalCancel}
-        onRefresh={() => {}}
+        onRefresh={() => {
+          initFetch();
+        }}
         currentOrder={currentOrder}
         form={updateOrderForm}
         formRef={updateOrderFormRef}

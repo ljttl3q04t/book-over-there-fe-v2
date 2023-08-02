@@ -99,10 +99,10 @@ export function CreateOrderModal(props: CreateOrderModalProps) {
             onCancel();
           }}
         >
-          Cancel
+          {t("Cancel") as string}
         </Button>,
         <Button key="submit" type="primary" loading={isSubmitting} onClick={onSubmit}>
-          {"Submit"}
+          {t("Submit") as string}
         </Button>,
       ]}
       centered

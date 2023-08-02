@@ -6,6 +6,9 @@ import * as React from "react";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 import { OnlineOrderTableRow } from "./types";
+import dayjs from "dayjs";
+import { UpdateDraftOrderOptions } from "@/services/types";
+import dfbServices from "@/services/dfb";
 
 type UpdateOnlineOrderModalProps = {
   open: boolean;
@@ -29,6 +32,7 @@ export function UpdateOnlineOrderModal(props: UpdateOnlineOrderModalProps) {
   const { open, onCancel, onRefresh, currentOrder, form, formRef } = props;
   const [loading, setLoading] = React.useState(false);
   const [hasChange, setHasChange] = React.useState(false);
+  const [dueDate, setDueDate] = React.useState(moment().add(35, "days"));
 
   const { t } = useTranslation();
 
@@ -43,6 +47,12 @@ export function UpdateOnlineOrderModal(props: UpdateOnlineOrderModalProps) {
     setHasChange(isDiff);
   };
 
+  const handleOrderDateChange = (date: any) => {
+    const newDueDate = date.add(35, "days");
+    setDueDate(newDueDate);
+    formRef.current?.setFieldsValue({ due_date: newDueDate });
+  };
+
   React.useEffect(() => {
     setHasChange(false);
     formRef.current?.setFieldsValue({
@@ -54,11 +64,33 @@ export function UpdateOnlineOrderModal(props: UpdateOnlineOrderModalProps) {
     });
   }, [currentOrder, form]);
 
+  React.useEffect(() => {
+    formRef.current?.setFieldsValue({
+      fullName: currentOrder?.fullName,
+      phoneNumber: currentOrder?.phoneNumber,
+      address: currentOrder?.address,
+      orderDate: moment(currentOrder?.orderDate, "YYYY-MM-DD"),
+      dueDate: moment(currentOrder?.dueDate, "YYYY-MM-DD"),
+    });
+  }, [open]);
+
   const handleSubmit = async () => {
     try {
       setLoading(true);
+      const values = await form.validateFields();
+      if (!currentOrder) return;
+      const updateData: UpdateDraftOrderOptions = { draft_order_id: currentOrder.id };
+      values.orderDate = dayjs(values.orderDate?.toDate()).format("YYYY-MM-DD");
+      values.dueDate = dayjs(values.dueDate?.toDate()).format("YYYY-MM-DD");
+      for (const [k, v] of Object.entries(values)) {
+        if (v !== currentOrder[k]) {
+          updateData[k] = v;
+        }
+      }
+      const message = await dfbServices.updateDraftOrder(updateData);
+      notification.success({ message: message, type: "success" });
       onRefresh();
-      handleCancel();
+      onCancel();
     } catch (error: any) {
       const errorMessage = error.message || "An error occurred while updating the member.";
       notification.error({ message: errorMessage });
@@ -73,6 +105,7 @@ export function UpdateOnlineOrderModal(props: UpdateOnlineOrderModalProps) {
       open={open}
       width={800}
       onCancel={handleCancel}
+      onOk={handleSubmit}
       footer={[
         <Button
           key="cancel"
@@ -124,14 +157,15 @@ export function UpdateOnlineOrderModal(props: UpdateOnlineOrderModalProps) {
             label={t("Order Date") as string}
             rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} order time` }]}
           >
-            <DatePicker format={["DD/MM/YYYY"]} />
+            <DatePicker format={["DD/MM/YYYY"]} onChange={handleOrderDateChange} />
           </Form.Item>
           <Form.Item
             name="dueDate"
             label={t("Due Date") as string}
+            initialValue={dueDate}
             rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} order time` }]}
           >
-            <DatePicker format={["DD/MM/YYYY"]} />
+            <DatePicker format={["DD/MM/YYYY"]} disabled />
           </Form.Item>
           <Form.Item name="selected_book" label={t("Selected Books") as string} rules={[{ required: false }]}>
             <List

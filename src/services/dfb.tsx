@@ -8,6 +8,7 @@ import {
   GetClubBookIdsOptions,
   MemberInfos,
   OrderInfos,
+  UpdateDraftOrderOptions,
   UpdateMemberRequest,
   getOrderIdsOptions,
 } from "./types";
@@ -264,6 +265,20 @@ async function createDraftOrder(data: CreateOrderDraftOptions): Promise<string> 
   }
 }
 
+async function updateDraftOrder(data: UpdateDraftOrderOptions): Promise<string> {
+  try {
+    const response = await ApiDfbAuthor.post(`/order/draft/update`, data);
+    if (response.data.message) {
+      return response.data.message;
+    } else {
+      throw new Error(response.data.error);
+    }
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "An error occurred";
+    throw new Error(errorMessage);
+  }
+}
+
 async function getDraftOrderIds(): Promise<number[]> {
   try {
     const response = await ApiDfbAuthor.post(`/order/draft/get_ids`);
@@ -333,6 +348,7 @@ const dfbServices = {
   createDraftOrder,
   getDraftOrderIds,
   getDraftOrderInfos,
+  updateDraftOrder,
   getUserOrderHistory,
 };
 

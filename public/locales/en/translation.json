@@ -16,6 +16,10 @@
     "created": "created",
     "all": "all"
   },
+  "draftStatus": {
+    "pending": "pending",
+    "created": "approve"
+  },
   "Book Name": "Book Name",
   "Book Code": "Book Code",
   "Reader Full Name": "Reader Full Name",

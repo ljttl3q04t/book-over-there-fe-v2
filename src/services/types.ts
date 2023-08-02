@@ -158,3 +158,12 @@ export type DraftOrderInfos = {
   club_book_ids: number[];
   draft_status: string;
 };
+
+export type UpdateDraftOrderOptions = {
+  draft_order_id: number;
+  order_date?: string;
+  due_date?: string;
+  phone_number?: string;
+  full_name?: string;
+  address?: string;
+};
