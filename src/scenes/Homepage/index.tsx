@@ -1,8 +1,21 @@
 import { ProFormText, QueryFilter } from "@ant-design/pro-form";
-import { Button, Typography, Affix, Modal, Form, Input, List, Avatar, DatePicker, notification } from "antd";
+import {
+  Button,
+  Typography,
+  Affix,
+  Modal,
+  Form,
+  Input,
+  List,
+  Avatar,
+  DatePicker,
+  notification,
+  Space,
+  Card,
+} from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { RightOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import { RightOutlined, PlusCircleOutlined, FacebookOutlined } from "@ant-design/icons";
 import CardBook from "../../component/CardBook";
 import { UserContext } from "@/context/UserContext";
 
@@ -425,6 +438,19 @@ const Homepage = () => {
                   </span>
                 </Title>
               </div>
+              <Space direction="vertical" size="large" style={{ display: "flex" }}>
+                <Card title="Giới thiệu" size="default">
+                  <p>
+                  Chúng mình là thư viện cộng đồng cho mượn sách miễn phí, chỉ đặt cọc niềm tin 💚
+                  </p>
+                  <p>Địa chỉ: Số 107, khu tập thể A5, ngõ 128C Đại La.</p>
+                  <p>Thời gian mở cửa: 8h30 - 22h mỗi ngày</p>
+                  <p>Liên hệ: 0962.188.248</p>
+                  <a href="https://www.facebook.com/dfreebook" target="_blank" rel="noopener noreferrer">
+                    https://www.facebook.com/dfreebook
+                  </a>
+                </Card>
+              </Space>
               <Section>
                 <Carousel
                   swipeable={true}

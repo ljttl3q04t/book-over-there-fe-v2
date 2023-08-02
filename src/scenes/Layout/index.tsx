@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Outlet } from "react-router-dom";
 
-import BreadcrumbNav from "@/component/BreadcrumbNav";
+// import BreadcrumbNav from "@/component/BreadcrumbNav";
 import Navbar from "@/component/Navbar";
 import Sidebar from "@/component/Sidebar";
 const { Content } = Layout;
@@ -22,7 +22,7 @@ const LayoutCustom = () => {
       />
       <Layout>
         <Navbar />
-        <BreadcrumbNav displayPageName={true} />
+        {/* <BreadcrumbNav displayPageName={true} /> */}
         <Content style={{ padding: "24px", overflow: "auto" }}>
           <Outlet />
         </Content>

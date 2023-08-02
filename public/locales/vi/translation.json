@@ -98,5 +98,6 @@
   "Report": "Báo cáo",
   "Total Order": "Số lượt người mượn",
   "Total Book": "Số sách được mượn",
-  "Total New Member": "Số bạn đọc mới"
+  "Total New Member": "Số bạn đọc mới",
+  "Created Order Date": "Ngày mượn sách"
 }
