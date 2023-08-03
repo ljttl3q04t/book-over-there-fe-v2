@@ -6,9 +6,6 @@ import * as React from "react";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 import { OnlineOrderTableRow } from "./types";
-import dayjs from "dayjs";
-import { UpdateDraftOrderOptions } from "@/services/types";
-import dfbServices from "@/services/dfb";
 
 type UpdateOnlineOrderModalProps = {
   open: boolean;
@@ -17,6 +14,7 @@ type UpdateOnlineOrderModalProps = {
   form: any;
   formRef: any;
   currentOrder: OnlineOrderTableRow | undefined;
+  handleSubmitUpdateOrder: any;
 };
 
 const StyledModalContent = styled.div`
@@ -29,7 +27,7 @@ const layout = {
 };
 
 export function UpdateOnlineOrderModal(props: UpdateOnlineOrderModalProps) {
-  const { open, onCancel, onRefresh, currentOrder, form, formRef } = props;
+  const { open, onCancel, onRefresh, currentOrder, form, formRef, handleSubmitUpdateOrder } = props;
   const [loading, setLoading] = React.useState(false);
   const [hasChange, setHasChange] = React.useState(false);
   const [dueDate, setDueDate] = React.useState(moment().add(35, "days"));
@@ -50,7 +48,7 @@ export function UpdateOnlineOrderModal(props: UpdateOnlineOrderModalProps) {
   const handleOrderDateChange = (date: any) => {
     const newDueDate = date.add(35, "days");
     setDueDate(newDueDate);
-    formRef.current?.setFieldsValue({ due_date: newDueDate });
+    formRef.current?.setFieldsValue({ dueDate: newDueDate });
   };
 
   React.useEffect(() => {
@@ -77,18 +75,7 @@ export function UpdateOnlineOrderModal(props: UpdateOnlineOrderModalProps) {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const values = await form.validateFields();
-      if (!currentOrder) return;
-      const updateData: UpdateDraftOrderOptions = { draft_order_id: currentOrder.id };
-      values.orderDate = dayjs(values.orderDate?.toDate()).format("YYYY-MM-DD");
-      values.dueDate = dayjs(values.dueDate?.toDate()).format("YYYY-MM-DD");
-      for (const [k, v] of Object.entries(values)) {
-        if (v !== currentOrder[k]) {
-          updateData[k] = v;
-        }
-      }
-      const message = await dfbServices.updateDraftOrder(updateData);
-      notification.success({ message: message, type: "success" });
+      await handleSubmitUpdateOrder();
       onRefresh();
       onCancel();
     } catch (error: any) {

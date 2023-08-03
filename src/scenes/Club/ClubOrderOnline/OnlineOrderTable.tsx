@@ -54,7 +54,7 @@ export function OnlineOrderTable({
       title: t("Address") as string,
       dataIndex: "address",
       key: "address",
-      width: "18%",
+      width: "16%",
     },
     {
       title: t("Order Date") as string,
@@ -75,6 +75,7 @@ export function OnlineOrderTable({
       title: t("Selected Books") as string,
       key: "books",
       dataIndex: "books",
+      width: "18%",
       render: (value) => {
         return (
           <>

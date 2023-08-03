@@ -7,6 +7,7 @@ import { Form, FormInstance, notification } from "antd";
 import { OnlineOrderTableRow } from "./types";
 import { UpdateOnlineOrderModal } from "./UpdateOnlineOrderModal";
 import { useTranslation } from "react-i18next";
+import dayjs from "dayjs";
 
 const StyledClubOrder = styled.div`
   border-radius: 12px;
@@ -33,7 +34,7 @@ const ClubOrderOnline = () => {
   const [loading, setLoading] = React.useState(false);
   const [openUpdateModal, setOpenUpdateModal] = React.useState(false);
   const [tableData, setTableData] = React.useState<OnlineOrderTableRow[]>([]);
-  const [currentOrder, setCurrentOrder] = React.useState<OnlineOrderTableRow | undefined>(undefined);
+  const [currentOrder, setCurrentOrder] = React.useState<any>(undefined);
 
   const [updateOrderForm] = Form.useForm();
   const updateOrderFormRef = React.useRef<FormInstance>(updateOrderForm);
@@ -63,6 +64,32 @@ const ClubOrderOnline = () => {
     } catch (error: any) {
       console.error(error);
       notification.error({ message: t(error.message) as string });
+    }
+  };
+
+  const handleSubmitUpdateOrder = async () => {
+    try {
+      const values: any = await updateOrderForm.validateFields();
+      if (!currentOrder) return;
+      const updateData: any = { draft_order_id: currentOrder.id };
+      values.orderDate = dayjs(values.orderDate?.toDate()).format("YYYY-MM-DD");
+      values.dueDate = dayjs(values.dueDate?.toDate()).format("YYYY-MM-DD");
+      for (const [k, v] of Object.entries(values)) {
+        if (v !== currentOrder[k]) {
+          updateData[k] = v;
+        }
+      }
+      const options: any = { draft_order_id: updateData.draft_order_id };
+      if (updateData.phoneNumber) options.phone_number = updateData.phoneNumber;
+      if (updateData.fullName) options.full_name = updateData.fullName;
+      if (updateData.orderDate) options.order_date = updateData.orderDate;
+      if (updateData.dueDate) options.due_date = updateData.dueDate;
+      if (updateData.address) options.address = updateData.address;
+      const message = await dfbServices.updateDraftOrder(options);
+      notification.success({ message: message, type: "success" });
+    } catch (error: any) {
+      const errorMessage = error.message || "An error occurred while updating the member.";
+      notification.error({ message: errorMessage });
     }
   };
 
@@ -161,6 +188,7 @@ const ClubOrderOnline = () => {
         currentOrder={currentOrder}
         form={updateOrderForm}
         formRef={updateOrderFormRef}
+        handleSubmitUpdateOrder={handleSubmitUpdateOrder}
       />
     </StyledClubOrder>
   );
