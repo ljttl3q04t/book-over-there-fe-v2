@@ -31,6 +31,12 @@ export function OnlineOrderTable({
 
   const columns: ColumnsType<OnlineOrderTableRow> = [
     {
+      title: t("Order ID") as string,
+      dataIndex: "id",
+      key: "id",
+      width: "8%",
+    },
+    {
       title: t("Full Name") as string,
       dataIndex: "fullName",
       key: "fullName",

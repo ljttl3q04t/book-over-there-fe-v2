@@ -159,7 +159,14 @@ const ClubOrderOnline = () => {
           member: mapPhone[d.phone_number],
         });
       }
-      setTableData(_tableData);
+      const sortedData = [..._tableData].sort((a, b) => {
+        const dateComparison = new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime();
+        if (dateComparison === 0) {
+          return b.id - a.id;
+        }
+        return dateComparison;
+      });
+      setTableData(sortedData);
     } catch (err: any) {
       notification.error({ message: err.message });
     } finally {
