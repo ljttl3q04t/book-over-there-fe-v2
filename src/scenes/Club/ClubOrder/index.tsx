@@ -166,6 +166,9 @@ const ClubOrder = () => {
       if (data.order_date) {
         data.order_date = dayjs(data.order_date).format("YYYY-MM-DD");
       }
+      if (data.order_month) {
+        data.order_month = dayjs(data.order_month).format("YYYY-MM-DD");
+      }
       const _orderIds = await dfbServices.getOrderIds(data);
       setOrderIds(_orderIds);
     } catch (error: any) {
@@ -197,6 +200,7 @@ const ClubOrder = () => {
           handleQueryCancel={handleQueryCancel}
           loading={loading}
           form={form}
+          members={members}
         />
         <div>
           {" "}
