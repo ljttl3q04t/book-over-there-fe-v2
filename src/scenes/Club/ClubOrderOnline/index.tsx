@@ -1,13 +1,14 @@
-import * as React from "react";
-import styled from "styled-components";
-import { OnlineOrderTable } from "./OnlineOrderTable";
 import dfbServices from "@/services/dfb";
 import { ClubBookInfos, MemberInfos } from "@/services/types";
 import { Form, FormInstance, notification } from "antd";
-import { OnlineOrderTableRow } from "./types";
-import { UpdateOnlineOrderModal } from "./UpdateOnlineOrderModal";
-import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
+import * as React from "react";
+import { useTranslation } from "react-i18next";
+import styled from "styled-components";
+import { OnlineOrderTable } from "./OnlineOrderTable";
+import { UpdateOnlineOrderModal } from "./UpdateOnlineOrderModal";
+import { OnlineOrderTableRow } from "./types";
+import { ConfirmModal } from "./ConfirmModal";
 
 const StyledClubOrder = styled.div`
   border-radius: 12px;
@@ -33,11 +34,16 @@ const StyledClubOrder = styled.div`
 const ClubOrderOnline = () => {
   const [loading, setLoading] = React.useState(false);
   const [openUpdateModal, setOpenUpdateModal] = React.useState(false);
+  const [openConfirmModal, setOpenConfirmModal] = React.useState(false);
   const [tableData, setTableData] = React.useState<OnlineOrderTableRow[]>([]);
   const [currentOrder, setCurrentOrder] = React.useState<any>(undefined);
 
   const [updateOrderForm] = Form.useForm();
   const updateOrderFormRef = React.useRef<FormInstance>(updateOrderForm);
+
+  const [confirmOrderForm] = Form.useForm();
+  const confirmOrderFormRef = React.useRef<FormInstance>(confirmOrderForm);
+
   const { t } = useTranslation();
 
   const handleEditOnClick = (row: any) => {
@@ -45,26 +51,13 @@ const ClubOrderOnline = () => {
     setOpenUpdateModal(true);
   };
 
-  const handleUpdateModalCancel = () => {
-    setOpenUpdateModal(false);
+  const handleConfirmOnClick = (row: any) => {
+    setCurrentOrder(row);
+    setOpenConfirmModal(true);
   };
 
-  const handleOrderConfirm = async (row: OnlineOrderTableRow) => {
-    try {
-      const data: any = {
-        draft_id: row.id,
-        member_id: row.member.id,
-        club_id: row.member.clubId,
-        order_date: row.orderDate,
-        due_date: row.dueDate,
-        club_book_ids: row.books.map((b) => b.id).join(","),
-      };
-      const message = await dfbServices.createOrderFromDraft(data);
-      notification.success({ message: message, type: "success" });
-    } catch (error: any) {
-      console.error(error);
-      notification.error({ message: t(error.message) as string });
-    }
+  const handleUpdateModalCancel = () => {
+    setOpenUpdateModal(false);
   };
 
   const handleSubmitUpdateOrder = async () => {
@@ -90,6 +83,35 @@ const ClubOrderOnline = () => {
     } catch (error: any) {
       const errorMessage = error.message || "An error occurred while updating the member.";
       notification.error({ message: errorMessage });
+    }
+  };
+
+  const handleSubmitConfirmOrder = async () => {
+    try {
+      const data: any = {
+        draft_id: currentOrder.id,
+        order_date: currentOrder.orderDate,
+        due_date: currentOrder.dueDate,
+        club_book_ids: currentOrder.books.map((b: any) => b.id).join(","),
+      };
+      if (currentOrder.member) {
+        (data.club_id = currentOrder.member.clubId), (data.member_id = currentOrder.member.id);
+        const message = await dfbServices.createOrderFromDraft(data);
+        notification.success({ message: message, type: "success" });
+      } else {
+        const values: any = await confirmOrderForm.validateFields();
+        data.new_member = {
+          code: values.memberCode,
+          phone_number: currentOrder.phoneNumber,
+          full_name: currentOrder.fullName,
+          club_id: currentOrder.books[0].club_id,
+        };
+        const message = await dfbServices.createOrderFromDraftForNewMember(data);
+        notification.success({ message: message, type: "success" });
+      }
+    } catch (error: any) {
+      console.error(error);
+      notification.error({ message: t(error.message) as string });
     }
   };
 
@@ -184,7 +206,10 @@ const ClubOrderOnline = () => {
         tableLoading={loading}
         tableData={tableData}
         handleEditOnClick={handleEditOnClick}
-        handleOrderConfirm={handleOrderConfirm}
+        handleConfirmOnClick={handleConfirmOnClick}
+        handleOrderConfirm={() => {
+          setOpenConfirmModal(true);
+        }}
       />
       <UpdateOnlineOrderModal
         open={openUpdateModal}
@@ -196,6 +221,19 @@ const ClubOrderOnline = () => {
         form={updateOrderForm}
         formRef={updateOrderFormRef}
         handleSubmitUpdateOrder={handleSubmitUpdateOrder}
+      />
+      <ConfirmModal
+        open={openConfirmModal}
+        onCancel={() => {
+          setOpenConfirmModal(false);
+        }}
+        currentOrder={currentOrder}
+        form={confirmOrderForm}
+        formRef={confirmOrderFormRef}
+        onRefresh={() => {
+          initFetch();
+        }}
+        handleSubmitConfirmOrder={handleSubmitConfirmOrder}
       />
     </StyledClubOrder>
   );

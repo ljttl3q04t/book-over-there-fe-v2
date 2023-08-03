@@ -12,23 +12,16 @@ type OnlineOrderTableProps = {
   tableLoading: boolean;
   handleEditOnClick: any;
   handleOrderConfirm: any;
+  handleConfirmOnClick: any;
 };
 
 export function OnlineOrderTable({
   tableData,
   tableLoading,
   handleEditOnClick,
-  handleOrderConfirm,
+  handleConfirmOnClick,
 }: OnlineOrderTableProps) {
   const { t } = useTranslation();
-  const [loading, setLoading] = React.useState(false);
-
-  const onClickConfirm = async (row: any) => {
-    setLoading(true);
-    await handleOrderConfirm(row);
-    setLoading(false);
-  };
-
   const columns: ColumnsType<OnlineOrderTableRow> = [
     {
       title: t("Order ID") as string,
@@ -137,9 +130,8 @@ export function OnlineOrderTable({
               type="primary"
               icon={<CheckCircleOutlined />}
               onClick={() => {
-                onClickConfirm(value);
+                handleConfirmOnClick(value);
               }}
-              loading={loading}
             >
               {t("Confirm") as string}
             </Button>

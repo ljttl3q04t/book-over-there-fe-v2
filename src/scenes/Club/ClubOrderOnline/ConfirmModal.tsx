@@ -14,7 +14,7 @@ type UpdateOnlineOrderModalProps = {
   form: any;
   formRef: any;
   currentOrder: OnlineOrderTableRow | undefined;
-  handleSubmitUpdateOrder: any;
+  handleSubmitConfirmOrder: any;
 };
 
 const StyledModalContent = styled.div`
@@ -26,23 +26,16 @@ const layout = {
   wrapperCol: { span: 16 },
 };
 
-export function UpdateOnlineOrderModal(props: UpdateOnlineOrderModalProps) {
-  const { open, onCancel, onRefresh, currentOrder, form, formRef, handleSubmitUpdateOrder } = props;
+export function ConfirmModal(props: UpdateOnlineOrderModalProps) {
+  const { open, onCancel, onRefresh, currentOrder, form, formRef, handleSubmitConfirmOrder } = props;
   const [loading, setLoading] = React.useState(false);
-  const [hasChange, setHasChange] = React.useState(false);
   const [dueDate, setDueDate] = React.useState(moment().add(35, "days"));
+  const [oldMember, setOldMember] = React.useState(true);
 
   const { t } = useTranslation();
 
   const handleCancel = () => {
     onCancel();
-  };
-
-  const handleFormValuesChange = (changedValues: any) => {
-    const isDiff = Object.keys(changedValues).some((field) => {
-      return changedValues[field] != currentOrder[field];
-    });
-    setHasChange(isDiff);
   };
 
   const handleOrderDateChange = (date: any) => {
@@ -52,30 +45,33 @@ export function UpdateOnlineOrderModal(props: UpdateOnlineOrderModalProps) {
   };
 
   React.useEffect(() => {
-    setHasChange(false);
+    setOldMember(!!currentOrder?.member);
     formRef.current?.setFieldsValue({
       fullName: currentOrder?.fullName,
       phoneNumber: currentOrder?.phoneNumber,
       address: currentOrder?.address,
       orderDate: moment(currentOrder?.orderDate, "YYYY-MM-DD"),
       dueDate: moment(currentOrder?.dueDate, "YYYY-MM-DD"),
+      memberCode: currentOrder?.member ? currentOrder?.member.code : undefined,
     });
   }, [currentOrder, form]);
 
   React.useEffect(() => {
+    setOldMember(!!currentOrder?.member);
     formRef.current?.setFieldsValue({
       fullName: currentOrder?.fullName,
       phoneNumber: currentOrder?.phoneNumber,
       address: currentOrder?.address,
       orderDate: moment(currentOrder?.orderDate, "YYYY-MM-DD"),
       dueDate: moment(currentOrder?.dueDate, "YYYY-MM-DD"),
+      memberCode: currentOrder?.member ? currentOrder?.member.code : undefined,
     });
   }, [open]);
 
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      await handleSubmitUpdateOrder();
+      await handleSubmitConfirmOrder();
       onRefresh();
       onCancel();
     } catch (error: any) {
@@ -88,7 +84,7 @@ export function UpdateOnlineOrderModal(props: UpdateOnlineOrderModalProps) {
 
   return (
     <Modal
-      title={t("Update Online Order") as string}
+      title={t("Confirm Online Order") as string}
       open={open}
       width={800}
       onCancel={handleCancel}
@@ -102,49 +98,44 @@ export function UpdateOnlineOrderModal(props: UpdateOnlineOrderModalProps) {
         >
           {t("Cancel") as string}
         </Button>,
-        <Button key="submit" type="primary" loading={loading} onClick={handleSubmit} disabled={!hasChange}>
+        <Button key="submit" type="primary" loading={loading} onClick={handleSubmit}>
           {t("Submit") as string}
         </Button>,
       ]}
       centered
     >
       <StyledModalContent>
-        <Form
-          {...layout}
-          id="updateOnlineOrder"
-          form={form}
-          ref={formRef}
-          name="control-ref"
-          style={{ width: 800 }}
-          onValuesChange={handleFormValuesChange}
-        >
+        <Form {...layout} id="confirmOnlineOrder" form={form} ref={formRef} style={{ width: 800 }}>
           <Form.Item
             name="fullName"
             label={t("Full Name") as string}
             rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} full name` }]}
           >
-            <Input />
+            <Input disabled />
           </Form.Item>
           <Form.Item
             name="phoneNumber"
             label={t("Phone Number") as string}
             rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} phone number` }]}
           >
-            <Input />
+            <Input disabled />
+          </Form.Item>
+          <Form.Item name="memberCode" label={t("Member Code") as string}>
+            <Input disabled={oldMember} />
           </Form.Item>
           <Form.Item
             name="address"
             label={t("Address") as string}
             rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} address` }]}
           >
-            <Input />
+            <Input disabled />
           </Form.Item>
           <Form.Item
             name="orderDate"
             label={t("Order Date") as string}
             rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} order time` }]}
           >
-            <DatePicker format={["DD/MM/YYYY"]} onChange={handleOrderDateChange} />
+            <DatePicker disabled format={["DD/MM/YYYY"]} onChange={handleOrderDateChange} />
           </Form.Item>
           <Form.Item
             name="dueDate"
