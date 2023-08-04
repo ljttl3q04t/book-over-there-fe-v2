@@ -32,6 +32,7 @@ const Personal = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [fileListPreview, setFileListPreview] = useState<UploadFile[]>([]);
   const { user, setLoggedInUser } = useContext(UserContext);
+  const [hasChange, setHasChange] = React.useState(false);
 
   const uploadButton = (
     <div>
@@ -65,6 +66,7 @@ const Personal = () => {
   };
 
   const initFetch = useCallback(async () => {
+    setHasChange(false);
     setLoading(true);
 
     formRef.current?.setFieldsValue({
@@ -93,6 +95,13 @@ const Personal = () => {
     initFetch();
   }, [user]);
 
+  const handleFormValuesChange = (changedValues: any) => {
+    const isDiff = Object.keys(changedValues).some((field) => {
+      return changedValues[field] != user[field];
+    });
+    setHasChange(isDiff);
+  };
+
   const onFinish = async (values: any) => {
     try {
       setLoading(true);
@@ -104,9 +113,15 @@ const Personal = () => {
         phone_number: values.phone_number,
         birth_date: dayjs(values.birth_date).format("YYYY-MM-DD"),
       };
-      if (fileList[0]) data.avatar = fileList[0] as RcFile;
-      const user = await UserService.updateUser(data);
-      setLoggedInUser(user);
+      const updateData: any = {};
+      for (const [k, v] of Object.entries(data)) {
+        if (v !== user[k]) {
+          updateData[k] = v;
+        }
+      }
+      if (fileList[0]) updateData.avatar = fileList[0] as RcFile;
+      const updateUser = await UserService.updateUser(updateData);
+      setLoggedInUser(updateUser);
       notification.success({
         message: "Update info successfully",
         type: "success",
@@ -139,7 +154,14 @@ const Personal = () => {
         <div>
           <Image style={{ float: "left" }} width={200} src={user?.avatar} />
         </div>
-        <Form {...layout} ref={formRef} name="control-ref" onFinish={onFinish} style={{ width: 600 }}>
+        <Form
+          {...layout}
+          ref={formRef}
+          name="control-ref"
+          onFinish={onFinish}
+          style={{ width: 600 }}
+          onValuesChange={handleFormValuesChange}
+        >
           <Form.Item name="username" label={t("Username") as string} rules={[{ required: true }]}>
             <Input disabled />
           </Form.Item>
@@ -164,7 +186,7 @@ const Personal = () => {
             </Upload>
           </Form.Item>
           <Form.Item {...tailLayout}>
-            <Button style={{ marginRight: "10px" }} type="primary" htmlType="submit">
+            <Button style={{ marginRight: "10px" }} type="primary" htmlType="submit" disabled={!hasChange}>
               {t("Submit") as string}
             </Button>
             <Button htmlType="button" onClick={initFetch}>

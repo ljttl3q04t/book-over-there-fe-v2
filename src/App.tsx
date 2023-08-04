@@ -87,3 +87,25 @@ const App = () => {
 };
 
 export default App;
+
+// // Import the functions you need from the SDKs you need
+// import { initializeApp } from "firebase/app";
+// import { getAnalytics } from "firebase/analytics";
+// // TODO: Add SDKs for Firebase products that you want to use
+// // https://firebase.google.com/docs/web/setup#available-libraries
+
+// // Your web app's Firebase configuration
+// // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// const firebaseConfig = {
+//   apiKey: "AIzaSyC7NrGu93Wgvay9I6Tr_cvk2qafOxgPTXw",
+//   authDomain: "book-over-there.firebaseapp.com",
+//   projectId: "book-over-there",
+//   storageBucket: "book-over-there.appspot.com",
+//   messagingSenderId: "193016641590",
+//   appId: "1:193016641590:web:e2921367b4a9291dcc8097",
+//   measurementId: "G-8HEFS9KB88"
+// };
+
+// // Initialize Firebase
+// const app = initializeApp(firebaseConfig);
+// const analytics = getAnalytics(app);

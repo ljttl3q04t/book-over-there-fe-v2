@@ -41,12 +41,12 @@ const getUserShareClub = (data: any) => {
 async function updateUser(data: any) {
   try {
     const formData = new FormData();
-    formData.append("email", data.email);
-    formData.append("phone_number", data.phone_number);
-    formData.append("address", data.address);
-    formData.append("full_name", data.full_name);
-    formData.append("birth_date", data.birth_date);
-    formData.append("avatar", data.avatar);
+    if (data.email) formData.append("email", data.email);
+    if (data.phone_number) formData.append("phone_number", data.phone_number);
+    if (data.address) formData.append("address", data.address);
+    if (data.full_name) formData.append("full_name", data.full_name);
+    if (data.birth_date) formData.append("birth_date", data.birth_date);
+    if (data.avatar) formData.append("avatar", data.avatar);
     const response = await ApiServiceAuthor.put("/user/info/update", formData);
     if (response.data) {
       return response.data;
