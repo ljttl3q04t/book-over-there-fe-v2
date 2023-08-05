@@ -37,6 +37,7 @@ const ClubOrderOnline = () => {
   const [openConfirmModal, setOpenConfirmModal] = React.useState(false);
   const [tableData, setTableData] = React.useState<OnlineOrderTableRow[]>([]);
   const [currentOrder, setCurrentOrder] = React.useState<any>(undefined);
+  const [clubBookInfos, setClubBookInfos] = React.useState<ClubBookInfos[]>([]);
 
   const [updateOrderForm] = Form.useForm();
   const updateOrderFormRef = React.useRef<FormInstance>(updateOrderForm);
@@ -78,6 +79,7 @@ const ClubOrderOnline = () => {
       if (updateData.orderDate) options.order_date = updateData.orderDate;
       if (updateData.dueDate) options.due_date = updateData.dueDate;
       if (updateData.address) options.address = updateData.address;
+      if (updateData.select_books) options.club_book_ids = updateData.select_books.join(",");
       const message = await dfbServices.updateDraftOrder(options);
       notification.success({ message: message, type: "success" });
     } catch (error: any) {
@@ -151,9 +153,20 @@ const ClubOrderOnline = () => {
     return data;
   };
 
+  const fetchBooks = async () => {
+    try {
+      const clubBookIds = await dfbServices.getClubBookIds({});
+      const _clubBookInfos = await dfbServices.getClubBookInfos(clubBookIds);
+      setClubBookInfos(_clubBookInfos);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const initFetch = async () => {
     try {
       setLoading(true);
+      await fetchBooks();
       const memberInfos = await fetchMemberIds();
       const mapPhone: any = {};
       for (const memberInfo of memberInfos) {
@@ -221,6 +234,7 @@ const ClubOrderOnline = () => {
         form={updateOrderForm}
         formRef={updateOrderFormRef}
         handleSubmitUpdateOrder={handleSubmitUpdateOrder}
+        clubBookInfos={clubBookInfos}
       />
       <ConfirmModal
         open={openConfirmModal}

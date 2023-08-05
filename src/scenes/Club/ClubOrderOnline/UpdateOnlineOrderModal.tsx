@@ -1,6 +1,6 @@
 import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
 import defaultImage from "@/image/book-default.png";
-import { Avatar, Button, DatePicker, Form, Input, List, Modal, notification } from "antd";
+import { Avatar, Button, DatePicker, Form, Input, List, Modal, Select, notification } from "antd";
 import moment from "moment";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
@@ -15,6 +15,7 @@ type UpdateOnlineOrderModalProps = {
   formRef: any;
   currentOrder: OnlineOrderTableRow | undefined;
   handleSubmitUpdateOrder: any;
+  clubBookInfos: any;
 };
 
 const StyledModalContent = styled.div`
@@ -27,7 +28,7 @@ const layout = {
 };
 
 export function UpdateOnlineOrderModal(props: UpdateOnlineOrderModalProps) {
-  const { open, onCancel, onRefresh, currentOrder, form, formRef, handleSubmitUpdateOrder } = props;
+  const { open, onCancel, onRefresh, currentOrder, form, formRef, handleSubmitUpdateOrder, clubBookInfos } = props;
   const [loading, setLoading] = React.useState(false);
   const [hasChange, setHasChange] = React.useState(false);
   const [dueDate, setDueDate] = React.useState(moment().add(35, "days"));
@@ -59,6 +60,7 @@ export function UpdateOnlineOrderModal(props: UpdateOnlineOrderModalProps) {
       address: currentOrder?.address,
       orderDate: moment(currentOrder?.orderDate, "YYYY-MM-DD"),
       dueDate: moment(currentOrder?.dueDate, "YYYY-MM-DD"),
+      select_books: currentOrder?.books.map((b) => b.id),
     });
   }, [currentOrder, form]);
 
@@ -69,6 +71,7 @@ export function UpdateOnlineOrderModal(props: UpdateOnlineOrderModalProps) {
       address: currentOrder?.address,
       orderDate: moment(currentOrder?.orderDate, "YYYY-MM-DD"),
       dueDate: moment(currentOrder?.dueDate, "YYYY-MM-DD"),
+      select_books: currentOrder?.books.map((b) => b.id),
     });
   }, [open]);
 
@@ -154,19 +157,27 @@ export function UpdateOnlineOrderModal(props: UpdateOnlineOrderModalProps) {
           >
             <DatePicker format={["DD/MM/YYYY"]} disabled />
           </Form.Item>
-          <Form.Item name="selected_book" label={t("Selected Books") as string} rules={[{ required: false }]}>
-            <List
-              itemLayout="horizontal"
-              dataSource={currentOrder?.books}
-              renderItem={(item: any) => (
-                <List.Item>
-                  <List.Item.Meta
-                    avatar={<Avatar src={item.book.image ? item.book.image : defaultImage} />}
-                    title={<p>{item.book.name}</p>}
-                  />
-                </List.Item>
-              )}
-            />
+          <Form.Item
+            label={t("Select Books") as string}
+            name="select_books"
+            rules={[{ required: true, message: t("Please enter your select at least one book") as string }]}
+          >
+            <Select
+              mode="multiple"
+              showArrow
+              style={{ width: "100%" }}
+              showSearch
+              filterOption={(input, option: any) =>
+                (option?.children ?? "").toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {clubBookInfos?.map((item) => (
+                <Select.Option value={item.id}>{`${item.book.name} - ${item.code}`}</Select.Option>
+              ))}
+              {clubBookInfos?.map((item) => {
+                return <Select.Option value={item.id}>{`${item.book.name}`}</Select.Option>;
+              })}
+            </Select>
           </Form.Item>
         </Form>
       </StyledModalContent>
