@@ -32,12 +32,7 @@ export function FilterOrder(props: FilterOrderProps) {
           <DatePicker format={dateFormatList} name="order_date" placeholder={t("Select date") as string} />
         </Form.Item>
         <Form.Item label={t("Created order by month") as string} name="order_month" style={{ width: "100%" }}>
-          <DatePicker
-            format={dateFormatList}
-            name="order_month"
-            picker="month"
-            placeholder={t("Select month") as string}
-          />
+          <DatePicker name="order_month" picker="month" placeholder={t("Select month") as string} />
         </Form.Item>
 
         <Form.Item name="member" label={t("Select Member") as string} style={{ width: "30%" }}>
