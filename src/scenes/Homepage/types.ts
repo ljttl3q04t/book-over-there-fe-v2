@@ -4,6 +4,7 @@ export type DataTypeClubSlide = {
   clubBookIds: number[];
   clubBookInfor: DataTypeClubBook[];
   clubCode: string;
+  details: any;
 };
 
 export type DataTypeClubBook = {

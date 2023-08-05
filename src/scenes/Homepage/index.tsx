@@ -1,5 +1,18 @@
 import { ProFormText, QueryFilter } from "@ant-design/pro-form";
-import { Button, Typography, Affix, Modal, Form, Input, List, Avatar, DatePicker, notification } from "antd";
+import {
+  Button,
+  Typography,
+  Affix,
+  Modal,
+  Form,
+  Input,
+  List,
+  Avatar,
+  DatePicker,
+  notification,
+  Space,
+  Card,
+} from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { RightOutlined, PlusCircleOutlined } from "@ant-design/icons";
@@ -190,6 +203,7 @@ const Homepage = () => {
               clubBookIds,
               clubBookInfor,
               clubCode: item.code,
+              details: item.details,
             };
             return clubSlide;
           } catch (error) {
@@ -425,6 +439,17 @@ const Homepage = () => {
                   </span>
                 </Title>
               </div>
+              <Space direction="vertical" size="large" style={{ display: "flex" }}>
+                <Card title={t("Introduce") as string} size="default">
+                  <p>{item.details.description}</p>
+                  <p>{`${t("Address") as string}: ${item.details.address}`}</p>
+                  <p>{`${t("Open time") as string}: ${item.details.time_open}`}</p>
+                  <p>{`${t("Contact") as string}: ${item.details.phone_number}`}</p>
+                  <a href={item.details.facebook} target="_blank" rel="noopener noreferrer">
+                    {item.details.facebook}
+                  </a>
+                </Card>
+              </Space>
               <Section>
                 <Carousel
                   swipeable={true}

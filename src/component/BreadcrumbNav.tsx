@@ -66,7 +66,7 @@ const BreadcrumbNav = ({ displayPageName }: any) => {
             }
           })}
       </Breadcrumb>
-      {displayPageName && <h1 className="page-title">{pageName}</h1>} {/* Display the last segment as the page name */}
+      {displayPageName && <h1 className="page-title">{pageName}</h1>}
     </StyledBreadCrumb>
   );
 };
