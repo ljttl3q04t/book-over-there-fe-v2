@@ -1,6 +1,5 @@
 import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
-import defaultImage from "@/image/book-default.png";
-import { Avatar, Button, DatePicker, Form, Input, List, Modal, Select, notification } from "antd";
+import { Button, DatePicker, Form, Input, Modal, Select, notification } from "antd";
 import moment from "moment";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
