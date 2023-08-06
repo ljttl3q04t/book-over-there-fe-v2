@@ -69,10 +69,10 @@ const App = () => {
                 <Route path="/clubbook" Component={ClubBook} />
                 <Route path="/bookclub" Component={ClubBook} />
                 <Route path="/my-profile" Component={Personal} />
-                <Route path="/payment" Component={Payment} />
-                <Route path="/transactionhistory" Component={Transaction} />
-                <Route path="/my-book" Component={MyBook} />
-                <Route path="/book-borrow" Component={BookBorrow} />
+                {/* <Route path="/payment" Component={Payment} /> */}
+                {/* <Route path="/transactionhistory" Component={Transaction} /> */}
+                {/* <Route path="/my-book" Component={MyBook} /> */}
+                {/* <Route path="/book-borrow" Component={BookBorrow} /> */}
                 <Route path="/book-history" Component={UserOrderHistory} />
               </>
             ) : (
