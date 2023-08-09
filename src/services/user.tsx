@@ -110,6 +110,20 @@ async function verifyOTP(code: string): Promise<string> {
   }
 }
 
+async function changePassword(data: any): Promise<string> {
+  try {
+    const response = await ApiServiceAuthor.post(`user/change-password`, data);
+    if (response.data.message) {
+      return response.data.message;
+    } else {
+      throw new Error(response.data.error);
+    }
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "An error occurred";
+    throw new Error(errorMessage);
+  }
+}
+
 const userService = {
   registerUser,
   updateUser,
@@ -120,5 +134,6 @@ const userService = {
   getStaffClubs,
   sendOTP,
   verifyOTP,
+  changePassword,
 };
 export default userService;

@@ -2,7 +2,14 @@ import BreadcrumbNav from "@/component/BreadcrumbNav";
 import { UserContext } from "@/context/UserContext";
 import { validatePhoneNumber } from "@/helpers/fuctionHepler";
 import userService from "@/services/user";
-import { CheckCircleOutlined, PhoneOutlined, ProfileOutlined, UserAddOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  CheckCircleOutlined,
+  LockOutlined,
+  PhoneOutlined,
+  ProfileOutlined,
+  UserAddOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 import type { FormInstance, MenuProps } from "antd";
 import { Button, Dropdown, Form, Image, Input, Modal, Select, Space, Tag, notification } from "antd";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -38,12 +45,15 @@ const Navbar = () => {
   const { user, logoutUser, language, changeLanguage, setLoggedInUser } = useContext(UserContext);
   const { t, i18n } = useTranslation();
   const [openVerify, setOpenVerify] = useState(false);
+  const [openChangePassword, setOpenChangePassword] = useState(false);
   const [sentOTP, setSentOTP] = useState(false);
   const [countdown, setCountdown] = useState(300);
   const [loading, setLoading] = useState(false);
 
   const [form] = Form.useForm();
   const formRef = useRef<FormInstance>(form);
+  const [changePasswordForm] = Form.useForm();
+  const changePasswordFormRef = useRef<FormInstance>(changePasswordForm);
 
   const handleSendOtp = async () => {
     try {
@@ -97,6 +107,9 @@ const Navbar = () => {
     };
   }, [sentOTP, countdown]);
 
+  useEffect(() => {
+    changePasswordForm.resetFields();
+  }, [openChangePassword]);
   const handleVerify = () => {
     setOpenVerify(true);
   };
@@ -107,7 +120,31 @@ const Navbar = () => {
     navigate("/");
   };
 
+  const handleChangePassword = async () => {
+    try {
+      setLoading(true);
+      const values = await changePasswordForm.validateFields();
+      const message = await userService.changePassword(values);
+      notification.success({ message: message, type: "success" });
+      setOpenChangePassword(false);
+    } catch (error: any) {
+      if (error.values === undefined) {
+        const errorMessage = t(error.message || "An error occurred") as string;
+        notification.error({ message: errorMessage });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const items: MenuProps["items"] = [
+    {
+      label: t("Change Password") as string,
+      key: "1",
+      onClick: () => {
+        setOpenChangePassword(true);
+      },
+    },
     {
       label: t("Logout") as string,
       key: "2",
@@ -249,6 +286,88 @@ const Navbar = () => {
           </Form.Item>
           <Form.Item name="otp_code" label={t("OTP Code") as string} rules={[{ required: true }]}>
             <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
+      <Modal
+        title={t("Change Password") as string}
+        open={openChangePassword}
+        onCancel={() => {
+          setOpenChangePassword(false);
+        }}
+        onOk={handleChangePassword}
+        cancelText={t("Cancel") as string}
+        okText={t("Submit") as string}
+        width={900}
+        centered
+        maskClosable={false}
+        confirmLoading={loading}
+      >
+        <Form
+          {...layout}
+          form={changePasswordForm}
+          ref={changePasswordFormRef}
+          name="change-password-form"
+          style={{ width: 900 }}
+        >
+          <Form.Item
+            name="password"
+            label={t("Password") as string}
+            rules={[
+              {
+                required: true,
+                message: "Please input your Password!",
+              },
+            ]}
+          >
+            <Input.Password
+              prefix={<LockOutlined className="site-form-item-icon" />}
+              type="password"
+              placeholder="Password"
+            />
+          </Form.Item>
+          <Form.Item
+            name="new_password"
+            label={t("New Password") as string}
+            hasFeedback
+            rules={[
+              {
+                required: true,
+                message: "Please input your New Password!",
+              },
+            ]}
+          >
+            <Input.Password
+              prefix={<LockOutlined className="site-form-item-icon" />}
+              type="password"
+              placeholder="New Password"
+            />
+          </Form.Item>
+          <Form.Item
+            name="rePassword"
+            label={t("Re-enter Password") as string}
+            dependencies={["password"]}
+            hasFeedback
+            rules={[
+              {
+                required: true,
+                message: "Please input your Password again!",
+              },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("new_password") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error("The new password that you entered do not match!"));
+                },
+              }),
+            ]}
+          >
+            <Input.Password
+              prefix={<LockOutlined className="site-form-item-icon" />}
+              type="password"
+              placeholder="Re-enter password"
+            />
           </Form.Item>
         </Form>
       </Modal>
