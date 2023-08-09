@@ -1,12 +1,14 @@
 import * as React from "react";
 import styled from "styled-components";
-import { Button, notification } from "antd";
+import { Button, Col, Form, Input, Row, notification } from "antd";
 import { BookClubInfo, CategoryInfos, ClubBookInfos } from "@/services/types";
 import userService from "@/services/user";
 import dfbServices from "@/services/dfb";
 import DrawerAddBook from "./DrawerAddBook";
 import { useTranslation } from "react-i18next";
 import TableBook from "./TableBook";
+import { PlusCircleOutlined } from "@ant-design/icons";
+import { UserContext } from "@/context/UserContext";
 
 const StyledClubStaffList = styled.div`
   border-radius: 12px;
@@ -36,6 +38,11 @@ const ClubStaff = () => {
   const [categories, setCategories] = React.useState<CategoryInfos[]>([]);
   const bookClubName = React.useRef<string>("");
   const [open, setOpen] = React.useState(false);
+  const [filterData, setFilterData] = React.useState<ClubBookInfos[]>([]);
+  const [isFilter, setIsFilter] = React.useState(false);
+  const { user } = React.useContext(UserContext);
+
+  const [form] = Form.useForm();
 
   const { t } = useTranslation();
 
@@ -70,6 +77,26 @@ const ClubStaff = () => {
     }
   };
 
+  const handleQueryCancel = async () => {
+    form.resetFields();
+    setIsFilter(false);
+    setFilterData([]);
+  };
+
+  const handleQuerySearch = async () => {
+    const { value } = await form.validateFields();
+    console.log(value);
+    console.log(clubBookInfos[0]);
+    const data = clubBookInfos.filter((b) => {
+      if (b.code.toLowerCase().indexOf(value.toLowerCase()) >= 0) return true;
+      if (b.book.name.toLowerCase().indexOf(value.toLowerCase()) >= 0) return true;
+      return false;
+    });
+    setIsFilter(true);
+    setFilterData(data);
+    console.log(data);
+  };
+
   React.useEffect(() => {
     initFetch();
   }, []);
@@ -78,17 +105,39 @@ const ClubStaff = () => {
     <StyledClubStaffList>
       <div className="table-extra-content">
         <h1>{bookClubName.current}</h1>
-        <Button
-          type="primary"
-          style={{ alignSelf: "flex-start" }}
-          onClick={() => {
-            setOpen(true);
-          }}
-        >
-          {t("Add Book") as string}
-        </Button>
+        <Form form={form} name="filter-member-form">
+          <Row gutter={24}>
+            <Col span={8}>
+              <Form.Item name="value">
+                <Input placeholder={t("Search") as string} />
+              </Form.Item>
+            </Col>
+            <Col span={10}>
+              <Form.Item>
+                <Button onClick={handleQueryCancel} style={{ marginRight: "10px" }}>
+                  {t("Reset") as string}
+                </Button>
+                <Button type="primary" loading={loading} onClick={handleQuerySearch}>
+                  {t("Search") as string}
+                </Button>
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+        {user?.is_club_admin && (
+          <Button
+            type="primary"
+            icon={<PlusCircleOutlined />}
+            style={{ alignSelf: "flex-start" }}
+            onClick={() => {
+              setOpen(true);
+            }}
+          >
+            {t("Add Book") as string}
+          </Button>
+        )}
       </div>
-      <TableBook loading={loading} clubBookInfos={clubBookInfos} />
+      <TableBook loading={loading} clubBookInfos={isFilter ? filterData : clubBookInfos} />
       <DrawerAddBook
         open={open}
         onClose={() => setOpen(false)}

@@ -2,6 +2,8 @@ import Table from "antd/es/table";
 import Image from "@/component/Image";
 import { ClubBookInfos } from "@/services/types";
 import { useTranslation } from "react-i18next";
+import { EditOutlined } from "@ant-design/icons";
+import { Space, Button } from "antd";
 
 type TableBookProps = {
   loading: boolean;
@@ -60,6 +62,18 @@ function TableBook({ loading, clubBookInfos }: TableBookProps) {
       dataIndex: "current_count",
       width: "8%",
     },
+    {
+      title: t("Action") as string,
+      key: "action",
+      width: "10%",
+      render: (v: any) => (
+        <Space>
+          <Button type="primary" icon={<EditOutlined />} onClick={() => {}}>
+            {t("Edit") as string}
+          </Button>
+        </Space>
+      ),
+    },
   ];
 
   return (
@@ -68,7 +82,7 @@ function TableBook({ loading, clubBookInfos }: TableBookProps) {
         loading={loading}
         columns={columns}
         scroll={{ x: 1500, y: 700 }}
-        dataSource={clubBookInfos}
+        dataSource={clubBookInfos.sort((a, b) => b.id - a.id)}
         pagination={{
           defaultPageSize: 50, // Set the default pageSize to 50
           showSizeChanger: true, // Optional: To allow users to change pageSize

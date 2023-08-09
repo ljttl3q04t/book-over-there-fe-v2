@@ -58,7 +58,7 @@ function DrawerAddBook({ open, onClose, club, categories, initFetch }: DrawerAdd
       formData.append("category", values.category);
       formData.append("author", values.author);
       formData.append("init_count", values.initialCount);
-      formData.append("current_count", values.currentCount);
+      formData.append("current_count", values.initialCount);
       formData.append("club_id", (club?.id ?? "").toString());
       if (fileList[0]) {
         formData.append("image", (fileList[0] as RcFile) ? (fileList[0] as RcFile) : "");
@@ -261,14 +261,6 @@ function DrawerAddBook({ open, onClose, club, categories, initFetch }: DrawerAdd
           rules={[{ required: true, message: "Please enter the initial count" }]}
         >
           <InputNumber style={{ width: "100%" }} placeholder="Please enter the initial count" />
-        </Form.Item>
-
-        <Form.Item
-          name="currentCount"
-          label={t("Current Count") as string}
-          rules={[{ required: true, message: "Please enter the current count" }]}
-        >
-          <InputNumber style={{ width: "100%" }} placeholder="Please enter the current count" />
         </Form.Item>
       </Form>
     </Drawer>
