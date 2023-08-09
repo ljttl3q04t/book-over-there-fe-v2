@@ -4,14 +4,19 @@ import { ClubBookInfos } from "@/services/types";
 import { useTranslation } from "react-i18next";
 import { EditOutlined } from "@ant-design/icons";
 import { Space, Button } from "antd";
+import { useContext } from "react";
+import { UserContext } from "@/context/UserContext";
 
 type TableBookProps = {
   loading: boolean;
   clubBookInfos: ClubBookInfos[];
+  handleEdit: any;
 };
 
-function TableBook({ loading, clubBookInfos }: TableBookProps) {
+function TableBook({ loading, clubBookInfos, handleEdit }: TableBookProps) {
   const { t } = useTranslation();
+  const { user } = useContext(UserContext);
+
   const columns = [
     {
       title: "",
@@ -66,16 +71,22 @@ function TableBook({ loading, clubBookInfos }: TableBookProps) {
       title: t("Action") as string,
       key: "action",
       width: "10%",
-      render: (v: any) => (
+      render: (row: any) => (
         <Space>
-          <Button type="primary" icon={<EditOutlined />} onClick={() => {}}>
+          <Button
+            type="primary"
+            icon={<EditOutlined />}
+            onClick={() => {
+              handleEdit(row);
+            }}
+            disabled={!user?.is_club_admin}
+          >
             {t("Edit") as string}
           </Button>
         </Space>
       ),
     },
   ];
-
   return (
     <>
       <Table

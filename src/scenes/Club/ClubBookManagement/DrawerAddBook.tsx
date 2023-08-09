@@ -1,6 +1,6 @@
 import { getBookByLink } from "@/scenes/User/MyBook/callService";
 import dfbServices from "@/services/dfb";
-import { BookClubInfo, CategoryInfos } from "@/services/types";
+import { BookClubInfo, CategoryInfos, ClubBookInfos } from "@/services/types";
 import { PlusOutlined } from "@ant-design/icons";
 import {
   Button,
@@ -26,6 +26,7 @@ type DrawerAddBookProps = {
   categories: any;
   club: BookClubInfo | undefined;
   initFetch: any;
+  editRow: ClubBookInfos | undefined;
 };
 
 const { Search } = Input;
@@ -37,7 +38,7 @@ const getBase64 = (file: RcFile): Promise<string> =>
     reader.onerror = (error) => reject(error);
   });
 
-function DrawerAddBook({ open, onClose, club, categories, initFetch }: DrawerAddBookProps) {
+function DrawerAddBook({ open, onClose, club, categories, initFetch, editRow }: DrawerAddBookProps) {
   const [form] = Form.useForm();
   const formRef = React.useRef<FormInstance>(form);
   const [previewOpen, setPreviewOpen] = React.useState(false);
@@ -46,27 +47,70 @@ function DrawerAddBook({ open, onClose, club, categories, initFetch }: DrawerAdd
   const [fileList, setFileList] = React.useState<UploadFile[]>([]);
   const [fileListPreview, setFileListPreview] = React.useState<UploadFile[]>([]);
   const [loading, setLoading] = React.useState(false);
+  const [changeCover, setChangeCover] = React.useState(false);
 
   const { t } = useTranslation();
+
+  React.useEffect(() => {
+    if (editRow) {
+      formRef.current?.setFieldsValue({
+        initialCount: editRow.init_count,
+        name: editRow.book.name,
+        code: editRow.code,
+        category: editRow.book.category?.name,
+        author: editRow.book.author?.name,
+      });
+      setFileListPreview([
+        {
+          uid: "-1",
+          name: "image.png",
+          status: "done",
+          url: editRow?.book.image || undefined,
+        },
+      ]);
+    } else {
+      formRef.current.resetFields();
+      setFileListPreview([]);
+    }
+  }, [editRow, open]);
+
+  React.useEffect(() => {
+    setChangeCover(true);
+  }, [fileList]);
 
   const onFinish = async (values: any) => {
     try {
       setLoading(true);
-      const formData = new FormData();
-      formData.append("name", values.name);
-      formData.append("code", values.code);
-      formData.append("category", values.category);
-      formData.append("author", values.author);
-      formData.append("init_count", values.initialCount);
-      formData.append("current_count", values.initialCount);
-      formData.append("club_id", (club?.id ?? "").toString());
-      if (fileList[0]) {
-        formData.append("image", (fileList[0] as RcFile) ? (fileList[0] as RcFile) : "");
+      if (editRow) {
+        const updateFormData = new FormData();
+        updateFormData.append("club_book_id", editRow.id.toString());
+        if (values.code !== editRow.code) updateFormData.append("code", values.code);
+        if (values.name !== editRow.book.name) updateFormData.append("name", values.name);
+        if (values.author !== editRow.book.author?.name) updateFormData.append("author", values.author);
+        if (values.category !== editRow.book.category?.name) updateFormData.append("category", values.category);
+        if (values.initialCount !== editRow.init_count) updateFormData.append("init_count", values.initialCount);
+        if (fileList[0] && changeCover) {
+          updateFormData.append("image", (fileList[0] as RcFile) ? (fileList[0] as RcFile) : "");
+        }
+        const message = await dfbServices.updateBook(updateFormData);
+        notification.success({ message: message, type: "success" });
       } else {
-        formData.append("image_url", values.image);
+        const formData = new FormData();
+        formData.append("name", values.name);
+        formData.append("code", values.code);
+        formData.append("category", values.category);
+        formData.append("author", values.author);
+        formData.append("init_count", values.initialCount);
+        formData.append("current_count", values.initialCount);
+        formData.append("club_id", (club?.id ?? "").toString());
+        if (fileList[0]) {
+          formData.append("image", (fileList[0] as RcFile) ? (fileList[0] as RcFile) : "");
+        } else {
+          formData.append("image_url", values.image);
+        }
+        const message = await dfbServices.createBook(formData);
+        notification.success({ message: message, type: "success" });
       }
-      const message = await dfbServices.createBook(formData);
-      notification.success({ message: message, type: "success" });
       initFetch();
       onClose();
       setFileListPreview([]);
@@ -104,7 +148,7 @@ function DrawerAddBook({ open, onClose, club, categories, initFetch }: DrawerAdd
         {
           uid: "-xxx",
           percent: 50,
-          name: "image.png",
+          name: file.name,
           status: "done",
           url: URL.createObjectURL(file),
         },
@@ -191,17 +235,19 @@ function DrawerAddBook({ open, onClose, club, categories, initFetch }: DrawerAdd
       }
     >
       <Form layout="vertical" form={form} onFinish={onFinish} ref={formRef}>
-        <Form.Item name="link" label="Link">
-          <Tooltip title="You can select link book from Tiki or Fahasa " color={"#108ee9"}>
-            <Search
-              disabled={loading}
-              size="large"
-              style={{ width: "100%" }}
-              placeholder="You can select link book from Tiki or Fahasa"
-              onSearch={changeLink}
-            />
-          </Tooltip>
-        </Form.Item>
+        {!editRow && (
+          <Form.Item name="link" label="Link">
+            <Tooltip title="You can select link book from Tiki or Fahasa " color={"#108ee9"}>
+              <Search
+                disabled={loading}
+                size="large"
+                style={{ width: "100%" }}
+                placeholder="You can select link book from Tiki or Fahasa"
+                onSearch={changeLink}
+              />
+            </Tooltip>
+          </Form.Item>
+        )}
         <Form.Item name="image" label="Cover">
           <Upload accept="image/*" multiple={false} listType="picture-card" onPreview={handlePreview} {...props}>
             {uploadButton}

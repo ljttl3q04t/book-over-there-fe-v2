@@ -33,6 +33,7 @@ const StyledClubStaffList = styled.div`
 
 const ClubStaff = () => {
   const [loading, setLoading] = React.useState(false);
+  const [editRow, setEditRow] = React.useState<ClubBookInfos | undefined>(undefined);
   const [clubBookInfos, setClubBookInfos] = React.useState<ClubBookInfos[]>([]);
   const [club, setClub] = React.useState<BookClubInfo>();
   const [categories, setCategories] = React.useState<CategoryInfos[]>([]);
@@ -85,8 +86,6 @@ const ClubStaff = () => {
 
   const handleQuerySearch = async () => {
     const { value } = await form.validateFields();
-    console.log(value);
-    console.log(clubBookInfos[0]);
     const data = clubBookInfos.filter((b) => {
       if (b.code.toLowerCase().indexOf(value.toLowerCase()) >= 0) return true;
       if (b.book.name.toLowerCase().indexOf(value.toLowerCase()) >= 0) return true;
@@ -94,7 +93,11 @@ const ClubStaff = () => {
     });
     setIsFilter(true);
     setFilterData(data);
-    console.log(data);
+  };
+
+  const handleEdit = (row: ClubBookInfos) => {
+    setEditRow(row);
+    setOpen(true);
   };
 
   React.useEffect(() => {
@@ -137,13 +140,17 @@ const ClubStaff = () => {
           </Button>
         )}
       </div>
-      <TableBook loading={loading} clubBookInfos={isFilter ? filterData : clubBookInfos} />
+      <TableBook loading={loading} clubBookInfos={isFilter ? filterData : clubBookInfos} handleEdit={handleEdit} />
       <DrawerAddBook
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={() => {
+          setOpen(false);
+          setEditRow(undefined);
+        }}
         categories={categories}
         club={club}
         initFetch={initFetch}
+        editRow={editRow}
       />
     </StyledClubStaffList>
   );

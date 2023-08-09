@@ -181,6 +181,20 @@ async function createBook(data: any): Promise<string> {
   }
 }
 
+async function updateBook(data: any): Promise<string> {
+  try {
+    const response = await ApiDfbAuthor.post(`/club_book/update`, data);
+    if (response.data.message) {
+      return response.data.message;
+    } else {
+      throw new Error(response.data.error);
+    }
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "An error occurred";
+    throw new Error(errorMessage);
+  }
+}
+
 async function getCategoryList(): Promise<CategoryInfos[]> {
   try {
     const response = await axiosApi.get(`/category/list/dfb`);
@@ -367,6 +381,7 @@ const dfbServices = {
   getClubBookInfos,
   getClubBookIds,
   createBook,
+  updateBook,
   getCategoryList,
   getAllMembers,
   createOrder,
