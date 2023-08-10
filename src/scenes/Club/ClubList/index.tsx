@@ -186,18 +186,18 @@ const ClubList = () => {
         return dayjs(value).format("DD-MM-YYYY");
       },
     },
-    {
-      title: "Total member",
-      dataIndex: "total_member_count",
-      defaultSortOrder: "descend",
-      sorter: (a, b) => a.total_member_count - b.total_member_count,
-    },
-    {
-      title: "Total book count",
-      dataIndex: "total_book_count",
-      defaultSortOrder: "descend",
-      sorter: (a, b) => a.total_book_count - b.total_book_count,
-    },
+    // {
+    //   title: "Total member",
+    //   dataIndex: "total_member_count",
+    //   defaultSortOrder: "descend",
+    //   sorter: (a, b) => a.total_member_count - b.total_member_count,
+    // },
+    // {
+    //   title: "Total book count",
+    //   dataIndex: "total_book_count",
+    //   defaultSortOrder: "descend",
+    //   sorter: (a, b) => a.total_book_count - b.total_book_count,
+    // },
     {
       title: "Action",
       key: "",

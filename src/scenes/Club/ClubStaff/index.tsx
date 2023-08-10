@@ -61,7 +61,7 @@ const ClubStaff = () => {
 
   const { t } = useTranslation();
 
-  const handleUpdateMember = async (record: any, action: "approve" | "setStaff", isStaff?: boolean) => {
+  const handleUpdateMember = async (record: any, action: "approve" | "setStaff" | "revoke", isStaff?: boolean) => {
     try {
       setLoading(true);
       const updateMemberForm: UpdateMemberClubForm = {
@@ -69,8 +69,10 @@ const ClubStaff = () => {
       };
       if (action === "approve") {
         updateMemberForm.member_status = MEMBER_STATUS.ACTIVE;
-      } else {
+      } else if (action === "setStaff") {
         updateMemberForm.is_staff = isStaff;
+      } else {
+        updateMemberForm.is_staff = false;
       }
       const message = await ClubService.updateMemberClub(updateMemberForm);
       notification.success({ message: t(message) as string, type: "success" });
@@ -200,6 +202,17 @@ const ClubStaff = () => {
                 loading={loading}
               >
                 {t("Staff") as string}
+              </Button>
+            )}
+            {user?.is_club_admin && record?.memberStatus === MEMBER_STATUS.ACTIVE && record.isStaff == true && (
+              <Button
+                type="primary"
+                onClick={() => {
+                  handleUpdateMember(record, "revoke", false);
+                }}
+                loading={loading}
+              >
+                {t("Revoke") as string}
               </Button>
             )}
           </>
