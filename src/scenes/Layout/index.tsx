@@ -10,7 +10,7 @@ const { Content } = Layout;
 
 const LayoutCustom = () => {
   const isNonMobile = useMediaQuery({ minWidth: 600 });
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   return (
     <Layout style={{ height: "100vh" }}>

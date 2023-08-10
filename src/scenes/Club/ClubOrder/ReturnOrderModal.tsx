@@ -1,6 +1,6 @@
 import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
 import { dateFormatList } from "@/helpers/DateHelper";
-import { Button, Form, Modal, DatePicker, List, Avatar } from "antd";
+import { Form, Modal, DatePicker, List, Avatar } from "antd";
 import styled from "styled-components";
 import defaultImage from "@/image/book-default.png";
 import { useTranslation } from "react-i18next";
@@ -39,15 +39,10 @@ export function ReturnOrderModal(props: ReturnOrderModalProps) {
       title={t("Return Book") as string}
       open={open}
       onCancel={handleCancelModal}
+      cancelText={t("Cancel") as string}
+      onOk={form.submit}
+      okButtonProps={{ loading: loading }}
       width={800}
-      footer={[
-        <Button key="cancel" onClick={handleCancelModal}>
-          {"Cancel"}
-        </Button>,
-        <Button key="submit" type="primary" loading={loading} onClick={form.submit}>
-          {"Submit"}
-        </Button>,
-      ]}
       centered
     >
       <StyledModalContent>

@@ -1,3 +1,4 @@
+import { MembershipInfos } from "@/services/types";
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 
 interface User {
@@ -11,7 +12,7 @@ interface User {
   full_name: string;
   birth_date: string;
   user_id: number;
-  membership_info: number;
+  membership_info: MembershipInfos[];
   is_verify: boolean;
 }
 
@@ -21,6 +22,12 @@ interface UserContextProps {
   logoutUser: () => void;
   language: string;
   changeLanguage: (language: string) => void;
+  currentClubId: number | undefined;
+  setCurrentClubId: (clubId: number | undefined) => void;
+  isClubAdmin: boolean;
+  setIsClubAdmin: (value: boolean) => void;
+  membershipInfos: MembershipInfos[];
+  setMembershipInfos: (data: MembershipInfos[]) => void;
 }
 
 export const UserContext = createContext<UserContextProps>({
@@ -29,6 +36,12 @@ export const UserContext = createContext<UserContextProps>({
   logoutUser: () => {},
   language: "",
   changeLanguage: () => {},
+  currentClubId: undefined,
+  setCurrentClubId: () => {},
+  isClubAdmin: false,
+  setIsClubAdmin: () => {},
+  membershipInfos: [],
+  setMembershipInfos: () => {},
 });
 
 interface UserProviderProps {
@@ -37,6 +50,9 @@ interface UserProviderProps {
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | undefined>(undefined);
+  const [membershipInfos, setMembershipInfos] = useState<MembershipInfos[]>([]);
+  const [isClubAdmin, setIsClubAdmin] = useState(false);
+  const [currentClubId, setCurrentClubId] = useState<number | undefined>(undefined);
   const lang = localStorage.getItem("i18nextLng");
 
   const [language, setLanguage] = useState<string>(lang ? lang : "vi");
@@ -74,6 +90,12 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         logoutUser,
         language,
         changeLanguage,
+        currentClubId,
+        setCurrentClubId,
+        isClubAdmin,
+        setIsClubAdmin,
+        membershipInfos,
+        setMembershipInfos,
       }}
     >
       {children}

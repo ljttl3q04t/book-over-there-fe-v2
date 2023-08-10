@@ -35,10 +35,11 @@ export async function getOrderDetailIds(): Promise<number[]> {
   }
 }
 
-export async function getOrderInfos(orderIds: number[]): Promise<OrderInfos[]> {
+export async function getOrderInfos(clubId: any, orderIds: number[]): Promise<OrderInfos[]> {
   if (!orderIds.length) return [];
   try {
     const data = {
+      club_id: clubId,
       order_ids: orderIds.join(","),
     };
     const response = await ApiDfbAuthor.post(`/order/get_infos`, data);
@@ -64,9 +65,10 @@ export async function getOrderDetailInfos(orderDetailIds: number[]): Promise<num
   }
 }
 
-export async function getMemberIds(): Promise<number[]> {
+export async function getMemberIds(clubId: number): Promise<number[]> {
   try {
-    const response = await ApiDfbAuthor.post(`/member/get_ids`);
+    const data = { club_id: clubId };
+    const response = await ApiDfbAuthor.post(`/member/get_ids`, data);
     const { member_ids } = response.data;
     return member_ids;
   } catch (error) {
@@ -75,10 +77,11 @@ export async function getMemberIds(): Promise<number[]> {
   }
 }
 
-export async function getMemberInfos(memberIds: number[]): Promise<MemberInfos[]> {
+export async function getMemberInfos(clubId: number, memberIds: number[]): Promise<MemberInfos[]> {
   try {
     const data = {
       member_ids: memberIds.join(","),
+      club_id: clubId,
     };
     const response = await ApiDfbAuthor.post(`/member/get_infos`, data);
     const { member_infos } = response.data;
@@ -89,10 +92,10 @@ export async function getMemberInfos(memberIds: number[]): Promise<MemberInfos[]
   }
 }
 
-export async function getAllMembers(): Promise<MemberInfos[]> {
+export async function getAllMembers(clubId: number): Promise<MemberInfos[]> {
   try {
-    const memberIds = await getMemberIds();
-    const memberInfos = await getMemberInfos(memberIds);
+    const memberIds = await getMemberIds(clubId);
+    const memberInfos = await getMemberInfos(clubId, memberIds);
     return memberInfos;
   } catch (error: any) {
     const errorMessage = error.response?.data?.error || "An error occurred while creating the member.";
@@ -128,12 +131,16 @@ export async function updateMember(member: UpdateMemberRequest): Promise<string>
   }
 }
 
-async function getClubBookIds(options: GetClubBookIdsOptions): Promise<number[]> {
+async function getClubBookIds(options: GetClubBookIdsOptions | number): Promise<number[]> {
   try {
-    const { clubs } = options;
-    const data: any = {};
-    if (clubs) {
-      data["club_ids"] = clubs.map((c) => c.id).join(",");
+    let data: any;
+    if (typeof options === "number") {
+      data = { club_id: options };
+    } else {
+      const { clubs } = options;
+      if (clubs) {
+        data["club_ids"] = clubs.map((c) => c.id).join(",");
+      }
     }
     const response = await dfbApi.post(`/club_book/get_ids`, data);
     if (response.data.club_book_ids !== undefined) {
@@ -307,9 +314,9 @@ async function updateDraftOrder(data: UpdateDraftOrderOptions): Promise<string> 
   }
 }
 
-async function getDraftOrderIds(): Promise<number[]> {
+async function getDraftOrderIds(clubId: any): Promise<number[]> {
   try {
-    const response = await ApiDfbAuthor.post(`/order/draft/get_ids`);
+    const response = await ApiDfbAuthor.post(`/order/draft/get_ids`, { club_id: clubId });
     if (response.data.draft_order_ids) {
       return response.data.draft_order_ids;
     } else {
@@ -321,11 +328,12 @@ async function getDraftOrderIds(): Promise<number[]> {
   }
 }
 
-async function getDraftOrderInfos(draftOrderIds: number[]): Promise<DraftOrderInfos[]> {
+async function getDraftOrderInfos(clubId: any, draftOrderIds: number[]): Promise<DraftOrderInfos[]> {
   if (!draftOrderIds.length) {
     return [];
   }
   const data = {
+    club_id: clubId,
     draft_order_ids: draftOrderIds.join(","),
   };
   try {
@@ -357,7 +365,7 @@ async function getUserOrderHistory(): Promise<OrderInfos[]> {
 
 async function getReport(clubId: string): Promise<any> {
   try {
-    const response = await ApiDfbAuthor.post(`/report/${clubId}`);
+    const response = await ApiDfbAuthor.post("/report", { club_id: clubId });
     if (response.data.data) {
       return response.data.data;
     } else {

@@ -5,8 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import loadable from "@loadable/component";
 import { UserContext } from "@/context/UserContext";
 import { useBeforeRender } from "./component/Error";
-const Error404 = loadable(() => import("@/component/Error404"));
-const Error403 = loadable(() => import("@/component/Error403"));
+import { Error404 } from "./component";
 
 const BookDetail = loadable(() => import("@/scenes/BookDetail"));
 const Checkout = loadable(() => import("@/scenes/Checkout"));
@@ -18,12 +17,8 @@ const Homepage = loadable(() => import("@/scenes/Homepage"));
 const LayoutCustom = loadable(() => import("@/scenes/Layout/index"));
 const Login = loadable(() => import("@/scenes/Login"));
 const Register = loadable(() => import("@/scenes/Register"));
-// const MyBook = loadable(() => import("@/scenes/User/MyBook"));
-// const BookBorrow = loadable(() => import("@/scenes/User/BookBorrow"));
-// const Payment = loadable(() => import("@/scenes/User/Payment"));
 const Personal = loadable(() => import("@/scenes/User/Personal Profile"));
 const Support = loadable(() => import("@/scenes/User/Support"));
-// const Transaction = loadable(() => import("@/scenes/User/Transaction History"));
 const ForgotPassword = loadable(() => import("@/scenes/ForgotPassword"));
 const ClubOrder = loadable(() => import("@/scenes/Club/ClubOrder"));
 const ClubMember = loadable(() => import("@/scenes/Club/ClubMember"));
@@ -33,7 +28,7 @@ const ClubReport = loadable(() => import("@/scenes/Club/ClubReport"));
 
 const App = () => {
   const token = localStorage.getItem("access_token");
-  const { user } = useContext(UserContext);
+  const { currentClubId } = useContext(UserContext);
   useBeforeRender(() => {
     window.addEventListener("error", (e) => {
       if (e) {
@@ -58,28 +53,26 @@ const App = () => {
             <Route path="/support" Component={Support} />
             <Route path="/book-detail/:id" Component={BookDetail} />
             <Route path="/clublist" Component={ClubList} />
-            {token ? (
+            {token && (
               <>
-                {user?.is_staff && <Route path="/clubstaff/report" Component={ClubReport} />}
-                {user?.is_staff && <Route path="/clubstaff/member-order" Component={ClubStaff} />}
-                {user?.is_staff && <Route path="/clubstaff/books" Component={ClubBookManagement} />}
-                {user?.is_staff && <Route path="/clubstaff/orders" Component={ClubOrder} />}
-                {user?.is_staff && <Route path="/clubstaff/members" Component={ClubMember} />}
-                {user?.is_staff && <Route path="/clubstaff/online-orders" Component={ClubOrderOnline} />}
+                {currentClubId && (
+                  <>
+                    <Route path="/clubstaff/report" Component={ClubReport} />
+                    <Route path="/clubstaff/member-order" Component={ClubStaff} />
+                    <Route path="/clubstaff/books" Component={ClubBookManagement} />
+                    <Route path="/clubstaff/orders" Component={ClubOrder} />
+                    <Route path="/clubstaff/members" Component={ClubMember} />
+                    <Route path="/clubstaff/online-orders" Component={ClubOrderOnline} />
+                  </>
+                )}
                 <Route path="/clubbook" Component={ClubBook} />
                 <Route path="/bookclub" Component={ClubBook} />
                 <Route path="/my-profile" Component={Personal} />
-                {/* <Route path="/payment" Component={Payment} /> */}
-                {/* <Route path="/transactionhistory" Component={Transaction} /> */}
-                {/* <Route path="/my-book" Component={MyBook} /> */}
-                {/* <Route path="/book-borrow" Component={BookBorrow} /> */}
                 <Route path="/book-history" Component={UserOrderHistory} />
               </>
-            ) : (
-              <Route path="/" element={<Error403 />} />
             )}
+            <Route path="*" element={<Error404 />} />
           </Route>
-          <Route element={<Error404 />} />
         </Routes>
       </Router>
     </div>
@@ -87,25 +80,3 @@ const App = () => {
 };
 
 export default App;
-
-// // Import the functions you need from the SDKs you need
-// import { initializeApp } from "firebase/app";
-// import { getAnalytics } from "firebase/analytics";
-// // TODO: Add SDKs for Firebase products that you want to use
-// // https://firebase.google.com/docs/web/setup#available-libraries
-
-// // Your web app's Firebase configuration
-// // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-// const firebaseConfig = {
-//   apiKey: "AIzaSyC7NrGu93Wgvay9I6Tr_cvk2qafOxgPTXw",
-//   authDomain: "book-over-there.firebaseapp.com",
-//   projectId: "book-over-there",
-//   storageBucket: "book-over-there.appspot.com",
-//   messagingSenderId: "193016641590",
-//   appId: "1:193016641590:web:e2921367b4a9291dcc8097",
-//   measurementId: "G-8HEFS9KB88"
-// };
-
-// // Initialize Firebase
-// const app = initializeApp(firebaseConfig);
-// const analytics = getAnalytics(app);

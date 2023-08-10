@@ -2,13 +2,13 @@ import styled from "styled-components";
 import { MemberTable } from "./MemberTable";
 import { Button, Form, notification } from "antd";
 import { CreateMemberModal } from "./CreateMemberModal";
-import userService from "@/services/user";
-import { BookClubInfo, MemberInfos } from "@/services/types";
+import { MemberInfos } from "@/services/types";
 import { PlusCircleOutlined } from "@ant-design/icons";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import dfbServices from "@/services/dfb";
 import { useTranslation } from "react-i18next";
 import { FilteMember } from "./FilterMember";
+import { UserContext } from "@/context/UserContext";
 
 const StyledClubOrder = styled.div`
   border-radius: 12px;
@@ -44,29 +44,17 @@ const ClubMember = () => {
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
   const [openCreateModal, setOpenCreateMOdal] = useState(false);
-  const [staffClubs, setStaffClubs] = useState<BookClubInfo[]>([]);
   const [tableData, setTableData] = useState<DataType[]>([]);
   const [filteredTableData, setFilteredTableData] = useState<DataType[]>([]);
   const [isFilter, setIsFilter] = useState(false);
+  const { currentClubId } = useContext(UserContext);
 
   const [form] = Form.useForm();
-
-  const fetchInit = async () => {
-    try {
-      setLoading(true);
-      const clubs: BookClubInfo[] = await userService.getStaffClubs();
-      setStaffClubs(clubs);
-    } catch (error: any) {
-      notification.error({ message: error.message });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const fetchMemberIds = async () => {
     try {
       setTableLoading(true);
-      const memberIds = await dfbServices.getMemberIds();
+      const memberIds = await dfbServices.getMemberIds(currentClubId ?? 0);
       if (memberIds.length > 0) {
         await fetchMemberInfos(memberIds);
       }
@@ -79,7 +67,7 @@ const ClubMember = () => {
 
   const fetchMemberInfos = async (memberIds: number[]) => {
     try {
-      const memberInfos: MemberInfos[] = await dfbServices.getMemberInfos(memberIds);
+      const memberInfos: MemberInfos[] = await dfbServices.getMemberInfos(currentClubId ?? 0, memberIds);
       const data: DataType[] = [];
       for (const member of memberInfos) {
         data.push({
@@ -128,11 +116,7 @@ const ClubMember = () => {
 
   useEffect(() => {
     fetchMemberIds();
-  }, []);
-
-  useEffect(() => {
-    fetchInit();
-  }, []);
+  }, [currentClubId]);
 
   return (
     <StyledClubOrder>
@@ -157,7 +141,6 @@ const ClubMember = () => {
       <CreateMemberModal
         fetchMemberIds={fetchMemberIds}
         open={openCreateModal}
-        staffClubs={staffClubs}
         onCancel={() => {
           setOpenCreateMOdal(false);
         }}

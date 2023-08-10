@@ -7,16 +7,16 @@ import * as React from "react";
 import { useTranslation } from "react-i18next";
 
 function ClubReport() {
-  const { user } = React.useContext(UserContext);
+  const { currentClubId } = React.useContext(UserContext);
   const [loading, setLoading] = React.useState(false);
   const [reportData, setReportData] = React.useState<any>(undefined);
   const { t } = useTranslation();
 
   const initFetch = async () => {
+    if (!currentClubId) return;
     try {
       setLoading(true);
-      const clubId = user.membership_info[0].book_club.id;
-      const data = await dfbServices.getReport(clubId);
+      const data = await dfbServices.getReport(currentClubId.toString());
       setReportData(data);
     } catch (err: any) {
       notification.error({ message: err.message });

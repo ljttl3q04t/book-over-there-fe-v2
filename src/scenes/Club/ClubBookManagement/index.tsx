@@ -1,8 +1,7 @@
 import * as React from "react";
 import styled from "styled-components";
 import { Button, Col, Form, Input, Row, notification } from "antd";
-import { BookClubInfo, CategoryInfos, ClubBookInfos } from "@/services/types";
-import userService from "@/services/user";
+import { CategoryInfos, ClubBookInfos } from "@/services/types";
 import dfbServices from "@/services/dfb";
 import DrawerAddBook from "./DrawerAddBook";
 import { useTranslation } from "react-i18next";
@@ -35,32 +34,24 @@ const ClubStaff = () => {
   const [loading, setLoading] = React.useState(false);
   const [editRow, setEditRow] = React.useState<ClubBookInfos | undefined>(undefined);
   const [clubBookInfos, setClubBookInfos] = React.useState<ClubBookInfos[]>([]);
-  const [club, setClub] = React.useState<BookClubInfo>();
   const [categories, setCategories] = React.useState<CategoryInfos[]>([]);
   const bookClubName = React.useRef<string>("");
   const [open, setOpen] = React.useState(false);
   const [filterData, setFilterData] = React.useState<ClubBookInfos[]>([]);
   const [isFilter, setIsFilter] = React.useState(false);
-  const { user } = React.useContext(UserContext);
+  const { currentClubId } = React.useContext(UserContext);
 
   const [form] = Form.useForm();
 
   const { t } = useTranslation();
-
-  const fetchClub = async (): Promise<BookClubInfo> => {
-    const clubs: BookClubInfo[] = await userService.getStaffClubs();
-    bookClubName.current = clubs[0]?.name;
-    setClub(clubs[0]);
-    return clubs[0];
-  };
 
   const fetchCategory = async () => {
     const _categories = await dfbServices.getCategoryList();
     setCategories(_categories);
   };
 
-  const fetchBooks = async (_club: BookClubInfo) => {
-    const clubBookIds = await dfbServices.getClubBookIds({ clubs: [_club] });
+  const fetchBooks = async () => {
+    const clubBookIds = await dfbServices.getClubBookIds(currentClubId ?? 0);
     const infos = await dfbServices.getClubBookInfos(clubBookIds);
     setClubBookInfos(infos);
   };
@@ -68,9 +59,8 @@ const ClubStaff = () => {
   const initFetch = async () => {
     try {
       setLoading(true);
-      const _club = await fetchClub();
       await fetchCategory();
-      await fetchBooks(_club);
+      await fetchBooks();
     } catch (error: any) {
       notification.error({ message: error.message });
     } finally {
@@ -102,7 +92,7 @@ const ClubStaff = () => {
 
   React.useEffect(() => {
     initFetch();
-  }, []);
+  }, [currentClubId]);
 
   return (
     <StyledClubStaffList>
@@ -127,7 +117,7 @@ const ClubStaff = () => {
             </Col>
           </Row>
         </Form>
-        {user?.is_club_admin && (
+        {currentClubId && (
           <Button
             type="primary"
             icon={<PlusCircleOutlined />}
@@ -148,7 +138,6 @@ const ClubStaff = () => {
           setEditRow(undefined);
         }}
         categories={categories}
-        club={club}
         initFetch={initFetch}
         editRow={editRow}
       />

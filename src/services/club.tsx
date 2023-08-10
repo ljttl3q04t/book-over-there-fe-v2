@@ -5,6 +5,7 @@ export interface UpdateMemberClubForm {
   membership_id: number;
   member_status?: string;
   is_staff?: boolean;
+  club_id: any;
 }
 
 export interface ClubMemberOrderCreateForm {
@@ -60,8 +61,19 @@ const joinCLub = (data: any) => {
 const getClubBookList = () => {
   return axiosApi.get("/club/book/list");
 };
-const getClubMemberList = () => {
-  return ApiServiceAuthor.get("/club/member/list");
+
+const getClubMemberList = async (clubId: number) => {
+  try {
+    const response = await ApiServiceAuthor.post("/club/member/list", { club_id: clubId });
+    if (response.data) {
+      return response.data;
+    } else {
+      throw new Error(response.data.error);
+    }
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || "An error occurred.";
+    throw new Error(errorMessage);
+  }
 };
 
 async function updateMemberClub(data: UpdateMemberClubForm): Promise<string> {

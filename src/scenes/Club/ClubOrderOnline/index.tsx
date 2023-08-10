@@ -9,6 +9,7 @@ import { OnlineOrderTable } from "./OnlineOrderTable";
 import { UpdateOnlineOrderModal } from "./UpdateOnlineOrderModal";
 import { OnlineOrderTableRow } from "./types";
 import { ConfirmModal } from "./ConfirmModal";
+import { UserContext } from "@/context/UserContext";
 
 const StyledClubOrder = styled.div`
   border-radius: 12px;
@@ -46,6 +47,7 @@ const ClubOrderOnline = () => {
   const confirmOrderFormRef = React.useRef<FormInstance>(confirmOrderForm);
 
   const { t } = useTranslation();
+  const { currentClubId } = React.useContext(UserContext);
 
   const handleEditOnClick = (row: any) => {
     setCurrentOrder(row);
@@ -73,7 +75,7 @@ const ClubOrderOnline = () => {
           updateData[k] = v;
         }
       }
-      const options: any = { draft_order_id: updateData.draft_order_id };
+      const options: any = { draft_order_id: updateData.draft_order_id, club_id: currentClubId };
       if (updateData.phoneNumber) options.phone_number = updateData.phoneNumber;
       if (updateData.fullName) options.full_name = updateData.fullName;
       if (updateData.orderDate) options.order_date = updateData.orderDate;
@@ -95,6 +97,7 @@ const ClubOrderOnline = () => {
         order_date: currentOrder.orderDate,
         due_date: currentOrder.dueDate,
         club_book_ids: currentOrder.books.map((b: any) => b.id).join(","),
+        club_id: currentClubId,
       };
       if (currentOrder.member) {
         (data.club_id = currentOrder.member.clubId), (data.member_id = currentOrder.member.id);
@@ -106,7 +109,7 @@ const ClubOrderOnline = () => {
           code: values.memberCode,
           phone_number: currentOrder.phoneNumber,
           full_name: currentOrder.fullName,
-          club_id: currentOrder.books[0].club_id,
+          club_id: currentClubId,
         };
         const message = await dfbServices.createOrderFromDraftForNewMember(data);
         notification.success({ message: message, type: "success" });
@@ -120,7 +123,7 @@ const ClubOrderOnline = () => {
   const fetchMemberIds = async () => {
     try {
       setLoading(true);
-      const memberIds = await dfbServices.getMemberIds();
+      const memberIds = await dfbServices.getMemberIds(currentClubId ?? 0);
       let memberInfos = [];
       if (memberIds.length > 0) {
         memberInfos = await fetchMemberInfos(memberIds);
@@ -136,7 +139,7 @@ const ClubOrderOnline = () => {
   const fetchMemberInfos = async (memberIds: number[]) => {
     const data: any = [];
     try {
-      const memberInfos: MemberInfos[] = await dfbServices.getMemberInfos(memberIds);
+      const memberInfos: MemberInfos[] = await dfbServices.getMemberInfos(currentClubId ?? 0, memberIds);
       for (const member of memberInfos) {
         data.push({
           id: member.id,
@@ -153,29 +156,20 @@ const ClubOrderOnline = () => {
     return data;
   };
 
-  const fetchBooks = async () => {
-    try {
-      const clubBookIds = await dfbServices.getClubBookIds({});
-      const _clubBookInfos = await dfbServices.getClubBookInfos(clubBookIds);
-      setClubBookInfos(_clubBookInfos);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const initFetch = async () => {
     try {
       setLoading(true);
-      await fetchBooks();
+      const clubBookIds = await dfbServices.getClubBookIds(currentClubId ?? 0);
+      const clubBookInfos = await dfbServices.getClubBookInfos(clubBookIds);
+      setClubBookInfos(clubBookInfos);
+
       const memberInfos = await fetchMemberIds();
       const mapPhone: any = {};
       for (const memberInfo of memberInfos) {
         mapPhone[memberInfo.phoneNumber] = memberInfo;
       }
-      const draftOrderIds = await dfbServices.getDraftOrderIds();
-      const data = await dfbServices.getDraftOrderInfos(draftOrderIds);
-      const clubBookIds = data.map((d) => d.club_book_ids).flat();
-      const clubBookInfos = await dfbServices.getClubBookInfos(clubBookIds);
+      const draftOrderIds = await dfbServices.getDraftOrderIds(currentClubId);
+      const data = await dfbServices.getDraftOrderInfos(currentClubId, draftOrderIds);
       const mapBooks: Record<number, ClubBookInfos> = {};
       clubBookInfos.forEach((b) => {
         mapBooks[b.id] = b;
@@ -211,7 +205,7 @@ const ClubOrderOnline = () => {
 
   React.useEffect(() => {
     initFetch();
-  }, []);
+  }, [currentClubId]);
 
   return (
     <StyledClubOrder>

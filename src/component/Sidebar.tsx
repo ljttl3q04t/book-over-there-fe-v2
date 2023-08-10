@@ -61,14 +61,15 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSide
   const { pathname } = useLocation();
   const [active, setActive] = React.useState("");
   const navigate = useNavigate();
-  const { user } = React.useContext(UserContext);
+  const { currentClubId } = React.useContext(UserContext);
   React.useEffect(() => {
     setActive(pathname.substring(1));
   }, [pathname]);
 
   let items: MenuProps["items"] = [getItem(<>{t("sidebar.homePage")}</>, "", <HomeOutlined />)];
-  const getClubStaffItem = (isStaff: any): MenuItem => {
-    if (isStaff) {
+
+  const getClubStaffItem = (currentClubId: number | undefined): MenuItem => {
+    if (currentClubId) {
       return getItem(t("Club Staff") as string, "sub4", <UserOutlined />, [
         getItem(t("Report") as string, "clubstaff/report"),
         getItem(t("Club Member") as string, "clubstaff/member-order"),
@@ -81,13 +82,14 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSide
       return null; // Return null if the user is not a staff member
     }
   };
+
   if (getAccessToken()) {
     items = [
       ...items,
       getItem(t("Club") as string, "sub1", <TeamOutlined />, [
         getItem(t("Club List") as string, "clublist"),
         // getItem("Club Book", "clubbook"),
-        getClubStaffItem(user?.is_staff),
+        getClubStaffItem(currentClubId),
       ]),
       getItem(t("User") as string, "sub0", <UserOutlined />, [
         getItem(t("My Account") as string, "sub3", <UserOutlined />, [

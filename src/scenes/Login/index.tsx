@@ -104,7 +104,7 @@ const StyledLoginAccessibility = styled.div`
   }
 `;
 const Login = () => {
-  const { setLoggedInUser } = useContext(UserContext);
+  const { setLoggedInUser, setMembershipInfos } = useContext(UserContext);
   const navigate = useNavigate();
   const [openResetPassword, setOpenResetPassword] = useState(false);
 
@@ -119,7 +119,7 @@ const Login = () => {
         token.data.user.user_id = user_id;
         const response: any = await userService.getUserMembership();
         if (response.data && response.data.length > 0) {
-          token.data.user.membership_info = response.data;
+          setMembershipInfos(response.data);
         }
         navigate("/");
         notification.success({

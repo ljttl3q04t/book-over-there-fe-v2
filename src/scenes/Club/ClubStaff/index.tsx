@@ -39,7 +39,7 @@ const statusColors = {
 };
 
 interface DataType {
-  no: number;
+  id: number;
   bookClubName: string;
   memberName: string;
   memberStatus: string;
@@ -57,7 +57,7 @@ const ClubStaff = () => {
   const [loading, setLoading] = useState(false);
   const [clubMemberTableSource, setClubMemberTableSource] = useState<DataType[]>([]);
   const bookClubName = useRef<string>("");
-  const { user } = useContext(UserContext);
+  const { isClubAdmin, currentClubId } = useContext(UserContext);
 
   const { t } = useTranslation();
 
@@ -65,6 +65,7 @@ const ClubStaff = () => {
     try {
       setLoading(true);
       const updateMemberForm: UpdateMemberClubForm = {
+        club_id: currentClubId,
         membership_id: record.membershipId,
       };
       if (action === "approve") {
@@ -85,38 +86,40 @@ const ClubStaff = () => {
   };
 
   const initFetch = useCallback(async () => {
-    setLoading(true);
-    ClubService.getClubMemberList()
-      .then((response) => {
-        if (response.data) {
-          const data = response.data.map((item: any, index: any) => {
-            return {
-              no: index + 1,
-              bookClubName: item.book_club.name,
-              memberName: item.member.full_name,
-              memberStatus: item.member_status,
-              memberEmail: item.member.email,
-              memberPhone: item.member.phone_number,
-              memberAvatar: item.member.avatar_url,
-              createdAt: dayjs(item.created_at).format("YYYY-MM-DD"),
-              joinedAt: dayjs(item.joined_at).format("YYYY-MM-DD"),
-              leaveAt: item.leaved_at && dayjs(item.leaved_at).format("YYYY-MM-DD"),
-              isStaff: item.is_staff,
-              membershipId: item.id,
-            };
-          });
-          bookClubName.current = data[0]?.bookClubName;
-          setClubMemberTableSource(data);
-        }
-      })
-      .finally(() => {
-        setLoading(false);
+    try {
+      setLoading(true);
+      const data = await ClubService.getClubMemberList(currentClubId ?? 0);
+      const tableData = data.map((item: any) => {
+        return {
+          id: item.id,
+          bookClubName: item.book_club.name,
+          memberName: item.member.full_name,
+          memberStatus: item.member_status,
+          memberEmail: item.member.email,
+          memberPhone: item.member.phone_number,
+          memberAvatar: item.member.avatar_url,
+          createdAt: dayjs(item.created_at).format("YYYY-MM-DD"),
+          joinedAt: dayjs(item.joined_at).format("YYYY-MM-DD"),
+          leaveAt: item.leaved_at && dayjs(item.leaved_at).format("YYYY-MM-DD"),
+          isStaff: item.is_staff,
+          membershipId: item.id,
+        };
       });
+      bookClubName.current = tableData[0]?.bookClubName;
+      setClubMemberTableSource(tableData);
+    } catch (error: any) {
+      if (error.values === undefined) {
+        const errorMessage = t(error.message || "An error occurred") as string;
+        notification.error({ message: errorMessage });
+      }
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
     initFetch();
-  }, []);
+  }, [currentClubId]);
 
   const memberStatusMapping = (status: MemberStatus) => {
     return (
@@ -133,10 +136,10 @@ const ClubStaff = () => {
 
   const columns: ColumnsType<DataType> = [
     {
-      title: t("No.") as string,
-      dataIndex: "no",
-      key: "no",
-      width: "10%",
+      title: t("ID") as string,
+      dataIndex: "id",
+      key: "id",
+      width: "8%",
     },
     {
       title: t("Member Name") as string,
@@ -193,7 +196,7 @@ const ClubStaff = () => {
                 {t("Approve") as string}
               </Button>
             )}
-            {user?.is_club_admin && record?.memberStatus === MEMBER_STATUS.ACTIVE && record.isStaff == false && (
+            {isClubAdmin && !record.isStaff && record?.memberStatus === MEMBER_STATUS.ACTIVE && (
               <Button
                 type="primary"
                 onClick={() => {
@@ -204,7 +207,7 @@ const ClubStaff = () => {
                 {t("Staff") as string}
               </Button>
             )}
-            {user?.is_club_admin && record?.memberStatus === MEMBER_STATUS.ACTIVE && record.isStaff == true && (
+            {isClubAdmin && record?.memberStatus === MEMBER_STATUS.ACTIVE && record.isStaff == true && (
               <Button
                 type="primary"
                 onClick={() => {
@@ -231,7 +234,7 @@ const ClubStaff = () => {
         scroll={{ x: "max-content" }}
         loading={loading}
         columns={columns}
-        dataSource={clubMemberTableSource}
+        dataSource={clubMemberTableSource.sort((a, b) => b.id - a.id)}
         bordered
       />
     </StyledClubStaffList>

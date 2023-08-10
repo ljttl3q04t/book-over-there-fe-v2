@@ -15,7 +15,7 @@ type TableBookProps = {
 
 function TableBook({ loading, clubBookInfos, handleEdit }: TableBookProps) {
   const { t } = useTranslation();
-  const { user } = useContext(UserContext);
+  const { isClubAdmin } = useContext(UserContext);
 
   const columns = [
     {
@@ -79,7 +79,7 @@ function TableBook({ loading, clubBookInfos, handleEdit }: TableBookProps) {
             onClick={() => {
               handleEdit(row);
             }}
-            disabled={!user?.is_club_admin}
+            disabled={!isClubAdmin}
           >
             {t("Edit") as string}
           </Button>

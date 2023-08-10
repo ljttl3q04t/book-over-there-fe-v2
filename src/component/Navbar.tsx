@@ -38,17 +38,34 @@ const layout = {
   wrapperCol: { span: 16 },
 };
 
+type ManageClub = {
+  isStaff: boolean;
+  isClubAdmin: boolean;
+  clubId: number;
+  clubName: string;
+};
+
 const Navbar = () => {
   const access = localStorage.getItem("access_token");
   const navigate = useNavigate();
   const [changePW, setChangePW] = useState(false);
-  const { user, logoutUser, language, changeLanguage, setLoggedInUser } = useContext(UserContext);
+  const {
+    user,
+    logoutUser,
+    language,
+    changeLanguage,
+    setLoggedInUser,
+    setCurrentClubId,
+    setIsClubAdmin,
+    membershipInfos,
+  } = useContext(UserContext);
   const { t, i18n } = useTranslation();
   const [openVerify, setOpenVerify] = useState(false);
   const [openChangePassword, setOpenChangePassword] = useState(false);
   const [sentOTP, setSentOTP] = useState(false);
   const [countdown, setCountdown] = useState(300);
   const [loading, setLoading] = useState(false);
+  const [manageClubs, setManageClubs] = useState<ManageClub[] | undefined>(undefined);
 
   const [form] = Form.useForm();
   const formRef = useRef<FormInstance>(form);
@@ -110,6 +127,22 @@ const Navbar = () => {
   useEffect(() => {
     changePasswordForm.resetFields();
   }, [openChangePassword]);
+
+  useEffect(() => {
+    const _manageClubs = membershipInfos
+      .filter((d) => !d.leaved_at && d.member_status === "active" && (d.is_staff || d.is_admin))
+      .map((d) => {
+        return {
+          isStaff: d.is_staff,
+          isClubAdmin: d.is_admin,
+          clubId: d.book_club.id,
+          clubName: d.book_club.name,
+        };
+      });
+    if (_manageClubs && _manageClubs.length > 0) setCurrentClubId(_manageClubs[0].clubId);
+    setManageClubs(_manageClubs);
+  }, [membershipInfos]);
+
   const handleVerify = () => {
     setOpenVerify(true);
   };
@@ -161,6 +194,25 @@ const Navbar = () => {
   return (
     <StyledNavBar>
       <BreadcrumbNav displayPageName={false} />
+      <div style={{ float: "left", display: "flex" }}>
+        {access !== null && manageClubs && manageClubs.length > 1 && (
+          <Select
+            style={{ width: 250, marginRight: 8 }}
+            clearIcon={false}
+            defaultValue={manageClubs[0].clubId}
+            onChange={(v) => {
+              setCurrentClubId(v);
+              setIsClubAdmin(membershipInfos.some((d) => d.is_admin && d.book_club.id === v));
+            }}
+          >
+            {manageClubs.map((club: ManageClub) => (
+              <Select.Option key={club.clubId} value={club.clubId}>
+                {club.clubName}
+              </Select.Option>
+            ))}
+          </Select>
+        )}
+      </div>
       <div style={{ float: "right", display: "flex", alignItems: "center" }}>
         {access !== null &&
           (user?.is_verify ? (

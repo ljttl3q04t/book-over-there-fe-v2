@@ -1,9 +1,9 @@
 import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
+import { UserContext } from "@/context/UserContext";
 import { validatePhoneNumber } from "@/helpers/fuctionHepler";
 import dfbServices from "@/services/dfb";
-import { BookClubInfo } from "@/services/types";
 import { PhoneOutlined } from "@ant-design/icons";
-import { Button, Form, FormInstance, Input, Modal, Select, notification } from "antd";
+import { Button, Form, FormInstance, Input, Modal, notification } from "antd";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
@@ -11,7 +11,6 @@ import styled from "styled-components";
 type CreateOrderModalProps = {
   open: boolean;
   onCancel: () => void;
-  staffClubs: BookClubInfo[];
   fetchMemberIds: any;
 };
 
@@ -25,10 +24,11 @@ const layout = {
 };
 
 export function CreateMemberModal(props: CreateOrderModalProps) {
-  const { fetchMemberIds, open, staffClubs, onCancel } = props;
+  const { fetchMemberIds, open, onCancel } = props;
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [form] = Form.useForm();
   const formRef = React.useRef<FormInstance>(form);
+  const { currentClubId } = React.useContext(UserContext);
 
   const { t } = useTranslation();
 
@@ -36,8 +36,8 @@ export function CreateMemberModal(props: CreateOrderModalProps) {
     try {
       setIsSubmitting(true);
       const values = await form.validateFields();
-      const { club, ...data } = values;
-      data.club_id = club;
+      const { ...data } = values;
+      data.club_id = currentClubId;
       const message = await dfbServices.createMember(data);
       notification.success({ message: message, type: "success" });
       form.resetFields();
@@ -50,12 +50,6 @@ export function CreateMemberModal(props: CreateOrderModalProps) {
       setIsSubmitting(false);
     }
   };
-
-  React.useEffect(() => {
-    formRef.current?.setFieldsValue({
-      club: staffClubs[0]?.id,
-    });
-  }, [open]);
 
   return (
     <Modal
@@ -80,19 +74,6 @@ export function CreateMemberModal(props: CreateOrderModalProps) {
     >
       <StyledModalContent>
         <Form {...layout} form={form} ref={formRef} name="control-ref" style={{ width: 800 }}>
-          <Form.Item
-            name="club"
-            label={t("Club") as string}
-            rules={[{ required: true, message: "Please select club" }]}
-          >
-            <Select placeholder="Please select a club">
-              {staffClubs.map((club) => (
-                <Select.Option key={club.id} value={club.id}>
-                  {club.name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
           <Form.Item
             name="full_name"
             label={t("Full Name") as string}

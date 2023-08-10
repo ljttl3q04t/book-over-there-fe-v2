@@ -1,19 +1,19 @@
 import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
-import { Button, DatePicker, Form, FormInstance, Input, Modal, Select, notification } from "antd";
+import { DatePicker, Form, FormInstance, Input, Modal, Select, notification } from "antd";
 import * as React from "react";
 import styled from "styled-components";
 import moment from "moment";
-import { BookClubInfo, ClubBookInfos, MemberInfos } from "@/services/types";
+import { ClubBookInfos, MemberInfos } from "@/services/types";
 import dfbServices from "@/services/dfb";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
+import { UserContext } from "@/context/UserContext";
 
 type CreateOrderModalProps = {
   open: boolean;
   onCancel: () => void;
   members: MemberInfos[];
   clubBookInfos: ClubBookInfos[];
-  staffClubs: BookClubInfo[];
   onRefresh: any;
 };
 
@@ -27,10 +27,11 @@ const layout = {
 };
 
 export function CreateOrderModal(props: CreateOrderModalProps) {
-  const { open, onCancel, members, clubBookInfos, staffClubs, onRefresh } = props;
+  const { open, onCancel, members, clubBookInfos, onRefresh } = props;
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isNewMember, setIsNewMember] = React.useState(false);
   const { t } = useTranslation();
+  const { currentClubId } = React.useContext(UserContext);
 
   const [form] = Form.useForm();
   const formRef = React.useRef<FormInstance>(form);
@@ -46,7 +47,7 @@ export function CreateOrderModal(props: CreateOrderModalProps) {
 
   React.useEffect(() => {
     formRef.current?.setFieldsValue({
-      club: staffClubs[0]?.id,
+      club: currentClubId,
       order_date: orderDate,
       due_date: dueDate,
     });
@@ -58,7 +59,7 @@ export function CreateOrderModal(props: CreateOrderModalProps) {
       setIsSubmitting(true);
       const values = await form.validateFields();
       const data: any = {
-        club_id: values.club,
+        club_id: currentClubId,
         order_date: dayjs(values.order_date?.toDate()).format("YYYY-MM-DD"),
         due_date: dayjs(values.due_date?.toDate()).format("YYYY-MM-DD"),
         club_book_ids: values.select_books.join(","),
@@ -92,33 +93,15 @@ export function CreateOrderModal(props: CreateOrderModalProps) {
       title={t("Create New Order") as string}
       open={open}
       width={800}
-      footer={[
-        <Button
-          key="cancel"
-          onClick={() => {
-            onCancel();
-          }}
-        >
-          {t("Cancel") as string}
-        </Button>,
-        <Button key="submit" type="primary" loading={isSubmitting} onClick={onSubmit}>
-          {t("Submit") as string}
-        </Button>,
-      ]}
+      onCancel={onCancel}
+      cancelText={t("Cancel") as string}
+      onOk={onSubmit}
+      okText={t("Submit") as string}
+      okButtonProps={{ loading: isSubmitting }}
       centered
     >
       <StyledModalContent>
         <Form {...layout} form={form} ref={formRef} name="control-ref" style={{ width: 800 }}>
-          <Form.Item name="club" label="Club" rules={[{ required: true, message: "Please select club" }]}>
-            <Select placeholder="Please select a club">
-              {staffClubs.map((club) => (
-                <Select.Option key={club.id} value={club.id}>
-                  {club.name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-
           <Form.Item
             name="member"
             label={t("Select Member") as string}

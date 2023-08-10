@@ -442,12 +442,14 @@ const Homepage = () => {
               <Space direction="vertical" size="large" style={{ display: "flex" }}>
                 <Card title={t("Introduce") as string} size="default">
                   <p>{item.details.description}</p>
-                  <p>{`${t("Address") as string}: ${item.details.address}`}</p>
-                  <p>{`${t("Open time") as string}: ${item.details.time_open}`}</p>
-                  <p>{`${t("Contact") as string}: ${item.details.phone_number}`}</p>
-                  <a href={item.details.facebook} target="_blank" rel="noopener noreferrer">
-                    {item.details.facebook}
-                  </a>
+                  {item.details.address && <p>{`${t("Address") as string}: ${item.details.address}`}</p>}
+                  {item.details.time_open && <p>{`${t("Open time") as string}: ${item.details.time_open}`}</p>}
+                  {item.details.phone_number && <p>{`${t("Contact") as string}: ${item.details.phone_number}`}</p>}
+                  {item.details.facebook && (
+                    <a href={item.details.facebook} target="_blank" rel="noopener noreferrer">
+                      {item.details.facebook}
+                    </a>
+                  )}
                 </Card>
               </Space>
               <Section>

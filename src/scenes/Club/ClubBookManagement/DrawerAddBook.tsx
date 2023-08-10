@@ -1,6 +1,7 @@
+import { UserContext } from "@/context/UserContext";
 import { getBookByLink } from "@/scenes/User/MyBook/callService";
 import dfbServices from "@/services/dfb";
-import { BookClubInfo, CategoryInfos, ClubBookInfos } from "@/services/types";
+import { CategoryInfos, ClubBookInfos } from "@/services/types";
 import { PlusOutlined } from "@ant-design/icons";
 import {
   Button,
@@ -24,7 +25,6 @@ type DrawerAddBookProps = {
   open: boolean;
   onClose: any;
   categories: any;
-  club: BookClubInfo | undefined;
   initFetch: any;
   editRow: ClubBookInfos | undefined;
 };
@@ -38,7 +38,7 @@ const getBase64 = (file: RcFile): Promise<string> =>
     reader.onerror = (error) => reject(error);
   });
 
-function DrawerAddBook({ open, onClose, club, categories, initFetch, editRow }: DrawerAddBookProps) {
+function DrawerAddBook({ open, onClose, categories, initFetch, editRow }: DrawerAddBookProps) {
   const [form] = Form.useForm();
   const formRef = React.useRef<FormInstance>(form);
   const [previewOpen, setPreviewOpen] = React.useState(false);
@@ -48,6 +48,7 @@ function DrawerAddBook({ open, onClose, club, categories, initFetch, editRow }: 
   const [fileListPreview, setFileListPreview] = React.useState<UploadFile[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [changeCover, setChangeCover] = React.useState(false);
+  const { currentClubId } = React.useContext(UserContext);
 
   const { t } = useTranslation();
 
@@ -83,6 +84,7 @@ function DrawerAddBook({ open, onClose, club, categories, initFetch, editRow }: 
       setLoading(true);
       if (editRow) {
         const updateFormData = new FormData();
+        updateFormData.append("club_id", (currentClubId ?? 0).toString());
         updateFormData.append("club_book_id", editRow.id.toString());
         if (values.code !== editRow.code) updateFormData.append("code", values.code);
         if (values.name !== editRow.book.name) updateFormData.append("name", values.name);
@@ -102,7 +104,7 @@ function DrawerAddBook({ open, onClose, club, categories, initFetch, editRow }: 
         formData.append("author", values.author);
         formData.append("init_count", values.initialCount);
         formData.append("current_count", values.initialCount);
-        formData.append("club_id", (club?.id ?? "").toString());
+        formData.append("club_id", (currentClubId ?? 0).toString());
         if (fileList[0]) {
           formData.append("image", (fileList[0] as RcFile) ? (fileList[0] as RcFile) : "");
         } else {

@@ -132,6 +132,7 @@ export type GetClubBookIdsOptions = {
 export type getOrderIdsOptions = {
   order_status?: "created" | "complete" | "overdue";
   order_date?: string;
+  club_id: any;
 };
 
 export type CreateOrderDraftOptions = {
@@ -166,4 +167,17 @@ export type UpdateDraftOrderOptions = {
   phone_number?: string;
   full_name?: string;
   address?: string;
+  club_id: number;
+};
+
+export type MembershipInfos = {
+  id: number;
+  member_status: string;
+  leaved_at: string | null;
+  is_staff: boolean;
+  is_admin: boolean;
+  book_club: {
+    id: number;
+    name: string;
+  };
 };
