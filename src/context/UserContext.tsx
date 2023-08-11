@@ -27,7 +27,7 @@ interface UserContextProps {
   isClubAdmin: boolean;
   setIsClubAdmin: (value: boolean) => void;
   membershipInfos: MembershipInfos[];
-  setMembershipInfos: (data: MembershipInfos[]) => void;
+  changeMembershipInfos: (data: MembershipInfos[]) => void;
 }
 
 export const UserContext = createContext<UserContextProps>({
@@ -41,7 +41,7 @@ export const UserContext = createContext<UserContextProps>({
   isClubAdmin: false,
   setIsClubAdmin: () => {},
   membershipInfos: [],
-  setMembershipInfos: () => {},
+  changeMembershipInfos: () => {},
 });
 
 interface UserProviderProps {
@@ -63,7 +63,26 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
+    const storeMembershipInfos = localStorage.getItem("membershipInfos");
+    if (storeMembershipInfos) {
+      setMembershipInfos(JSON.parse(storeMembershipInfos));
+    }
   }, []);
+
+  useEffect(() => {
+    const _manageClubs = membershipInfos
+      .filter((d: any) => !d.leaved_at && d.member_status === "active" && (d.is_staff || d.is_admin))
+      .map((d: any) => {
+        return {
+          isStaff: d.is_staff,
+          isClubAdmin: d.is_admin,
+          clubId: d.book_club.id,
+          clubName: d.book_club.name,
+        };
+      });
+    if (_manageClubs.length > 0) setCurrentClubId(_manageClubs[0].clubId);
+    setIsClubAdmin(membershipInfos.some((d: any) => d.is_admin && d.book_club.id === _manageClubs[0].clubId));
+  }, [membershipInfos]);
 
   const setLoggedInUser = (userData: User) => {
     // Save the user data to localStorage when setting the logged-in user
@@ -78,10 +97,15 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   };
 
   const changeLanguage = (language: string) => {
-    // Save the user data to localStorage when setting the logged-in user
     localStorage.setItem("language", JSON.stringify(language));
     setLanguage(language);
   };
+
+  const changeMembershipInfos = (membershipInfos: MembershipInfos[]) => {
+    localStorage.setItem("membershipInfos", JSON.stringify(membershipInfos));
+    setMembershipInfos(membershipInfos);
+  };
+
   return (
     <UserContext.Provider
       value={{
@@ -95,7 +119,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         isClubAdmin,
         setIsClubAdmin,
         membershipInfos,
-        setMembershipInfos,
+        changeMembershipInfos,
       }}
     >
       {children}

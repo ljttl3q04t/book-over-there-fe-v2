@@ -53,7 +53,7 @@ export function OnlineOrderTable({
       title: t("Address") as string,
       dataIndex: "address",
       key: "address",
-      width: "16%",
+      width: "12%",
     },
     {
       title: t("Order Date") as string,

@@ -62,6 +62,7 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, isSidebarOpen, setIsSide
   const [active, setActive] = React.useState("");
   const navigate = useNavigate();
   const { currentClubId } = React.useContext(UserContext);
+
   React.useEffect(() => {
     setActive(pathname.substring(1));
   }, [pathname]);

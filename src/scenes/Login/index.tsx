@@ -104,7 +104,7 @@ const StyledLoginAccessibility = styled.div`
   }
 `;
 const Login = () => {
-  const { setLoggedInUser, setMembershipInfos } = useContext(UserContext);
+  const { setLoggedInUser, changeMembershipInfos, setCurrentClubId, setIsClubAdmin } = useContext(UserContext);
   const navigate = useNavigate();
   const [openResetPassword, setOpenResetPassword] = useState(false);
 
@@ -119,7 +119,20 @@ const Login = () => {
         token.data.user.user_id = user_id;
         const response: any = await userService.getUserMembership();
         if (response.data && response.data.length > 0) {
-          setMembershipInfos(response.data);
+          const membershipInfos = response.data;
+          changeMembershipInfos(membershipInfos);
+          const _manageClubs = membershipInfos
+            .filter((d: any) => !d.leaved_at && d.member_status === "active" && (d.is_staff || d.is_admin))
+            .map((d: any) => {
+              return {
+                isStaff: d.is_staff,
+                isClubAdmin: d.is_admin,
+                clubId: d.book_club.id,
+                clubName: d.book_club.name,
+              };
+            });
+          if (_manageClubs.length > 0) setCurrentClubId(_manageClubs[0].clubId);
+          setIsClubAdmin(membershipInfos.some((d: any) => d.is_admin && d.book_club.id === _manageClubs[0].clubId));
         }
         navigate("/");
         notification.success({

@@ -139,7 +139,7 @@ const Navbar = () => {
           clubName: d.book_club.name,
         };
       });
-    if (_manageClubs && _manageClubs.length > 0) setCurrentClubId(_manageClubs[0].clubId);
+    if (_manageClubs.length > 0) setCurrentClubId(_manageClubs[0].clubId);
     setManageClubs(_manageClubs);
   }, [membershipInfos]);
 
