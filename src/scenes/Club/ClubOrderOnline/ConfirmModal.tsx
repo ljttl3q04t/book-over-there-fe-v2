@@ -120,7 +120,11 @@ export function ConfirmModal(props: UpdateOnlineOrderModalProps) {
           >
             <Input disabled />
           </Form.Item>
-          <Form.Item name="memberCode" label={t("Member Code") as string}>
+          <Form.Item
+            name="memberCode"
+            label={t("Member Code") as string}
+            rules={[{ required: true, message: `${MESSAGE_VALIDATE_BASE} member code` }]}
+          >
             <Input disabled={oldMember} />
           </Form.Item>
           <Form.Item
