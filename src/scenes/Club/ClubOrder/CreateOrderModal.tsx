@@ -69,7 +69,7 @@ export function CreateOrderModal(props: CreateOrderModalProps) {
           full_name: values["memberFullName"],
           code: values["memberCode"],
           phone_number: values["memberPhoneNumber"],
-          club_id: values.club,
+          club_id: currentClubId,
         };
       } else {
         data["member_id"] = values.member;
