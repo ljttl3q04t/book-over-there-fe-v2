@@ -34,21 +34,22 @@ function ClubReport() {
     for (const order of reportData.order) {
       data.push({
         name: t("Total Order"),
-        month: order.month,
+        month: order.month.split("-").slice(0, 2).join("-"),
         total: order.total_orders,
       });
     }
     for (const book of reportData.books_by_months) {
       data.push({
         name: t("Total Book"),
-        month: book.month,
+        month: book.month.split("-").slice(0, 2).join("-"),
         total: book.total_books,
       });
     }
     for (const member of reportData.new_member) {
+      if (!member.month) continue;
       data.push({
         name: t("Total New Member"),
-        month: member.month,
+        month: member.month.split("-").slice(0, 2).join("-"),
         total: member.total_new_members,
       });
     }
