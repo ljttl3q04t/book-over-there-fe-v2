@@ -111,5 +111,9 @@
   "New Password": "Mật khẩu mới",
   "Re-enter Password": "Nhập lại mật khẩu",
   "Reset": "Đặt lại",
-  "Revoke": "Thu Hồi"
+  "Revoke": "Thu Hồi",
+  "You need to verify your phone number first!": "Bạn cần xác minh số điện thoại trước",
+  "Name": "Tên",
+  "Description": "Giới Thiệu",
+  "Join Club": "Tham Gia"
 }

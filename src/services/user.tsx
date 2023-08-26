@@ -11,9 +11,20 @@ type UpdatePasswordParams = {
   newPassword: string;
 };
 
-const registerUser = (data: any) => {
-  return axiosApi.post("/user/register", data);
-};
+async function registerUser(data: any) {
+  try {
+    const response = await axiosApi.post("/user/register", data);
+    if (response.data.message) {
+      return response.data.message;
+    } else {
+      throw new Error(response.data.error);
+    }
+  } catch (error: any) {
+    const errMsg: any = Object.values(error.response.data)[0];
+    const errorMessage = errMsg || "An error occurred";
+    throw new Error(errorMessage);
+  }
+}
 
 const getUserMembership = () => {
   return ApiServiceAuthor.get("/user/membership");

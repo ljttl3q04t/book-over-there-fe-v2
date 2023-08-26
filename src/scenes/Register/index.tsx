@@ -67,30 +67,31 @@ const StyledRegisterAccessibility = styled.div`
 const Register = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const [loading, setLoading] = React.useState(false);
 
-  const onFinish = (values: any) => {
-    const user = {
-      username: values.username,
-      password: values.password,
-      phone_number: values.phone,
-      email: values.email,
-      full_name: values.full_name,
-    };
-
-    UserService.registerUser(user).then((res: any) => {
-      if (res?.error?.message) {
-        notification.info({
-          message: "Info",
-          description: res.payload.error || res.payload,
-        });
-        return;
-      }
+  const onFinish = async (values: any) => {
+    try {
+      setLoading(true);
+      const user = {
+        username: values.username,
+        password: values.password,
+        phone_number: values.phone,
+        email: values.email,
+        full_name: values.full_name,
+      };
+      const message = await UserService.registerUser(user);
       notification.success({
-        message: "Register successfully, please login to continue!",
+        message: message,
         type: "success",
       });
       navigate("/login");
-    });
+    } catch (err: any) {
+      notification.error({
+        message: err.message,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -218,7 +219,7 @@ const Register = () => {
           <Form.Item>
             <StyledActionGroup>
               {" "}
-              <Button type="primary" htmlType="submit" className="login-form-button">
+              <Button type="primary" htmlType="submit" className="login-form-button" loading={loading}>
                 Register
               </Button>
               <span>Or </span>

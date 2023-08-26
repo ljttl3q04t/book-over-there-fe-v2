@@ -29,7 +29,6 @@ import bookService from "@/services/book";
 import styled from "styled-components";
 import ClubService from "@/services/club";
 import BookService from "@/services/book";
-import { ProFormSelect } from "@ant-design/pro-components";
 import Image from "@/component/Image";
 import defaultImage from "@/image/book-default.png";
 import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
@@ -128,6 +127,12 @@ const Homepage = () => {
     onChange: onSelectChange,
   };
   const handleOpenOrderModal = async () => {
+    if (user?.is_verify !== true) {
+      notification.warning({
+        message: t("You need to verify your phone number first!") as string,
+      });
+      return;
+    }
     setActiveModal(MODAL_CODE.ORDER);
     form.setFieldsValue({
       full_name: user?.full_name,
@@ -510,36 +515,6 @@ const Homepage = () => {
               label={"Search"}
               placeholder={"Input book name to search"}
             />
-            <ProFormSelect
-              name="book_category"
-              label="Book Category"
-              placeholder={"Filter Category"}
-              showSearch
-              valueEnum={{
-                ["Lịch sử Việt Nam"]: "Lịch sử Việt Nam",
-                ["Tôn giáo-tâm linh"]: "Tôn giáo-tâm linh",
-                ["Văn học Việt Nam"]: "Văn học Việt Nam",
-                ["Khoa học"]: "Khoa học",
-                ["Ngôn tình"]: "Ngôn tình",
-                ["Nguyễn Nhật Ánh"]: "Nguyễn Nhật Ánh",
-                ["Khám phá"]: "Khám phá",
-                ["Văn học phương Tây"]: "Văn học phương Tây",
-                ["Tâm lí học"]: "Tâm lí học",
-                ["Tư duy"]: "Tư duy",
-                ["Sức khỏe-ẩm thực"]: "Sức khỏe-ẩm thực",
-                ["Nguyên Phong"]: "Nguyên Phong",
-                ["Oopsy"]: "Oopsy",
-                ["Văn học phương Đông"]: "Văn học phương Đông",
-                ["Truyền cảm hứng"]: "Truyền cảm hứng",
-                ["Dạy con làm giàu"]: "Dạy con làm giàu",
-                ["Kinh doanh- kinh tế"]: "Kinh doanh- kinh tế",
-                ["Kỹ năng"]: "Kỹ năng",
-                ["Chú Lửng Mật"]: "Chú Lửng Mật",
-                ["Kỹ năng sống"]: "Kỹ năng sống",
-                ["Tản văn"]: "Tản văn",
-                ["Sách học NN-Ngoại văn"]: "Sách học NN-Ngoại văn",
-              }}
-            />
           </QueryFilter>
           <Button
             disabled={disableOrder()}
@@ -547,7 +522,7 @@ const Homepage = () => {
             onClick={() => handleOpenOrderModal()}
             type="primary"
           >
-            Order
+            {t("Order") as string}
           </Button>
         </div>
 

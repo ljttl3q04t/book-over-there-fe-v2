@@ -12,6 +12,7 @@ import { MESSAGE_VALIDATE_BASE } from "@/constants/MessageConstant";
 import ClubService from "@/services/club";
 import { getColumnSearchProps } from "@/helpers/CommonTable";
 import { FilterConfirmProps } from "antd/es/table/interface";
+import { useTranslation } from "react-i18next";
 const { TextArea } = Input;
 
 const layout = {
@@ -51,6 +52,8 @@ const ClubList = () => {
   const disabledDate: RangePickerProps["disabledDate"] = (current) => {
     return current && current > dayjs().endOf("day");
   };
+  const { t } = useTranslation();
+
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef<InputRef>(null);
@@ -159,7 +162,7 @@ const ClubList = () => {
       key: "no",
     },
     {
-      title: "Name",
+      title: t("Name") as string,
       dataIndex: "name",
       key: "name",
       ...getColumnSearchProps(
@@ -174,18 +177,18 @@ const ClubList = () => {
       ),
     },
     {
-      title: "Description",
+      title: t("Description") as string,
       dataIndex: "description",
       key: "description",
     },
-    {
-      title: "Created Date",
-      key: "created_at",
-      dataIndex: "created_at",
-      render: (value: any) => {
-        return dayjs(value).format("DD-MM-YYYY");
-      },
-    },
+    // {
+    //   title: "Created Date",
+    //   key: "created_at",
+    //   dataIndex: "created_at",
+    //   render: (value: any) => {
+    //     return dayjs(value).format("DD-MM-YYYY");
+    //   },
+    // },
     // {
     //   title: "Total member",
     //   dataIndex: "total_member_count",
@@ -199,7 +202,7 @@ const ClubList = () => {
     //   sorter: (a, b) => a.total_book_count - b.total_book_count,
     // },
     {
-      title: "Action",
+      title: t("Action") as string,
       key: "",
       dataIndex: "",
       render: (_values: any) => {
@@ -211,7 +214,7 @@ const ClubList = () => {
               disabled={disableJoinedClubBtn(_values)}
               onClick={() => handleOpenJoin(_values)}
             >
-              Join Club
+              {t("Join Club") as string}
             </Button>
           </>
         );

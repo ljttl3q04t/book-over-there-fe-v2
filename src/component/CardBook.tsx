@@ -1,14 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import {
-  ExclamationCircleOutlined,
-  InfoCircleOutlined,
-  LikeFilled,
-  LikeOutlined,
-  ShoppingCartOutlined,
-} from "@ant-design/icons";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { Button, Card, Modal, Row } from "antd";
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import Image from "@/component/Image";
 const { Meta } = Card;
 const { confirm } = Modal;
@@ -21,11 +14,7 @@ function CardBook({
   onEdit,
   onDelete,
   permissionAdmin,
-  isLike = false,
-  router,
 }: any) {
-  const navigate = useNavigate();
-
   const showConfirmDelete = () => {
     confirm({
       icon: <ExclamationCircleOutlined />,
@@ -72,24 +61,24 @@ function CardBook({
           </>
         ) : (
           <Row>
-            <Button style={{ marginRight: "10px" }} shape="circle" icon={<ShoppingCartOutlined />} />
+            {/* <Button style={{ marginRight: "10px" }} shape="circle" icon={<ShoppingCartOutlined />} /> */}
 
-            <Button
+            {/* <Button
               type="primary"
               style={{ marginRight: "10px" }}
               shape="circle"
               icon={<InfoCircleOutlined />}
               onClick={() => navigate(`${router}`)}
-            />
+            /> */}
 
-            <Button
+            {/* <Button
               type="primary"
               danger
               className="carousel-btn"
               shape="circle"
               icon={isLike ? <LikeFilled /> : <LikeOutlined />}
               style={{ color: isLike && "gray" }}
-            />
+            /> */}
           </Row>
         )}
       </Card>
