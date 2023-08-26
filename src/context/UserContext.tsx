@@ -94,6 +94,10 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     // Clear the user data from localStorage when logging out
     localStorage.removeItem("user");
     setUser(undefined);
+    localStorage.removeItem("membershipInfos");
+    setMembershipInfos([]);
+    setIsClubAdmin(false);
+    setCurrentClubId(undefined);
   };
 
   const changeLanguage = (language: string) => {
