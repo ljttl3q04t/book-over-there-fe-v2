@@ -1,4 +1,4 @@
-import { dateFormatList } from "@/helpers/DateHelper";
+// import { dateFormatList } from "@/helpers/DateHelper";
 import { Button, DatePicker, Form, Select, Space } from "antd";
 import { useTranslation } from "react-i18next";
 import { ORDER_STATUS_LIST } from "./types";
@@ -28,9 +28,9 @@ export function FilterOrder(props: FilterOrderProps) {
             ))}
           </Select>
         </Form.Item>
-        <Form.Item label={t("Created Order Date") as string} name="order_date" style={{ minWidth: 300, width: "100%" }}>
+        {/* <Form.Item label={t("Created Order Date") as string} name="order_date" style={{ minWidth: 300, width: "100%" }}>
           <DatePicker format={dateFormatList} name="order_date" placeholder={t("Select date") as string} />
-        </Form.Item>
+        </Form.Item> */}
         <Form.Item label={t("Created order by month") as string} name="order_month" style={{ width: "100%" }}>
           <DatePicker name="order_month" picker="month" placeholder={t("Select month") as string} />
         </Form.Item>
