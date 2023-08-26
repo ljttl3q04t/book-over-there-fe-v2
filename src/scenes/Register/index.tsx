@@ -171,6 +171,10 @@ const Register = () => {
                 required: true,
                 message: "Please input your Password!",
               },
+              {
+                min: 6, // Minimum password length
+                message: "Password must be at least 6 characters long!",
+              },
             ]}
           >
             <Input.Password
